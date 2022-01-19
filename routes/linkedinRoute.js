@@ -1,18 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const passport = require('passport')
-const { MongoClient } = require('mongodb')
+const database = require('../db/database')
 require('dotenv').config()
-//database uri
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rv6z4.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-client.connect()
-// console.log('successfully connected to the database')
-const database = client.db("bulkSMS")
+
 const  userCollection = database.collection("user")
-
-
-
 
 router.get('/linkedin',  passport.authenticate('linkedin', {
     scope: ['r_emailaddress', 'r_liteprofile'],

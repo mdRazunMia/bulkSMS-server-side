@@ -1,19 +1,8 @@
-const express = require("express")
-const { MongoClient } = require('mongodb')
-const cors = require('cors')
-const ObjectId = require('mongodb').ObjectId
+const database = require('../db/database')
 const nodeMailer = require('nodemailer')
 const md5 = require('md5')
 require('dotenv').config()
 
-
-
-//database uri
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rv6z4.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-client.connect()
-console.log('successfully connected to the database')
-const database = client.db("bulkSMS")
 const  userCollection = database.collection("user")
 
 const userRegistration = async (req, res)=>{
