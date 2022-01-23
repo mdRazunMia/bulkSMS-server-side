@@ -34,7 +34,7 @@ router.get('/linkedin/callback',
           // console.log("User Already exist.")
           console.log("User already exist")
           const googleExistingSuccessMessage = "User Already exist."
-          res.send({googleExistingSuccessMessage: "User Already exist.", user: result})
+          res.send({linkedInExistingSuccessMessage: "User Already exist.", user: result})
       }
   }
   )

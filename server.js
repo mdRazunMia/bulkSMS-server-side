@@ -65,7 +65,6 @@ passport.use(new LinkedInStrategy({
 // //midleware
 // app.use(express.json());
 // app.use('/uploads', express.static('./uploads'));
-
 //Routes
 app.use('/', userRoute);
 app.use('/auth',googleLoginRoute)

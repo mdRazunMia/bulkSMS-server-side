@@ -2,7 +2,8 @@ const database = require('../db/database')
 const nodeMailer = require('nodemailer')
 const md5 = require('md5')
 require('dotenv').config()
-
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 const  userCollection = database.collection("user")
 
 const userRegistration = async (req, res)=>{
@@ -27,7 +28,10 @@ const userRegistration = async (req, res)=>{
         // return  res.json(userPasswordNotMatched);
         return res.send({ message: "Password and Confirm Password are not matched."})
     }else{
-        userPassword = md5(userPassword1)
+        // userPassword = md5(userPassword1)
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(userPassword1, salt)
+        userPassword = hashedPassword
     }
     userCollection.findOne({userEmail: userEmail}, (err, result)=>{
         if(err) throw err
@@ -97,14 +101,14 @@ const userRegistration = async (req, res)=>{
 
 const userVerifiedAccount = (req, res)=>{
     const userEmail = req.params.userEmail
-    // console.log(userEmail)
+    console.log(userEmail)
     const userPassword = req.params.userPassword
-    // console.log(userPassword)
-    const userInformation = { userEmail: userEmail, userPassword: userPassword };
+    console.log(userPassword)
+    const userInformation = { userEmail: userEmail};
     const updatedUserInformation = { $set: {verified: true} };
     userCollection.updateOne(userInformation, updatedUserInformation, function(err, res) {
     if (err) throw err;
-    // console.log(res)
+    console.log(res)
   });
   const verifiedMessage = "Account has been verified successfully."
 //   res.json({ verifiedMessage: "Account has been verified successfully."})
@@ -113,7 +117,8 @@ const userVerifiedAccount = (req, res)=>{
 
 const userLogin = async (req, res)=>{
     const userEmail = req.body.userEmail
-    const userPassword = md5(req.body.userPassword)
+    const userPassword = req.body.userPassword
+    // const userPassword = md5(req.body.userPassword)
     // console.log(userEmail)
     // console.log(userPassword)
     if(!userEmail || !userPassword){
@@ -123,14 +128,19 @@ const userLogin = async (req, res)=>{
        const passwordLengthError= "Password must be greater than or equal to 8.";
         return res.json(passwordLengthError)
     }
-    userCollection.findOne({userEmail: userEmail, userPassword: userPassword}, (err, result)=>{
+    userCollection.findOne({userEmail: userEmail}, (err, result)=>{
         if(err) throw err
         if(result != null){
             if(result.verified){
+                const validPassword = bcrypt.compare(result.userPassword, userPassword)
+                if(validPassword){
+                    const token = jwt.sign({_id: result._id},process.env.TOKEN_SECRET)
                 req.session.userFullName = result.userFullName
                 req.session.userEmail = result.userEmail
+                res.header('auth-token').send(token)
+                }
                 // console.log(`user session data: ${req.session.userFullName}  ${req.session.userEmail}`)
-                res.send({ loginSuccessMessage: "User has been logged in successfully.", user: result})
+                // res.send({ loginSuccessMessage: "User has been logged in successfully.", user: result})
             }else{
                 res.send({ message: "Please Verify your email first.",user: result})
             }
