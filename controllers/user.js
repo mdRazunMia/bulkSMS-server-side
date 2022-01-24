@@ -145,6 +145,7 @@ const userLogin = async (req, res)=>{
         res.send(error.details[0].message)
     }else{
         const userEmail = value.userEmail
+        const userPassword = value.userPassword
         userCollection.findOne({userEmail: userEmail}, (err, result)=>{
             if(err) throw err
             if(result != null){
@@ -154,7 +155,7 @@ const userLogin = async (req, res)=>{
                         const token = jwt.sign({_id: result._id},process.env.TOKEN_SECRET)
                     //req.session.userFullName = result.userFullName
                     //req.session.userEmail = result.userEmail
-                    res.header('auth-token').send(token)
+                    res.header('auth-token').send({token: token, loginSuccessMessage: "User has been logged in successfully.", user: result})
                     }
                     // console.log(`user session data: ${req.session.userFullName}  ${req.session.userEmail}`)
                     // res.send({ loginSuccessMessage: "User has been logged in successfully.", user: result})
