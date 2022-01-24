@@ -153,9 +153,8 @@ const userLogin = async (req, res)=>{
                     const validPassword = bcrypt.compare(result.userPassword, userPassword)
                     if(validPassword){
                         const token = jwt.sign({_id: result._id},process.env.TOKEN_SECRET)
-                    //req.session.userFullName = result.userFullName
-                    //req.session.userEmail = result.userEmail
-                    res.header('auth-token').send({token: token, loginSuccessMessage: "User has been logged in successfully.", user: result})
+                        res.setHeader('auth-token', token)
+                        res.header('auth-token').send({token: token, loginSuccessMessage: "User has been logged in successfully.", user: result})
                     }
                     // console.log(`user session data: ${req.session.userFullName}  ${req.session.userEmail}`)
                     // res.send({ loginSuccessMessage: "User has been logged in successfully.", user: result})
