@@ -2,15 +2,17 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.js");
 const { route } = require("./linkedinRoute.js");
+const auth = require('../validations/verified')
 
 
 //USER ROUTE
 router.post('/registration',userController.userRegistration)
-router.get('/user',userController.allUser)
+router.get('/user',auth,userController.allUser)
 router.post('/login',userController.userLogin)
 router.get('/registration/verified/:userEmail/:userPassword',userController.userVerifiedAccount)
-router.delete('/delete/:userId',userController.deleteSinglelUser)
+router.delete('/delete/:userId',auth,userController.deleteSinglelUser)
 // router.post('/forgerPassword', userController.userForgetPassword)
 router.post('/passwordResetLink', userController.mailResetLink)
-router.post('/userUpdatePassword', userController.userResetPassword)
+router.post('/userUpdatePassword',auth,userController.userResetPassword)
+router.get('/userProfile',)
 module.exports = router;

@@ -1,6 +1,7 @@
 const database = require('../db/database')
 const {OAuth2Client} = require('google-auth-library')
 require('dotenv').config()
+const jwt = require('jsonwebtoken')
 
 const clientAccount = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 const  userCollection = database.collection("user")
@@ -23,13 +24,15 @@ const googleLogin = (req, res)=>{
             userCollection.findOne({userEmail: userEmail}, (err, result)=>{
                 if(err) throw err
                 if(result==null){
+                    const token = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
                     userCollection.insertOne(userInformation)
                     // const googleSuccessMessageAndInserted = "user has been logged in successfully."
-                    res.send({googleSuccessMessageAndInserted:"user has been logged in successfully.", user: {userEmail: userEmail, userFullName: userFullName}})
+                    res.header('auth-token').send({googleSuccessMessageAndInserted:"user has been logged in successfully.", user: {userEmail: userEmail, userFullName: userFullName}})
                 }else{
+                    const token = jwt.sign({_id: result._id},process.env.TOKEN_SECRET)
                     // console.log("User Already exist.")
                     const googleExistingSuccessMessage = "User Already exist."
-                    res.send({googleExistingSuccessMessage: "User Already exist.", user: result})
+                    res.header('auth-token').send({googleExistingSuccessMessage: "User Already exist.", user: result})
                 }
             })
 

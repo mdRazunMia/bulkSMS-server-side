@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const campaignController = require('../controllers/campaign.js')
+const auth = require('../validations/verified')
 //CAMPAIGN ROUTE
-router.post('/create',campaignController.createCampaign)
-router.get('/show', campaignController.showAllCampaign)
-router.delete('/delete/:campaignId', campaignController.deleteCampaign)
+router.post('/create',auth,campaignController.createCampaign)
+router.get('/show',auth,campaignController.showAllCampaign)
+router.delete('/delete/:campaignId',auth,campaignController.deleteCampaign)
 
 module.exports = router
