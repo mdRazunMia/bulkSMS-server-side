@@ -14,4 +14,5 @@ router.delete('/delete/:userId',auth,userController.deleteSinglelUser)
 // router.post('/forgerPassword', userController.userForgetPassword)
 router.post('/passwordResetLink', userController.mailResetLink)
 router.post('/userUpdatePassword',auth,userController.userResetPassword)
+router.get('/userProfile',)
 module.exports = router;

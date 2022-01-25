@@ -323,9 +323,16 @@ const deleteSinglelUser = (req, res)=>{
 }
 
 
-const validateEmail = (userEmail)=>{
-    var emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/
-    emailRegex.test(userEmail)
+// const validateEmail = (userEmail)=>{
+//     var emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/
+//     emailRegex.test(userEmail)
+// }
+
+const getUserProfile = (req,res)=>{
+    const token = req.header('auth-token')
+    userCollection.find({ userToken: token}).toArray((err, result)=>{
+        res.json(result)  
+    })
 }
 
 module.exports = {
