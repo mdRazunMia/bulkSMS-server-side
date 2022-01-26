@@ -38,7 +38,7 @@ const userRegistration = async (req, res)=>{
                         pass:process.env.EAILPASSWORD
                     }
                 })
-                const url = `http://localhost:3000/verified/${userEmail}/${userPassword}`
+                const url = `http://localhost:3000/verified/${userEmail}/${userRandomToken}`
                 const mailOption ={
                     from: 'test.sustneub@gmail.com',
                     to: userEmail,
