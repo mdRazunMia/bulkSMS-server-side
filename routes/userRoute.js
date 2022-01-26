@@ -9,10 +9,11 @@ const auth = require('../validations/verified')
 router.post('/registration',userController.userRegistration)
 router.get('/user',auth,userController.allUser)
 router.post('/login',userController.userLogin)
-router.get('/registration/verified/:userEmail/:userPassword',userController.userVerifiedAccount)
+router.get('/registration/verified/:userEmail/:userToken',userController.userVerifiedAccount)
 router.delete('/delete/:userId',auth,userController.deleteSinglelUser)
 // router.post('/forgerPassword', userController.userForgetPassword)
 router.post('/passwordResetLink', userController.mailResetLink)
 router.post('/userUpdatePassword',auth,userController.userResetPassword)
-router.get('/userProfile',)
+//new task
+router.get('/userProfile',auth,userController.getUserProfile)
 module.exports = router;

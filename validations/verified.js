@@ -8,7 +8,7 @@ const auth = (req, res, next) => {
         req.user = verified
         next()
     } catch (error) {
-        res.send({ errorMessage: "Invalid Token"})
+        res.send({ errorMessage: "Invalid Token or time is expired"})
     }
 }
 
