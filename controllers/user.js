@@ -4,34 +4,11 @@ const md5 = require('md5')
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
 const {registerValidation,loginValidation} = require('../validations/validation')
 
 const userRegistration = async (req, res)=>{
-    // let userPassword = ""
-    // const userFullName = req.body.userFullName
-    // const userEmail = req.body.userEmail
-    // const userPassword1 = req.body.userPassword1
-    // const userPassword2 = req.body.userPassword2
-    // let userRegisterSuccessMessage = " "
-    // let userRegisterExistingMessage = " "
-    // const messages = {}
-    // if(!userFullName || !userEmail || !userPassword1 || !userPassword2){
-    //     //const inputFieldInvalidMessage= "Please fill in all fields."
-    //     //return res.json(inputFieldInvalidMessage) ; 
-    //     return res.send({ message: "Please fill in all fields."})
-    // }else if(userPassword1.length < 8 || userPassword2.length <8){
-    // //    const passwordLengthError= "Password must be greater than or equal to 8.";
-    // //    return res.json(passwordLengthError)
-    //     return res.send({ message: "Password must be greater than or equal to 8."})
-    // }else if(userPassword1 !== userPassword2){
-    //     // const userPasswordNotMatched= "Password and Confirm Password are not matched.";
-    //     // return  res.json(userPasswordNotMatched);
-    //     return res.send({ message: "Password and Confirm Password are not matched."})
-    // }else{
-        // userPassword = md5(userPassword1)
-    // }
-
     const {error, value} = registerValidation(req.body) 
     if(error){
         res.send(error.details[0].message)
@@ -49,6 +26,9 @@ const userRegistration = async (req, res)=>{
                 userInformation.userFullName = userFullName
                 userInformation.userEmail = userEmail
                 userInformation.userPassword = userPassword
+                const userRandomToken = Str.random(50)
+                userInformation.userToken = userRandomToken
+                console.log(`user token: ${userRandomToken}`)
                 userInformation.verified = false
                 userCollection.insertOne(userInformation)
                 const transporter = nodeMailer.createTransport({
@@ -97,13 +77,9 @@ const userRegistration = async (req, res)=>{
                 transporter.sendMail(mailOption, (err, data )=>{
                     if(err) throw err
                 })
-            //     userRegisterSuccessMessage="User has been registered successfully. A link has been sent to your gmail to verify your account."
-            //    res.json(userRegisterSuccessMessage)
                 res.send({ userRegisterSuccessMessage: "User has been registered successfully. A link has been sent to your gmail to verify your account."})
             }else{
                 res.send({ message: "This email is already registered."})
-                // userRegisterExistingMessage="This email is already registered."
-                // res.json(userRegisterExistingMessage)
             }
         })
     }
@@ -114,32 +90,17 @@ const userRegistration = async (req, res)=>{
 const userVerifiedAccount = (req, res)=>{
     const userEmail = req.params.userEmail
     console.log(userEmail)
-    const userPassword = req.params.userPassword
-    console.log(userPassword)
-    const userInformation = { userEmail: userEmail};
+    const userToken = req.params.userToken
+    console.log(userToken)
+    const userInformation = { userEmail: userEmail, userToken: userToken};
     const updatedUserInformation = { $set: {verified: true} };
     userCollection.updateOne(userInformation, updatedUserInformation, function(err, res) {
     if (err) throw err;
-    console.log(res)
   });
-  const verifiedMessage = "Account has been verified successfully."
-//   res.json({ verifiedMessage: "Account has been verified successfully."})
-  res.json({verifiedMessage})
+  res.json({ verifiedMessage: "Account has been verified successfully."})
 }
 
 const userLogin = async (req, res)=>{
-    //const userEmail = req.body.userEmail
-    //const userPassword = req.body.userPassword
-    // const userPassword = md5(req.body.userPassword)
-    // console.log(userEmail)
-    // console.log(userPassword)
-    // if(!userEmail || !userPassword){
-    //     const inputFieldInvalidMessage= "Please fill in all fields."
-    //     return res.json(inputFieldInvalidMessage) ; 
-    // }else if(userPassword.length < 8){
-    //    const passwordLengthError= "Password must be greater than or equal to 8.";
-    //     return res.json(passwordLengthError)
-    // }
     const {error, value} = loginValidation(req.body)
     if(error){
         res.send(error.details[0].message)
@@ -152,17 +113,26 @@ const userLogin = async (req, res)=>{
                 if(result.verified){
                     const validPassword = bcrypt.compare(result.userPassword, userPassword)
                     if(validPassword){
-                        const token = jwt.sign({_id: result._id},process.env.TOKEN_SECRET)
+                        const token = jwt.sign({_id: result._id},process.env.TOKEN_SECRET, {
+                            expiresIn: process.env.JWT_EXPIRE_TIME
+                        })
+                        console.log(token)
                         res.setHeader('auth-token', token)
-                        res.header('auth-token').send({token: token, loginSuccessMessage: "User has been logged in successfully.", user: result})
+                        const userInformation = { userEmail: userEmail};
+                        const updatedUserInformation = { $set: {userToken: token} };
+                         userCollection.updateOne(userInformation, updatedUserInformation, function(err, res) {
+                            if (err) throw err;
+                                console.log(res)
+                        })
+                        res.header('auth-token').send({
+                            token: token
+                        })
                     }
-                    // console.log(`user session data: ${req.session.userFullName}  ${req.session.userEmail}`)
-                    // res.send({ loginSuccessMessage: "User has been logged in successfully.", user: result})
                 }else{
-                    res.send({ message: "Please Verify your email first.",user: result})
+                    res.send({ message: "Please Verify your email first."})
                 }
             }else{
-                 res.send({message: "Email/Password is incorrect or registered first",user: result})
+                 res.send({message: "Email/Password is incorrect or registered first"})
             }
             
         })
@@ -260,8 +230,6 @@ const mailResetLink = (req, res)=>{
             transporter.sendMail(mailOption, (err, data )=>{
                 if(err) throw err
             })
-        //     userRegisterSuccessMessage="User has been registered successfully. A link has been sent to your gmail to verify your account."
-        //    res.json(userRegisterSuccessMessage)
             res.send({ resetPasswordMessage: "A link has been sent to your gmail to reset your password."})
         }
     })
@@ -269,35 +237,30 @@ const mailResetLink = (req, res)=>{
 }
 
 const userResetPassword = (req, res)=>{
-    const userEmail = req.query.userEmail
-    console.log(userEmail)
-    const userPassword1 = req.body.userPassword1
-    const userPassword2 = req.body.userPassword2
-    if(!userPassword1 || !userPassword2){
-        // const inputFieldInvalidMessage= "Please fill in all fields."
-        return res.send({message: "Please fill in all fields."}) ; 
-    }else if(userPassword1.length < 8 || userPassword2.length <8){
-    //    const passwordLengthError= "Password must be greater than or equal to 8.";
-        return res.send({message: "Password must be greater than or equal to 8."})
-    }else if(userPassword1 !== userPassword2){
-        // const userPasswordNotMatched= "Password and Confirm Password are not matched.";
-        return  res.send({message:"Password and Confirm Password are not matched."});
+    const {error, value} = userResetPasswordValidation(req.body)
+    if(error){
+        res.send(error.details[0].message)
+    }else{
+        const userEmail = value.userEmail
+        const userNewPassword = value.userPassword1
+        userCollection.findOne({userEmail: userEmail},(err, user)=>{
+            if(err) throw err
+            if(user==null){
+                // const userNotExistError = "There is no user to update."
+                res.send({message: "There is no user to update."})
+            }else{
+            const userInformation = {userEmail: userEmail};
+            const salt = bcrypt.genSalt(10)
+            const hashedUserNewPassword =  bcrypt.hash(userNewPassword, salt)
+            const updatedUserInformation = { $set: {userPassword: hashedUserNewPassword} };
+            userCollection.updateOne(userInformation, updatedUserInformation, function(err, objecet) {
+                 if (err) throw err
+                 res.send({ updateSuccessMessage:"user password has been updated successfully."})
+             });
+            }
+        })
     }
-    const userPassword = md5(userPassword1)
-    userCollection.findOne({userEmail: userEmail},(err, user)=>{
-        if(err) throw err
-        if(user==null){
-            // const userNotExistError = "There is no user to update."
-            res.send({message: "There is no user to update."})
-        }else{
-        const userInformation = {userEmail: userEmail};
-        const updatedUserInformation = { $set: {userPassword: userPassword} };
-        userCollection.updateOne(userInformation, updatedUserInformation, function(err, objecet) {
-             if (err) throw err
-             res.send({ updateSuccessMessage:"user password has been updated successfully."})
-         });
-        }
-    })
+   
 }
 
 
@@ -322,16 +285,15 @@ const deleteSinglelUser = (req, res)=>{
     })
 }
 
-
-// const validateEmail = (userEmail)=>{
-//     var emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/
-//     emailRegex.test(userEmail)
-// }
-
+//new task
 const getUserProfile = (req,res)=>{
     const token = req.header('auth-token')
+    console.log(req.user)
     userCollection.find({ userToken: token}).toArray((err, result)=>{
-        res.json(result)  
+        let user = {}
+        user.userFullName = result[0].userFullName
+        user.userEmail = result[0].userEmail
+        res.send(user) 
     })
 }
 
@@ -343,7 +305,8 @@ module.exports = {
     userVerifiedAccount,
     // userForgetPassword,
     userResetPassword,
-    mailResetLink
+    mailResetLink,
+    getUserProfile
 }
 
 

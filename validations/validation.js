@@ -18,7 +18,17 @@ const loginValidation = (data) => {
     return schema.validate(data)
 }
 
+const userResetPasswordValidation = (data) => {
+    const schema = Joi.object({
+        userEmail: Joi.string().email({ minDomainSegments: 2, tlds: {allow: ['com','net']}}).required(),
+        userPassword1: Joi.string().min(8).max(25).required(),
+        userPassword2:  Joi.ref('userPassword1')
+    })
+    return schema.validate(data)
+}
+
 module.exports = {
     registerValidation,
-    loginValidation
+    loginValidation,
+    userResetPasswordValidation
 }
