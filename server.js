@@ -11,6 +11,7 @@ const linkedinLoginRoute = require('./routes/linkedinRoute');
 const logoutRoute = require('./routes/logout')
 const passport = require('passport');
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
+const subUserRoute = require('./routes/subUserRoute')
 
 const app = express();
 const whitelist = ["http://localhost:3000"]
@@ -71,6 +72,7 @@ app.use('/auth',googleLoginRoute)
 app.use('/auth', linkedinLoginRoute)
 app.use('/campaign',campaignRoute)
 app.use('/logout',logoutRoute)
+app.use('/subUser',subUserRoute)
 
 // app.use(function(req,res,next){
 //     if(req.session.email == null || req.session.email.length ==0 ){
