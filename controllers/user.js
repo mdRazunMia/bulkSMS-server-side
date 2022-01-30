@@ -8,6 +8,8 @@ const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
 const {registerValidation,loginValidation} = require('../validations/validation')
 
+
+//user registration
 const userRegistration = async (req, res)=>{
     const {error, value} = registerValidation(req.body) 
     if(error){
@@ -87,6 +89,8 @@ const userRegistration = async (req, res)=>{
 
 }
 
+
+//verify user account
 const userVerifiedAccount = (req, res)=>{
     const userEmail = req.params.userEmail
     console.log(userEmail)
@@ -100,6 +104,8 @@ const userVerifiedAccount = (req, res)=>{
   res.json({ verifiedMessage: "Account has been verified successfully."})
 }
 
+
+//user login
 const userLogin = async (req, res)=>{
     const {error, value} = loginValidation(req.body)
     if(error){
@@ -119,14 +125,6 @@ const userLogin = async (req, res)=>{
                         const refreshToken = jwt.sign({userEmail: result.userEmail}, process.env.REFRESH_TOKEN_SECRET,{
                             expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
                         })
-                        // console.log(token)
-                        // res.setHeader('auth-token', token)
-                        // const userInformation = { userEmail: userEmail};
-                        // const updatedUserInformation = { $set: {userToken: token} };
-                        //  userCollection.updateOne(userInformation, updatedUserInformation, function(err, res) {
-                        //     if (err) throw err;
-                        //         console.log(res)
-                        // })
                         res.header('auth-token').send({
                             token: token,
                             refreshToken: refreshToken
@@ -145,41 +143,7 @@ const userLogin = async (req, res)=>{
 }
 
 
-// const userForgetPassword = (req, res)=>{
-//     const userEmail = req.body.userEmail
-//     userCollection.findOne({userEmail: userEmail}, (err, user)=>{
-//         if(err) throw err
-//         if(user==null){
-//             const userEmailError = "This email is not exist. Please register first"
-//             res.json(userEmailError)
-//         }else{
-
-//             const transporter = nodeMailer.createTransport({
-//                 service: "gmail",
-//                 auth:{
-//                     user:process.env.EMAILID,
-//                     pass:process.env.EAILPASSWORD
-//                 }
-//             })
-
-//             const userPassword = user.userPassword
-//             const mailOption ={
-//                 from: 'test.sustneub@gmail.com',
-//                 to: userEmail,
-//                 subject: 'Please check your password',
-//                 html: `Your new password is: ${userPassword}`
-//             }
-//             transporter.sendMail(mailOption, (err, data )=>{
-//                 if(err) throw err
-//             })
-//             userPasswordRetrieveMessage="Your forget password has been sent to your email account. Please check the email."
-//            res.json(userPasswordRetrieveMessage)
-
-//         }
-//     })
-// }
-
-
+// send reset mail
 const mailResetLink = (req, res)=>{
     const userEmail = req.body.userEmail
     console.log(userEmail)
@@ -240,6 +204,8 @@ const mailResetLink = (req, res)=>{
 
 }
 
+
+// reset user password
 const userResetPassword = (req, res)=>{
     const {error, value} = userResetPasswordValidation(req.body)
     if(error){
@@ -269,14 +235,14 @@ const userResetPassword = (req, res)=>{
 
 
 
-
+// get all users
 const allUser = (req, res)=>{
     userCollection.find({}).toArray((err, result)=>{
         res.json(result)
     })
 }
 
-
+// delete single user 
 const deleteSinglelUser = (req, res)=>{
     const userId = req.params.userId
     console.log(userId)
@@ -289,7 +255,7 @@ const deleteSinglelUser = (req, res)=>{
     })
 }
 
-//new task
+// get all the info of requested user
 const getUserProfile = (req,res)=>{
     const userEmail = req.user.userEmail
     console.log(`userEmail: ${userEmail}`)
@@ -305,9 +271,7 @@ const getUserProfile = (req,res)=>{
 //user refresh token
 
 const userRefreshToken = (req, res)=>{
-    console.log("we are in refreshToken controller.")
     const refreshToken = req.header('refresh-token')
-    console.log(refreshToken)
     if(!refreshToken) return res.send({ errorMessage: "Access Denied." })
     const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
     const userEmail = verified.userEmail
