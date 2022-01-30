@@ -3,7 +3,7 @@ const nodeMailer = require('nodemailer')
 const md5 = require('md5')
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
 const {registerValidation,loginValidation} = require('../validations/validation')
@@ -38,7 +38,7 @@ const userRegistration = async (req, res)=>{
                         pass:process.env.EAILPASSWORD
                     }
                 })
-                const url = `http://localhost:3000/verified/${userEmail}/${userRandomToken}`
+                const url = `${process.env.BASE_URL}/verified/${userEmail}/${userRandomToken}`
                 const mailOption ={
                     from: 'test.sustneub@gmail.com',
                     to: userEmail,
@@ -113,19 +113,23 @@ const userLogin = async (req, res)=>{
                 if(result.verified){
                     const validPassword = bcrypt.compare(result.userPassword, userPassword)
                     if(validPassword){
-                        const token = jwt.sign({_id: result._id},process.env.TOKEN_SECRET, {
+                        const token = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET, {
                             expiresIn: process.env.JWT_EXPIRE_TIME
                         })
-                        console.log(token)
-                        res.setHeader('auth-token', token)
-                        const userInformation = { userEmail: userEmail};
-                        const updatedUserInformation = { $set: {userToken: token} };
-                         userCollection.updateOne(userInformation, updatedUserInformation, function(err, res) {
-                            if (err) throw err;
-                                console.log(res)
+                        const refreshToken = jwt.sign({userEmail: result.userEmail}, process.env.REFRESH_TOKEN_SECRET,{
+                            expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
                         })
+                        // console.log(token)
+                        // res.setHeader('auth-token', token)
+                        // const userInformation = { userEmail: userEmail};
+                        // const updatedUserInformation = { $set: {userToken: token} };
+                        //  userCollection.updateOne(userInformation, updatedUserInformation, function(err, res) {
+                        //     if (err) throw err;
+                        //         console.log(res)
+                        // })
                         res.header('auth-token').send({
-                            token: token
+                            token: token,
+                            refreshToken: refreshToken
                         })
                     }
                 }else{
@@ -190,8 +194,8 @@ const mailResetLink = (req, res)=>{
                     user:process.env.EMAILID,
                     pass:process.env.EAILPASSWORD
                 }
-            })
-            const url = `http://localhost:3000/resetPassword/userEmail=${userEmail}`
+            }) 
+            const url = `${process.env.BASE_URL}/resetPassword/userEmail=${userEmail}`
             const mailOption ={
                 from: 'test.sustneub@gmail.com',
                 to: userEmail,
@@ -287,14 +291,41 @@ const deleteSinglelUser = (req, res)=>{
 
 //new task
 const getUserProfile = (req,res)=>{
-    const token = req.header('auth-token')
-    console.log(req.user)
-    userCollection.find({ userToken: token}).toArray((err, result)=>{
+    const userEmail = req.user.userEmail
+    console.log(`userEmail: ${userEmail}`)
+    userCollection.find({ userEmail: userEmail}).toArray((err, result)=>{
         let user = {}
         user.userFullName = result[0].userFullName
         user.userEmail = result[0].userEmail
         res.send(user) 
     })
+}
+
+
+//user refresh token
+
+const userRefreshToken = (req, res)=>{
+    console.log("we are in refreshToken controller.")
+    const refreshToken = req.header('refresh-token')
+    console.log(refreshToken)
+    if(!refreshToken) return res.send({ errorMessage: "Access Denied." })
+    const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+    const userEmail = verified.userEmail
+    try {
+        const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+        const token = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET,{
+            expiresIn: process.env.JWT_EXPIRE_TIME
+        })
+        console.log(`token: ${token}, refreshToken: ${refreshToken}`)
+        res.send({
+            token: token,
+            refreshToken: refreshToken
+        })
+               
+    } catch (error) {
+        res.send({ errorMessage: "Invalid Token or time is expired"})
+    }
+    
 }
 
 module.exports = {
@@ -306,7 +337,8 @@ module.exports = {
     // userForgetPassword,
     userResetPassword,
     mailResetLink,
-    getUserProfile
+    getUserProfile,
+    userRefreshToken
 }
 
 

@@ -16,4 +16,5 @@ router.post('/passwordResetLink', userController.mailResetLink)
 router.post('/userUpdatePassword',auth,userController.userResetPassword)
 //new task
 router.get('/userProfile',auth,userController.getUserProfile)
+router.get('/refreshToken',userController.userRefreshToken)
 module.exports = router;
