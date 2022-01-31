@@ -3,18 +3,33 @@ const nodeMailer = require('nodemailer')
 const md5 = require('md5')
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const Str = require('@supercharge/strings')
 const  subUserCollection = database.collection("sub-user")
-const {registerValidation,loginValidation} = require('../validations/validation')
+const {
+    subUserCreateValidation, 
+    subUserLoginValidation,
+    subUserEditValidation,
+    subUserPasswordResetValidation
+} = require('../validations/validation')
 const { ObjectId } = require('mongodb')
 const { rules } = require('eslint-config-prettier')
 
-const createSubUser = (req, res)=>{
+const createSubUser = async (req, res)=>{
     const userRole = req.query.role
+    const subUserName = req.body.subUserName
+    const password = req.body.subUserPassword
+    const subUserRole = req.body.subUserRole
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+    const subUserPassword = hashedPassword
+    const subUser = {}
+    subUser.subUserName = subUserName
+    subUser.subUserPassword = subUserPassword
+    subUser.subUserRole = subUserRole
     if(userRole === "admin")
     {
-        subUserCollection.insertOne(req.body,(err, data)=>{
+        subUserCollection.insertOne(subUser,(err, data)=>{
             if(err) return res.json("sub-user is not created.")
             res.json({
                 successMessage: "sub-user has been created successfully.",
@@ -25,9 +40,84 @@ const createSubUser = (req, res)=>{
     }
 }
 
-const editSubUserInformation = (req, res)=>{}
+const logInSubUser = async (req, res)=>{
+    const subUserName = req.body.subUserName
+    const subUserPassword = req.body.subUserPassword
+    const subUserRole = req.body.subUserRole
+    subUserCollection.findOne({subUserName: subUserName, subUserRole: subUserRole},(error, result)=>{
+        if(error) return res.send({ errorMessage: "Something went wrong."})
+        if(!result){
+           return res.send({errorMessage: "No user found for this user name"})
+        }else{
+            const isValid = bcrypt.compare(result.subUserPassword,subUserPassword)
+            if(isValid){
+              return  res.send({
+                    successMessage: "User has been logged in successfully.",
+                    subUserName: result.subUserName,
+                    subUserRole: result.subUserRole
+                })
+            }else{
+              return  res.send({
+                    errorMessage: "User password is not correct"
+                })
+            } 
+        }
+    })
+}
 
-const editSubUserPassword = (req, res)=>{}
+const getSubUserInformationForEdit = (req, res)=>{
+    const subUserId = req.params.id
+    const role = req.query.role
+    if(role === 'admin' || role ==='sub-admin'){
+        subUserCollection.findOne({_id: ObjectId(subUserId)}, (error, subUser)=>{
+            if(error) throw error
+            if(subUser !== null){
+                res.send(subUser)
+            }else{
+                res.send({errorMessage: "There is no user for this Id."})
+            }
+        })
+    }else{
+        res.send({errorMessage: "User is not authorized to edit the sub-user information."})
+    }
+    
+}
+
+
+const editSubUserInformation = (req, res)=>{
+    const subUserId = req.params.id
+    const role = req.query.role
+    const subUserName = req.body.subUserName
+    const subUserRole = req.body.subUserRole
+    console.log(`subUserName: ${subUserName}, subUserRole: ${subUserRole}`)
+    if(role === 'admin' || role ==='sub-admin'){
+        subUserCollection.findOne({_id: ObjectId(subUserId)}, (error, subUser)=>{
+            if(error) throw error
+            if(subUser !== null){
+                const subUserInformationFilter = {_id: ObjectId(subUserId)}
+                const subUserEditedInfo = { $set:{subUserName: subUserName, subUserRole: subUserRole}}
+                subUserCollection.updateOne(subUserInformationFilter,subUserEditedInfo,(error, data)=>{
+                    if(error) return res.send({errorMessage: "sub-user information has not been updated."})
+                    return res.send({
+                        successMessage: "sub-user information has been updated successfully.",
+                        data: data
+                    })
+                })
+            }else{
+                res.send({errorMessage: "There is no user for this Id."})
+            }
+        })
+    }else{
+        res.send({errorMessage: "User is not authorized to edit the sub-user information."})
+    }
+
+}
+
+
+const editSubUserPassword = (req, res)=>{
+    const {error, value} = subUserPasswordResetValidation(req.body)
+
+}
 
 const deleteSubUser = (req, res)=>{
     const subUserId = req.params.id
@@ -65,5 +155,7 @@ module.exports = {
     editSubUserInformation,
     editSubUserPassword,
     deleteSubUser,
-    showAllSubUser
+    showAllSubUser,
+    getSubUserInformationForEdit,
+    logInSubUser
 }
