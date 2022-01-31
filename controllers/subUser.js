@@ -114,8 +114,38 @@ const editSubUserInformation = (req, res)=>{
 }
 
 
-const editSubUserPassword = (req, res)=>{
-    const {error, value} = subUserPasswordResetValidation(req.body)
+const editSubUserPassword = async (req, res)=>{
+    // const {error, value} = subUserPasswordResetValidation(req.body)
+    const subUserId = req.params.id
+    const subUserRole = req.query.role
+    const password = req.body.subUserPassword
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+    const subUserPassword = hashedPassword
+    // const subUserConfirmPassword = req.body.subUserConfirmPassword
+    if(subUserRole === 'admin' || subUserRole === 'sub-admin'){
+        subUserCollection.findOne({_id: ObjectId(subUserId)},(error, subUser)=>{
+            if(error) return res.send({errorMessage: "Something went wrong."})
+            if(!subUser){
+                return res.send({ errorMessage: "User is not found"})
+            }else{
+                subUserFilterInfo = { _id: ObjectId(subUserId)}
+                subUserUpdatedInfo = { $set: { subUserPassword: subUserPassword}}
+                subUserCollection.updateOne(subUserFilterInfo,subUserUpdatedInfo,(error, data)=>{
+                    if(error) return res.send({ errorMessage: "User password is not updated."})
+                    return res.send({
+                        successMessage: "User password has been updated successfully.",
+                        data: data
+                    })
+                })
+            }
+        })
+    }else{
+        res.send({
+            errorMessage: "User is not authorized to edit the password."
+        })
+    }
+    
 
 }
 

@@ -9,6 +9,6 @@ router.get('/showSubUsers',subUserController.showAllSubUser)
 router.delete('/deleteSubUser/:id', subUserController.deleteSubUser)
 router.put('/editSubUserInformation/:id', subUserController.editSubUserInformation)
 router.get('/getSubUserInformationForEdit/:id', subUserController.getSubUserInformationForEdit)
-router.post('/editSubUserPassword',subUserController.editSubUserPassword)
+router.put('/editSubUserPassword/:id',subUserController.editSubUserPassword)
 
 module.exports = router
