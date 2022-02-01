@@ -163,7 +163,7 @@ const deleteSubUser = (req, res)=>{
     const deletedUserId = {_id: ObjectId(subUserId)}
     if(userRole === 'admin'){
         subUserCollection.deleteOne(deletedUserId,(err,data)=>{
-            if(err) throw err
+            if(err) return res.send({ errorMessage: "Something went wrong."})
             res.send({
                 message: `user id ${subUserId} has been deleted successfully`
             })
