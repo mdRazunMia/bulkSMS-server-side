@@ -113,11 +113,12 @@ const userLogin = async (req, res)=>{
     }else{
         const userEmail = value.userEmail
         const userPassword = value.userPassword
-        userCollection.findOne({userEmail: userEmail}, (err, result)=>{
+        userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
             if(err) throw err
             if(result != null){
                 if(result.verified){
-                    const validPassword = bcrypt.compare(result.userPassword, userPassword)
+                    const validPassword = await bcrypt.compare(result.userPassword, userPassword)
+                    console.log(validPassword)
                     if(validPassword){
                         const token = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET, {
                             expiresIn: process.env.JWT_EXPIRE_TIME
