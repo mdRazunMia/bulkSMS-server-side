@@ -29,14 +29,17 @@ const userResetPasswordValidation = (data) => {
 
 const subUserCreateValidation = (data)=>{
     const schema = Joi.object({
-         
+         subUserName: Joi.string().max(24).required(),
+         subUserPassword: Joi.string().min(8).max(24).required(),
+         subUserRole: Joi.string().max(24)
     })
     return schema.validate(data)
 }
 
 const subUserLoginValidation = (data)=>{
     const schema = Joi.object({
-
+        subUserName: Joi.string().max(24).required(),
+        subUserPassword: Joi.string().min(8).max(24).required()
     })
 
     return schema.validate(data)
@@ -44,7 +47,9 @@ const subUserLoginValidation = (data)=>{
 
 const subUserEditValidation = (data)=>{
     const schema = Joi.object({
-
+        subUserName: Joi.string().max(24).required(),
+        subUserPassword: Joi.string().min(8).max(24).required(),
+        subUserRole: Joi.string().max(24)
     })
 
     return schema.validate(data)
@@ -52,10 +57,9 @@ const subUserEditValidation = (data)=>{
 
 const subUserPasswordResetValidation = (data)=>{
     const schema = Joi.object({
-        userPassword1: Joi.string().min(8).max(25).required(),
-        userPassword2:  Joi.ref('userPassword1')
+        subUserPassword1: Joi.string().min(8).max(25).required(),
+        subUserPassword2:  Joi.ref('subUserPassword1')
     })
-
     return schema.validate(data)
 }
 

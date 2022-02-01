@@ -53,6 +53,7 @@ const logInSubUser = async (req, res)=>{
             if(isValid){
               return  res.send({
                     successMessage: "User has been logged in successfully.",
+                    subUserId: result._id,
                     subUserName: result.subUserName,
                     subUserRole: result.subUserRole
                 })
@@ -115,10 +116,13 @@ const editSubUserInformation = (req, res)=>{
 
 
 const editSubUserPassword = async (req, res)=>{
-    // const {error, value} = subUserPasswordResetValidation(req.body)
+    const {error, value} = subUserPasswordResetValidation(req.body)
+    if(error){
+        return res.send(error.details[0].message)
+    }else{
     const subUserId = req.params.id
     const subUserRole = req.query.role
-    const password = req.body.subUserPassword
+    const password = req.body.subUserPassword1
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
     const subUserPassword = hashedPassword
@@ -145,7 +149,7 @@ const editSubUserPassword = async (req, res)=>{
             errorMessage: "User is not authorized to edit the password."
         })
     }
-    
+}
 
 }
 
