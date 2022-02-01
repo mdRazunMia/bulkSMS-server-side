@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.js");
-const { route } = require("./linkedinRoute.js");
 const auth = require('../validations/verified')
 
 
