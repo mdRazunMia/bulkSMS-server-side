@@ -40,23 +40,26 @@ const createSubUser = async (req, res)=>{
     }
 }
 
-const logInSubUser = async (req, res)=>{
+const logInSubUser = (req, res)=>{
     const subUserName = req.body.subUserName
     const subUserPassword = req.body.subUserPassword
+    console.log(subUserPassword)
     const subUserRole = req.body.subUserRole
-    subUserCollection.findOne({subUserName: subUserName, subUserRole: subUserRole},(error, result)=>{
+    subUserCollection.findOne({subUserName: subUserName, subUserRole: subUserRole}, async (error, result)=>{
         if(error) return res.send({ errorMessage: "Something went wrong."})
         if(!result){
            return res.send({errorMessage: "No user found for this user name"})
         }else{
-            const isValid = bcrypt.compare(result.subUserPassword,subUserPassword)
+            console.log(result.subUserPassword)
+            const isValid = await bcrypt.compare(subUserPassword,result.subUserPassword)
+            console.log(isValid)
             if(isValid){
               return  res.send({
                     successMessage: "User has been logged in successfully.",
                     subUserId: result._id,
                     subUserName: result.subUserName,
                     subUserRole: result.subUserRole
-                })
+            })
             }else{
               return  res.send({
                     errorMessage: "User password is not correct"
