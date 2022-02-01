@@ -74,7 +74,7 @@ const getSubUserInformationForEdit = (req, res)=>{
     const role = req.query.role
     if(role === 'admin' || role ==='sub-admin'){
         subUserCollection.findOne({_id: ObjectId(subUserId)}, (error, subUser)=>{
-            if(error) throw error
+            if(error) return res.send({errorMessage: "Something went wrong"})
             if(subUser !== null){
                 res.send(subUser)
             }else{
@@ -96,7 +96,7 @@ const editSubUserInformation = (req, res)=>{
     console.log(`subUserName: ${subUserName}, subUserRole: ${subUserRole}`)
     if(role === 'admin' || role ==='sub-admin'){
         subUserCollection.findOne({_id: ObjectId(subUserId)}, (error, subUser)=>{
-            if(error) throw error
+            if(error) return res.send({errorMessage: "Something went wrong"})
             if(subUser !== null){
                 const subUserInformationFilter = {_id: ObjectId(subUserId)}
                 const subUserEditedInfo = { $set:{subUserName: subUserName, subUserRole: subUserRole}}

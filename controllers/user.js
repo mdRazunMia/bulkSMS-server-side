@@ -1,6 +1,5 @@
 const database = require('../db/database')
 const nodeMailer = require('nodemailer')
-const md5 = require('md5')
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
@@ -19,8 +18,7 @@ const userRegistration = async (req, res)=>{
         const userFullName = value.userFullName
         const userEmail = value.userEmail
         const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(value.userPassword1, salt)
-        const userPassword = hashedPassword
+        const userPassword = await bcrypt.hash(value.userPassword1, salt)
         userCollection.findOne({userEmail: userEmail}, (err, result)=>{
             if(err) throw err
             if(result == null){
@@ -42,7 +40,8 @@ const userRegistration = async (req, res)=>{
                 })
                 const url = `${process.env.BASE_URL}/verified/${userEmail}/${userRandomToken}`
                 const mailOption ={
-                    from: 'test.sustneub@gmail.com',
+                    // from: 'test.sustneub@gmail.com',
+                    from: process.env.EMAILID,
                     to: userEmail,
                     subject: 'Please Verify your account',
                     html: `
@@ -66,10 +65,10 @@ const userRegistration = async (req, res)=>{
                            </div>
                            <hr />
                     
-                           <h4>Need help?Ask at <a href="#">dotonline@global.com</a> or visit Our <a href="https://www.dotonlineglobal.com/">Help Center</a> </h4>
+                           <h4>Need help?Ask at <a href="#">${process.env.OFFICIAL_WEB_ADDRESS}</a> or visit Our <a href="${process.env.OFFICIAL_WEB_ADDRESS_URL}">Help Center</a> </h4>
                           <div style="text-align:center; margin-top:20px;">
                             <h4>DotOnline,Inc.</h4>
-                            <h4>Niketon, Gulshan, Road-6, Blcok-C, House 55</h4>
+                            <h4>${process.env.OFFICE_ADDRESS}</h4>
                           </div>
                            </div>
                     </body>
@@ -77,7 +76,7 @@ const userRegistration = async (req, res)=>{
                     `
                 }
                 transporter.sendMail(mailOption, (err, data )=>{
-                    if(err) throw err
+                    if(err) return res.send({errorMessage: "Something went wrong when sent the mail."})
                 })
                 res.send({ userRegisterSuccessMessage: "User has been registered successfully. A link has been sent to your gmail to verify your account."})
             }else{
@@ -99,7 +98,7 @@ const userVerifiedAccount = (req, res)=>{
     const userInformation = { userEmail: userEmail, userToken: userToken};
     const updatedUserInformation = { $set: {verified: true} };
     userCollection.updateOne(userInformation, updatedUserInformation, function(err, res) {
-    if (err) throw err;
+    if (err) return res.send({errorMessage: "Something went wrong"})
   });
   res.json({ verifiedMessage: "Account has been verified successfully."})
 }
@@ -114,7 +113,7 @@ const userLogin = async (req, res)=>{
         const userEmail = value.userEmail
         const userPassword = value.userPassword
         userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
-            if(err) throw err
+            if(err) return res.send({errorMessage: "Something went wrong"})
             if(result != null){
                 if(result.verified){
                     const validPassword = await bcrypt.compare(result.userPassword, userPassword)
@@ -162,7 +161,7 @@ const mailResetLink = (req, res)=>{
             }) 
             const url = `${process.env.BASE_URL}/resetPassword/userEmail=${userEmail}`
             const mailOption ={
-                from: 'test.sustneub@gmail.com',
+                from: process.env.EMAILID,
                 to: userEmail,
                 subject: 'Please Verify your account',
                 // html: `Click <a href = '${url}'>here</a> to change your password.`
@@ -186,10 +185,10 @@ const mailResetLink = (req, res)=>{
                        </div>
                        <hr />
                 
-                       <h4>Need help?Ask at <a href="#">dotonline@global.com</a> or visit Our <a href="https://www.dotonlineglobal.com/">Help Center</a> </h4>
+                       <h4>Need help?Ask at <a href="#">${process.env.OFFICE_ADDRESS}</a> or visit Our <a href="${process.env.OFFICIAL_WEB_ADDRESS}">Help Center</a> </h4>
                       <div style="text-align:center; margin-top:20px;">
                         <h4>DotOnline,Inc.</h4>
-                        <h4>Niketon, Gulshan, Road-6, Blcok-C, House 55</h4>
+                        <h4>${process.env.OFFICE_ADDRESS}</h4>
                       </div>
                        </div>
                 </body>
@@ -215,7 +214,7 @@ const userResetPassword = (req, res)=>{
         const userEmail = value.userEmail
         const userNewPassword = value.userPassword1
         userCollection.findOne({userEmail: userEmail},(err, user)=>{
-            if(err) throw err
+            if(err) return res.send({errorMessage: "Something went wrong"})
             if(user==null){
                 // const userNotExistError = "There is no user to update."
                 res.send({message: "There is no user to update."})
@@ -225,7 +224,7 @@ const userResetPassword = (req, res)=>{
             const hashedUserNewPassword =  bcrypt.hash(userNewPassword, salt)
             const updatedUserInformation = { $set: {userPassword: hashedUserNewPassword} };
             userCollection.updateOne(userInformation, updatedUserInformation, function(err, objecet) {
-                 if (err) throw err
+                 if (err) return res.send({errorMessage: "Something went wrong"})
                  res.send({ updateSuccessMessage:"user password has been updated successfully."})
              });
             }
@@ -249,7 +248,7 @@ const deleteSinglelUser = (req, res)=>{
     console.log(userId)
     var deletedUserId = { _id: ObjectId(userId) };
     userCollection.deleteOne(deletedUserId,(err,data)=>{
-        if(err) throw err
+        if(err) return res.send({errorMessage: "Something went wrong"})
         res.send({
             message: `user id ${userId} has been deleted successfully`
         })
