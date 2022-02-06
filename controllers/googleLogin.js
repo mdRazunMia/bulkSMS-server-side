@@ -9,7 +9,7 @@ const  userCollection = database.collection("user")
 const googleLogin = (req, res)=>{
     tokenId = req.body.tokenId
     
-    clientAccount.verifyIdToken({idToken: tokenId, audience: "668987516685-cbeft0s2mojgf0el3aueqm3cfi6iospk.apps.googleusercontent.com"})
+    clientAccount.verifyIdToken({idToken: tokenId, audience: process.env.GOOGLE_CLIENT_ID})
     .then( response =>{
         console.log(response)
         const verifiedEmail = response.payload.email_verified

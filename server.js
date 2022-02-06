@@ -14,7 +14,7 @@ const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const subUserRoute = require('./routes/subUserRoute')
 
 const app = express();
-const whitelist = ["http://localhost:3000"]
+const whitelist = [`${process.env.BASE_URL}`]
 const corsOptions = {
   origin: function(origin, callback){
     if(!origin || whitelist.indexOf(origin) !==-1){
@@ -55,7 +55,7 @@ passport.deserializeUser((obj, cb)=>{
 passport.use(new LinkedInStrategy({
   clientID: process.env.LINKEDIN_CLIENT_ID,
   clientSecret: process.env.LINKEDIN_SECRET_ID,
-  callbackURL: "http://localhost:3000/auth/linkedin/callback",
+  callbackURL: `${process.env.BASE_URL}/auth/linkedin/callback`,
   scope: ['r_emailaddress', 'r_liteprofile'],
 }, function(accessToken, refreshToken, profile, done) {
   process.nextTick(function () {
@@ -83,11 +83,11 @@ app.use('/subUser',subUserRoute)
 //     }
 //   });
 
-app.get('/logoutRedirect', (req, res)=>{
-  res.send({
-    logoutState: true
-  })
-})
+// app.get('/logoutRedirect', (req, res)=>{
+//   res.send({
+//     logoutState: true
+//   })
+// })
 app.listen(port, () => {
     console.log('Dot Online Server is running on port', port);
 });
