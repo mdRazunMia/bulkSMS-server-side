@@ -7,7 +7,7 @@ const authRefreshToken = require('../validations/refreshTokenVerify')
 
 //USER ROUTE
 router.post('/registration',userController.userRegistration)
-router.get('/user',auth,userController.allUser)
+router.get('/showUsers',auth,userController.allUser)
 router.post('/login',userController.userLogin)
 router.get('/registration/verify/:userEmail/:userRandomToken',userController.userVerifiedAccount)
 router.delete('/delete/:userId',auth,userController.deleteSinglelUser)

@@ -20,7 +20,10 @@ const createCampaign = (req, res)=>{
 const showAllCampaign = (req, res)=>{
     campaignCollection.find({}).toArray((err, result)=>{
         if(err) return res.send({errorMessage: "Something went wrong"})
-        res.json(result)
+        // res.json(result)
+        res.send({
+            campaigns: result
+        })
     })
 }
 

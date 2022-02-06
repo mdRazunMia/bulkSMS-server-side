@@ -292,7 +292,7 @@ const userRefreshToken = (req, res)=>{
 }
 
 const userLogOut = (req, res)=>{
-
+    
 }
 
 module.exports = {
