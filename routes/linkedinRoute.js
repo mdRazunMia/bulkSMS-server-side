@@ -25,7 +25,7 @@ router.get('/linkedin/callback',
       "verified": true
     }
     userCollection.findOne({userEmail: userEmail}, (err, result)=>{
-      if(err) throw err
+      if(err) return res.send({errorMessage: "Something went wrong"})
       if(result==null){
         const token = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
           userCollection.insertOne(linkedInUser)

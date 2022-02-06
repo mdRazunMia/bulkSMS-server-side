@@ -22,7 +22,7 @@ const googleLogin = (req, res)=>{
         if(verifiedEmail){
             // console.log("User is verified")
             userCollection.findOne({userEmail: userEmail}, (err, result)=>{
-                if(err) throw err
+                if(err) return res.send({errorMessage: "Something went wrong"})
                 if(result==null){
                     const token = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
                     userCollection.insertOne(userInformation)
@@ -37,7 +37,8 @@ const googleLogin = (req, res)=>{
             })
 
         }else{
-            console.log("User is not verified")
+            // console.log("User is not verified")
+            res.send({ errorMessage: "User is not verified."})
         }
     //     const {email_verified, name, email} = response.payload
     //     console.log(response.payload)

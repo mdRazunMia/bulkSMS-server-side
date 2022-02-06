@@ -20,7 +20,7 @@ const userRegistration = async (req, res)=>{
         const salt = await bcrypt.genSalt(10)
         const userPassword = await bcrypt.hash(value.userPassword1, salt)
         userCollection.findOne({userEmail: userEmail}, (err, result)=>{
-            if(err) throw err
+            if(err) return res.send({errorMessage: "Something went wrong"})
             if(result == null){
                 const userInformation = {}
                 userInformation.userFullName = userFullName
@@ -38,7 +38,7 @@ const userRegistration = async (req, res)=>{
                         pass:process.env.EAILPASSWORD
                     }
                 })
-                const url = `${process.env.BASE_URL}/verified/${userEmail}/${userRandomToken}`
+                const url = `${process.env.BASE_URL}/verify/${userEmail}/${userRandomToken}`
                 const mailOption ={
                     // from: 'test.sustneub@gmail.com',
                     from: process.env.EMAILID,
@@ -93,7 +93,7 @@ const userRegistration = async (req, res)=>{
 const userVerifiedAccount = (req, res)=>{
     const userEmail = req.params.userEmail
     console.log(userEmail)
-    const userToken = req.params.userToken
+    const userToken = req.params.userRandomToken
     console.log(userToken)
     const userInformation = { userEmail: userEmail, userToken: userToken};
     const updatedUserInformation = { $set: {verified: true} };
@@ -116,7 +116,7 @@ const userLogin = async (req, res)=>{
             if(err) return res.send({errorMessage: "Something went wrong"})
             if(result != null){
                 if(result.verified){
-                    const validPassword = await bcrypt.compare(result.userPassword, userPassword)
+                    const validPassword = await bcrypt.compare(userPassword,result.userPassword)
                     console.log(validPassword)
                     if(validPassword){
                         const token = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET, {
@@ -126,7 +126,7 @@ const userLogin = async (req, res)=>{
                             expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
                         })
                         res.header('auth-token').send({
-                            token: token,
+                            authToken: token,
                             refreshToken: refreshToken
                         })
                     }
@@ -148,7 +148,7 @@ const mailResetLink = (req, res)=>{
     const userEmail = req.body.userEmail
     console.log(userEmail)
     userCollection.findOne({userEmail: userEmail},(err, user)=>{
-        if(err) throw err
+        if(err) return res.send({errorMessage: "Something went wrong"})
         if(user==null){
             res.send({resetPasswordErrorMessage: "This email is not registered. Please registered this email first."})
         }else{
@@ -196,7 +196,7 @@ const mailResetLink = (req, res)=>{
                 `
             }
             transporter.sendMail(mailOption, (err, data )=>{
-                if(err) throw err
+                if(err) return res.send({errorMessage: "Something went wrong"})
             })
             res.send({ resetPasswordMessage: "A link has been sent to your gmail to reset your password."})
         }

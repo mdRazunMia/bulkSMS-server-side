@@ -7,7 +7,7 @@ const createCampaign = (req, res)=>{
     //res.json(campaignInformation)
     let verified = false
     campaignCollection.insertOne(campaignInformation, (err, response)=>{
-        if(err) throw err
+        if(err) return res.send({errorMessage: "Something went wrong"})
         if(response.acknowledged){
             // console.log("Campaign has been created successfully.")
             verified = true
@@ -19,7 +19,7 @@ const createCampaign = (req, res)=>{
 
 const showAllCampaign = (req, res)=>{
     campaignCollection.find({}).toArray((err, result)=>{
-        if(err) throw err
+        if(err) return res.send({errorMessage: "Something went wrong"})
         res.json(result)
     })
 }
@@ -30,7 +30,7 @@ const deleteCampaign = (req, res)=>{
     console.log(campaignId)
     var deletedCampaignId = { _id: ObjectId(campaignId) };
     campaignCollection.deleteOne(deletedCampaignId,(err,data)=>{
-        if(err) throw err
+        if(err) return res.send({errorMessage: "Something went wrong"})
         res.send({
             message: `Campaign id ${campaignId} has been deleted successfully`
         })
