@@ -258,12 +258,11 @@ const deleteSinglelUser = (req, res)=>{
 // get all the info of requested user
 const getUserProfile = (req,res)=>{
     const userEmail = req.user.userEmail
-    console.log(`userEmail: ${userEmail}`)
     userCollection.find({ userEmail: userEmail}).toArray((err, result)=>{
         let user = {}
         user.userFullName = result[0].userFullName
         user.userEmail = result[0].userEmail
-        res.send(user) 
+        res.send({user: user}) 
     })
 }
 
@@ -282,7 +281,7 @@ const userRefreshToken = (req, res)=>{
         })
         console.log(`token: ${token}, refreshToken: ${refreshToken}`)
         res.send({
-            token: token,
+            authToken: token,
             refreshToken: refreshToken
         })
                
@@ -290,6 +289,10 @@ const userRefreshToken = (req, res)=>{
         res.send({ errorMessage: "Invalid Token or time is expired"})
     }
     
+}
+
+const userLogOut = (req, res)=>{
+
 }
 
 module.exports = {
