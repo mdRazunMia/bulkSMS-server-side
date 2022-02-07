@@ -288,17 +288,17 @@ const userRefreshToken = (req, res)=>{
     const userEmail = verified.userEmail
     try {
         // const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-        const token = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET,{
+        const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET,{
             expiresIn: process.env.JWT_EXPIRE_TIME
         })
         console.log(`token: ${token}, refreshToken: ${refreshToken}`)
         res.send({
-            authToken: token,
+            authToken: authToken,
             refreshToken: refreshToken
         })
                
     } catch (error) {
-        res.send({ errorMessage: "Invalid Token or time is expired"})
+        res.send({ errorMessage: "Something went wrong."})
     }
     
 }
