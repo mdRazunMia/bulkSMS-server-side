@@ -34,8 +34,8 @@ const userRegistration = async (req, res)=>{
                 const transporter = nodeMailer.createTransport({
                     service: "gmail",
                     auth:{
-                        user:process.env.EMAILID,
-                        pass:process.env.EAILPASSWORD
+                        user:process.env.EMAIL_ID,
+                        pass:process.env.EMAIL_PASSWORD
                     }
                 })
                 const url = `${process.env.BASE_URL}/verify/${userEmail}/${userRandomToken}`
@@ -155,13 +155,13 @@ const mailResetLink = (req, res)=>{
             const transporter = nodeMailer.createTransport({
                 service: "gmail",
                 auth:{
-                    user:process.env.EMAILID,
-                    pass:process.env.EAILPASSWORD
+                    user:process.env.EMAIL_ID,
+                    pass:process.env.EMAIL_PASSWORD
                 }
             }) 
             const url = `${process.env.BASE_URL}/resetPassword/userEmail=${userEmail}`
             const mailOption ={
-                from: process.env.EMAILID,
+                from: process.env.EMAIL_ID,
                 to: userEmail,
                 subject: 'Please Verify your account',
                 // html: `Click <a href = '${url}'>here</a> to change your password.`
@@ -223,7 +223,7 @@ const userResetPassword = (req, res)=>{
             const salt = bcrypt.genSalt(10)
             const hashedUserNewPassword =  bcrypt.hash(userNewPassword, salt)
             const updatedUserInformation = { $set: {userPassword: hashedUserNewPassword} };
-            userCollection.updateOne(userInformation, updatedUserInformation, function(err, objecet) {
+            userCollection.updateOne(userInformation, updatedUserInformation, function(err, object) {
                  if (err) return res.send({errorMessage: "Something went wrong"})
                  res.send({ updateSuccessMessage:"user password has been updated successfully."})
              });
@@ -243,7 +243,7 @@ const allUser = (req, res)=>{
 }
 
 // delete single user 
-const deleteSinglelUser = (req, res)=>{
+const deleteSingleUser = (req, res)=>{
     const userId = req.params.userId
     console.log(userId)
     var deletedUserId = { _id: ObjectId(userId) };
@@ -299,7 +299,7 @@ module.exports = {
     userRegistration,
     userLogin,
     allUser,
-    deleteSinglelUser,
+    deleteSingleUser,
     userVerifiedAccount,
     // userForgetPassword,
     userResetPassword,
