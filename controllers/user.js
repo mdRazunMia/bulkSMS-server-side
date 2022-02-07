@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
-const {registerValidation,loginValidation, userUpdatePasswordValidation} = require('../validations/validation')
+const {registerValidation,loginValidation, userUpdatePasswordValidation, userForgetPasswordValidation} = require('../validations/validation')
 const { ObjectId } = require('mongodb')
 
 
@@ -146,7 +146,7 @@ const userLogin = async (req, res)=>{
 
 
 // send reset mail
-const mailResetLink = (req, res)=>{
+const mailForgetPasswordResetLink = (req, res)=>{
     const userEmail = req.body.userEmail
     console.log(userEmail)
     userCollection.findOne({userEmail: userEmail},(err, user)=>{
@@ -161,7 +161,7 @@ const mailResetLink = (req, res)=>{
                     pass:process.env.EMAIL_PASSWORD
                 }
             }) 
-            const url = `${process.env.BASE_URL}/resetPassword/userEmail=${userEmail}`
+            const url = `${process.env.BASE_URL}/forgetPassword/userEmail=${userEmail}`
             const mailOption ={
                 from: process.env.EMAIL_ID,
                 to: userEmail,
@@ -204,6 +204,32 @@ const mailResetLink = (req, res)=>{
         }
     })
 
+}
+
+//user Forget password
+const userForgetPassword = async(req, res)=>{
+    const userEmail = req.query.userEmail
+   const {error, value} = userForgetPasswordValidation(req.body)
+   if(error){
+    res.send(error.details[0].message)
+   }else{
+    const userNewPassword = req.body.userPassword1
+    const salt = await bcrypt.genSalt(10)
+    const hashedUserNewPassword =  await bcrypt.hash(userNewPassword, salt)
+    userCollection.findOne({userEmail: userEmail},async(err, user)=>{
+        if(err) return res.send({ errorMessage: "Something went wrong."})
+        if(user==null){
+            res.send({message: "There is no user to update the password. Please register first."})
+        }else{
+            const userInformation = { userEmail: userEmail};
+            const updatedUserInformation = { $set: {userPassword: hashedUserNewPassword} };
+            userCollection.updateOne(userInformation, updatedUserInformation, function(err, object) {
+                if (err) return res.send({errorMessage: "Something went wrong"})
+                res.send({ updateSuccessMessage:"user password has been updated successfully."})
+            });
+        }
+    })
+   }
 }
 
 
@@ -314,7 +340,8 @@ module.exports = {
     deleteSingleUser,
     userVerifiedAccount,
     userUpdatePassword,
-    mailResetLink,
+    mailForgetPasswordResetLink,
+    userForgetPassword,
     getUserProfile,
     userRefreshToken
 }

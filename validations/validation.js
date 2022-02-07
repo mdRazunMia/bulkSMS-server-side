@@ -28,6 +28,15 @@ const userUpdatePasswordValidation = (data) => {
     return schema.validate(data)
 }
 
+
+const userForgetPasswordValidation = (data) => {
+    const schema = Joi.object({
+        userPassword1: Joi.string().min(8).max(25).required(),
+        userPassword2:  Joi.ref('userPassword1')
+    })
+    return schema.validate(data)
+}
+
 const subUserCreateValidation = (data)=>{
     const schema = Joi.object({
          subUserName: Joi.string().max(24).required(),
@@ -71,5 +80,6 @@ module.exports = {
     subUserCreateValidation,
     subUserLoginValidation,
     subUserEditValidation,
-    subUserPasswordResetValidation
+    subUserPasswordResetValidation,
+    userForgetPasswordValidation
 }
