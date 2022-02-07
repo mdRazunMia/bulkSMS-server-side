@@ -206,8 +206,8 @@ const mailResetLink = (req, res)=>{
 
 
 // reset user password
-const userResetPassword = (req, res)=>{
-    const {error, value} = userResetPasswordValidation(req.body)
+const userUpdatePassword = (req, res)=>{
+    const {error, value} = userUpdatePasswordValidation(req.body)
     if(error){
         res.send(error.details[0].message)
     }else{
@@ -300,7 +300,7 @@ module.exports = {
     allUser,
     deleteSingleUser,
     userVerifiedAccount,
-    userResetPassword,
+    userUpdatePassword,
     mailResetLink,
     getUserProfile,
     userRefreshToken

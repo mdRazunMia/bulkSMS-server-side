@@ -18,7 +18,7 @@ const loginValidation = (data) => {
     return schema.validate(data)
 }
 
-const userResetPasswordValidation = (data) => {
+const userUpdatePasswordValidation = (data) => {
     const schema = Joi.object({
         // userEmail: Joi.string().email({ minDomainSegments: 2, tlds: {allow: ['com','net']}}).required(),
         userPassword1: Joi.string().min(8).max(25).required(),
@@ -66,7 +66,7 @@ const subUserPasswordResetValidation = (data)=>{
 module.exports = {
     registerValidation,
     loginValidation,
-    userResetPasswordValidation,
+    userUpdatePasswordValidation,
     subUserCreateValidation,
     subUserLoginValidation,
     subUserEditValidation,

@@ -34,7 +34,7 @@ const googleLogin = (req, res)=>{
                     const authToken = jwt.sign({_id: result._id},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
                     // console.log("User Already exist.")
-                    const googleExistingSuccessMessage = "User Already exist."
+                    // const googleExistingSuccessMessage = "User Already exist."
                     res.header('auth-token').send({googleExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
                 }
             })
