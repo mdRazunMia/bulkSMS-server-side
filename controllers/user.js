@@ -287,7 +287,7 @@ const userRefreshToken = (req, res)=>{
     const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
     const userEmail = verified.userEmail
     try {
-        const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+        // const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
         const token = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET,{
             expiresIn: process.env.JWT_EXPIRE_TIME
         })

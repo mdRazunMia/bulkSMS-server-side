@@ -24,7 +24,6 @@ const showAllCampaign = (req, res)=>{
         res.send({
             campaigns: result
         })
-        res.json(result)
     })
 }
 
