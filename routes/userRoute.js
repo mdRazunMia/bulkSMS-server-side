@@ -11,7 +11,6 @@ router.get('/showUsers',auth,userController.allUser)
 router.post('/login',userController.userLogin)
 router.get('/registration/verify/:userEmail/:userRandomToken',userController.userVerifiedAccount)
 router.delete('/delete/:userId',auth,userController.deleteSingleUser)
-// router.post('/forgerPassword', userController.userForgetPassword)
 router.post('/passwordResetLink', userController.mailResetLink)
 router.post('/userUpdatePassword',auth,userController.userResetPassword)
 //new task

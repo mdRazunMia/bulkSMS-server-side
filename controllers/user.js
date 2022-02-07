@@ -41,7 +41,7 @@ const userRegistration = async (req, res)=>{
                 const url = `${process.env.BASE_URL}/verify/${userEmail}/${userRandomToken}`
                 const mailOption ={
                     // from: 'test.sustneub@gmail.com',
-                    from: process.env.EMAILID,
+                    from: process.env.EMAIL_ID,
                     to: userEmail,
                     subject: 'Please Verify your account',
                     html: `
@@ -268,7 +268,6 @@ const getUserProfile = (req,res)=>{
 
 
 //user refresh token
-
 const userRefreshToken = (req, res)=>{
     const refreshToken = req.header('refresh-token')
     if(!refreshToken) return res.send({ errorMessage: "Access Denied." })
@@ -301,7 +300,6 @@ module.exports = {
     allUser,
     deleteSingleUser,
     userVerifiedAccount,
-    // userForgetPassword,
     userResetPassword,
     mailResetLink,
     getUserProfile,
