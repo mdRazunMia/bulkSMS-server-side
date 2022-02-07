@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
-const {registerValidation,loginValidation} = require('../validations/validation')
+const {registerValidation,loginValidation, userUpdatePasswordValidation} = require('../validations/validation')
+const { ObjectId } = require('mongodb')
 
 
 //user registration
@@ -19,6 +20,7 @@ const userRegistration = async (req, res)=>{
         const userEmail = value.userEmail
         const salt = await bcrypt.genSalt(10)
         const userPassword = await bcrypt.hash(value.userPassword1, salt)
+        console.log(userPassword)
         userCollection.findOne({userEmail: userEmail}, (err, result)=>{
             if(err) return res.send({errorMessage: "Something went wrong"})
             if(result == null){
@@ -34,14 +36,14 @@ const userRegistration = async (req, res)=>{
                 const transporter = nodeMailer.createTransport({
                     service: "gmail",
                     auth:{
-                        user:process.env.EMAILID,
-                        pass:process.env.EAILPASSWORD
+                        user:process.env.EMAIL_ID,
+                        pass:process.env.EMAIL_PASSWORD
                     }
                 })
                 const url = `${process.env.BASE_URL}/verify/${userEmail}/${userRandomToken}`
                 const mailOption ={
                     // from: 'test.sustneub@gmail.com',
-                    from: process.env.EMAILID,
+                    from: process.env.EMAIL_ID,
                     to: userEmail,
                     subject: 'Please Verify your account',
                     html: `
@@ -155,13 +157,13 @@ const mailResetLink = (req, res)=>{
             const transporter = nodeMailer.createTransport({
                 service: "gmail",
                 auth:{
-                    user:process.env.EMAILID,
-                    pass:process.env.EAILPASSWORD
+                    user:process.env.EMAIL_ID,
+                    pass:process.env.EMAIL_PASSWORD
                 }
             }) 
             const url = `${process.env.BASE_URL}/resetPassword/userEmail=${userEmail}`
             const mailOption ={
-                from: process.env.EMAILID,
+                from: process.env.EMAIL_ID,
                 to: userEmail,
                 subject: 'Please Verify your account',
                 // html: `Click <a href = '${url}'>here</a> to change your password.`
@@ -205,28 +207,39 @@ const mailResetLink = (req, res)=>{
 }
 
 
-// reset user password
-const userResetPassword = (req, res)=>{
-    const {error, value} = userResetPasswordValidation(req.body)
+// user update password
+const userUpdatePassword = (req, res)=>{
+    const {error, value} = userUpdatePasswordValidation(req.body)
     if(error){
         res.send(error.details[0].message)
     }else{
-        const userEmail = value.userEmail
+        const userCurrentPassword = value.userCurrentPassword
+        console.log(userCurrentPassword)
+        const userId = req.query.id
+        console.log(userId)
         const userNewPassword = value.userPassword1
-        userCollection.findOne({userEmail: userEmail},(err, user)=>{
+        userCollection.findOne({_id: ObjectId(userId)},async(err, user)=>{
             if(err) return res.send({errorMessage: "Something went wrong"})
             if(user==null){
                 // const userNotExistError = "There is no user to update."
                 res.send({message: "There is no user to update."})
             }else{
-            const userInformation = {userEmail: userEmail};
-            const salt = bcrypt.genSalt(10)
-            const hashedUserNewPassword =  bcrypt.hash(userNewPassword, salt)
-            const updatedUserInformation = { $set: {userPassword: hashedUserNewPassword} };
-            userCollection.updateOne(userInformation, updatedUserInformation, function(err, objecet) {
-                 if (err) return res.send({errorMessage: "Something went wrong"})
-                 res.send({ updateSuccessMessage:"user password has been updated successfully."})
-             });
+            console.log(user)
+            const isValidPassword = await bcrypt.compare(userCurrentPassword, user.userPassword)
+            console.log(isValidPassword)
+            if(isValidPassword){
+                const userInformation = {_id: ObjectId(userId)};
+                const salt = await bcrypt.genSalt(10)
+                const hashedUserNewPassword =  await bcrypt.hash(userNewPassword, salt)
+                const updatedUserInformation = { $set: {userPassword: hashedUserNewPassword} };
+                userCollection.updateOne(userInformation, updatedUserInformation, function(err, object) {
+                    if (err) return res.send({errorMessage: "Something went wrong"})
+                    res.send({ updateSuccessMessage:"user password has been updated successfully."})
+                });
+            }else{
+                return res.send({ passwordNotMatchedError: "Current password is not matched wih the given current password."})
+            }
+            
             }
         })
     }
@@ -243,7 +256,7 @@ const allUser = (req, res)=>{
 }
 
 // delete single user 
-const deleteSinglelUser = (req, res)=>{
+const deleteSingleUser = (req, res)=>{
     const userId = req.params.userId
     console.log(userId)
     var deletedUserId = { _id: ObjectId(userId) };
@@ -258,18 +271,16 @@ const deleteSinglelUser = (req, res)=>{
 // get all the info of requested user
 const getUserProfile = (req,res)=>{
     const userEmail = req.user.userEmail
-    console.log(`userEmail: ${userEmail}`)
     userCollection.find({ userEmail: userEmail}).toArray((err, result)=>{
         let user = {}
         user.userFullName = result[0].userFullName
         user.userEmail = result[0].userEmail
-        res.send(user) 
+        res.send({user: user}) 
     })
 }
 
 
 //user refresh token
-
 const userRefreshToken = (req, res)=>{
     const refreshToken = req.header('refresh-token')
     if(!refreshToken) return res.send({ errorMessage: "Access Denied." })
@@ -282,7 +293,7 @@ const userRefreshToken = (req, res)=>{
         })
         console.log(`token: ${token}, refreshToken: ${refreshToken}`)
         res.send({
-            token: token,
+            authToken: token,
             refreshToken: refreshToken
         })
                
@@ -292,14 +303,17 @@ const userRefreshToken = (req, res)=>{
     
 }
 
+const userLogOut = (req, res)=>{
+    
+}
+
 module.exports = {
     userRegistration,
     userLogin,
     allUser,
-    deleteSinglelUser,
+    deleteSingleUser,
     userVerifiedAccount,
-    // userForgetPassword,
-    userResetPassword,
+    userUpdatePassword,
     mailResetLink,
     getUserProfile,
     userRefreshToken

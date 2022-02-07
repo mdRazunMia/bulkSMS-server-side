@@ -24,15 +24,18 @@ const googleLogin = (req, res)=>{
             userCollection.findOne({userEmail: userEmail}, (err, result)=>{
                 if(err) return res.send({errorMessage: "Something went wrong"})
                 if(result==null){
-                    const token = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
+                    const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
+                    const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
                     userCollection.insertOne(userInformation)
                     // const googleSuccessMessageAndInserted = "user has been logged in successfully."
-                    res.header('auth-token').send({googleSuccessMessageAndInserted:"user has been logged in successfully.", user: {userEmail: userEmail, userFullName: userFullName}})
+                    // res.header('auth-token').send({googleSuccessMessageAndInserted:"user has been logged in successfully.", user: {userEmail: userEmail, userFullName: userFullName}})
+                    res.send({googleSuccessMessageAndInserted:"user has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
                 }else{
-                    const token = jwt.sign({_id: result._id},process.env.TOKEN_SECRET)
+                    const authToken = jwt.sign({_id: result._id},process.env.TOKEN_SECRET)
+                    const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
                     // console.log("User Already exist.")
-                    const googleExistingSuccessMessage = "User Already exist."
-                    res.header('auth-token').send({googleExistingSuccessMessage: "User Already exist.", user: result})
+                    // const googleExistingSuccessMessage = "User Already exist."
+                    res.header('auth-token').send({googleExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
                 }
             })
 

@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const passport = require('passport')
 const database = require('../db/database')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const auth = require("../validations/verified");
 require('dotenv').config()
 
 const  userCollection = database.collection("user")
@@ -27,17 +28,21 @@ router.get('/linkedin/callback',
     userCollection.findOne({userEmail: userEmail}, (err, result)=>{
       if(err) return res.send({errorMessage: "Something went wrong"})
       if(result==null){
-        const token = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
+        const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
+        const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
           userCollection.insertOne(linkedInUser)
           // const googleSuccessMessageAndInserted = "user has been logged in successfully."
-          console.log("user has been logged in successfully")
-          res.header('auth-token').send({linkedInSuccessMessageAndInserted:"User has been logged in successfully.", user: {userEmail: userEmail, userFullName: userFullName}})
+          // console.log("user has been logged in successfully")
+          // res.header('auth-token').send({linkedInSuccessMessageAndInserted:"User has been logged in successfully.", user: {userEmail: userEmail, userFullName: userFullName}})
+          res.send({linkedInSuccessMessageAndInserted:"User has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
       }else{
-          const token = jwt.sign({_id: result._id},process.env.TOKEN_SECRET)
+          const authToken = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET)
+          const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
           // console.log("User Already exist.")
-          console.log("User already exist")
-          const googleExistingSuccessMessage = "User Already exist."
-          res.header('auth-token').send({linkedInExistingSuccessMessage: "User Already exist.", user: result})
+          // console.log("User already exist")
+          // const googleExistingSuccessMessage = "User Already exist."
+          // res.header('auth-token').send({linkedInExistingSuccessMessage: "User Already exist.", user: result})
+          res.send({linkedInExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
       }
   }
   )
