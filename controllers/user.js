@@ -7,7 +7,7 @@ const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
 const {registerValidation,loginValidation, userUpdatePasswordValidation, userForgetPasswordValidation} = require('../validations/validation')
 const { ObjectId } = require('mongodb')
-
+// const { client } = require('../db/redis')
 
 //user registration
 const userRegistration = async (req, res)=>{
@@ -110,7 +110,7 @@ const userVerifiedAccount = (req, res)=>{
 const userLogin = async (req, res)=>{
     const {error, value} = loginValidation(req.body)
     if(error){
-        res.send(error.details[0].message)
+        res.send({errorMessage: error.details[0].message})
     }else{
         const userEmail = value.userEmail
         const userPassword = value.userPassword
@@ -131,12 +131,14 @@ const userLogin = async (req, res)=>{
                             authToken: token,
                             refreshToken: refreshToken
                         })
+                    }else{
+                        return res.send({ errorMessage: "Password is incorrect."})
                     }
                 }else{
-                    res.send({ message: "Please Verify your email first."})
+                    return res.send({ errorMessage: "Please Verify your email first."})
                 }
             }else{
-                 res.send({message: "Email/Password is incorrect or registered first"})
+                return  res.send({errorMessage: "Email incorrect or registered first"})
             }
             
         })
@@ -161,7 +163,7 @@ const mailForgetPasswordResetLink = (req, res)=>{
                     pass:process.env.EMAIL_PASSWORD
                 }
             }) 
-            const url = `${process.env.BASE_URL}/forgetPassword/userEmail=${userEmail}`
+            const url = `${process.env.BASE_URL}/resetPassword/userEmail=${userEmail}`
             const mailOption ={
                 from: process.env.EMAIL_ID,
                 to: userEmail,
@@ -309,20 +311,15 @@ const getUserProfile = (req,res)=>{
 //user refresh token
 const userRefreshToken = (req, res)=>{
     const refreshToken = req.header('refresh-token')
+    console.log(`userToken: ${refreshToken}`)
     if(!refreshToken) return res.send({ errorMessage: "Access Denied." })
     const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
     const userEmail = verified.userEmail
+    console.log(userEmail)
     try {
         // const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-        const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET,{
-            expiresIn: process.env.JWT_EXPIRE_TIME
-        })
-        console.log(`token: ${token}, refreshToken: ${refreshToken}`)
-        res.send({
-            authToken: authToken,
-            refreshToken: refreshToken
-        })
-               
+        const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET,{expiresIn: process.env.JWT_EXPIRE_TIME})
+        res.send({authToken: authToken, refreshToken: refreshToken})          
     } catch (error) {
         res.send({ errorMessage: "Something went wrong."})
     }
