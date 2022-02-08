@@ -7,5 +7,4 @@ const auth = require('../validations/verified')
 router.post('/googleLogin',googleLoginController.googleLogin)
 
 
-
 module.exports = router

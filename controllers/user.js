@@ -301,6 +301,7 @@ const deleteSingleUser = (req, res)=>{
 // get all the info of requested user
 const getUserProfile = (req,res)=>{
     const userEmail = req.user.userEmail
+    console.log(`user email from getUserProfile: ${userEmail}`)
     userCollection.find({ userEmail: userEmail}).toArray((err, result)=>{
         let user = {}
         user.userFullName = result[0].userFullName
@@ -319,11 +320,10 @@ const userRefreshToken = (req, res)=>{
     const userEmail = verified.userEmail
     console.log(userEmail)
     try {
-        // const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
         const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET,{expiresIn: process.env.JWT_EXPIRE_TIME})
         res.send({authToken: authToken, refreshToken: refreshToken})          
     } catch (error) {
-        res.send({ errorMessage: "Something went wrong."})
+        res.send({ userRefreshTokenErrorMessage: "Something went wrong."})
     }
     
 }

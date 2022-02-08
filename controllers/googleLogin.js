@@ -8,7 +8,6 @@ const  userCollection = database.collection("user")
 
 const googleLogin = (req, res)=>{
     tokenId = req.body.tokenId
-    
     clientAccount.verifyIdToken({idToken: tokenId, audience: process.env.GOOGLE_CLIENT_ID})
     .then( response =>{
         console.log(response)
@@ -31,7 +30,7 @@ const googleLogin = (req, res)=>{
                     // res.header('auth-token').send({googleSuccessMessageAndInserted:"user has been logged in successfully.", user: {userEmail: userEmail, userFullName: userFullName}})
                     res.send({googleSuccessMessageAndInserted:"user has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
                 }else{
-                    const authToken = jwt.sign({_id: result._id},process.env.TOKEN_SECRET)
+                    const authToken = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
                     // console.log("User Already exist.")
                     // const googleExistingSuccessMessage = "User Already exist."
