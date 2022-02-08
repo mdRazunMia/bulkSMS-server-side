@@ -1,10 +1,12 @@
 const redis = require('redis')
- console.log("hello from redis")
- const client = redis.createClient({
-     port: 6379,
-     host: '127.0.0.1'
- })
 
+const client = redis.createClient({
+    port: 6379,
+    host: '127.0.0.1'
+})
+
+client.connect()
+ 
  client.on('connect', ()=>{
      console.log("client connected to redis.")
  })
@@ -16,7 +18,7 @@ const redis = require('redis')
  client.on('error',(error)=>{
     console.log(error.message)
  })
-
+ client.set('fooo','bar')
  client.on('end', ()=>{
      console.log("Client disconnected from redis.")
  })
@@ -25,4 +27,6 @@ const redis = require('redis')
      client.quit()
  })
  
+
+
  module.exports = client

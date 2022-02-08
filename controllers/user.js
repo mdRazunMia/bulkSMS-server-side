@@ -12,6 +12,7 @@ const { ObjectId } = require('mongodb')
 //user registration
 const userRegistration = async (req, res)=>{
     const {error, value} = registerValidation(req.body) 
+    // console.log(error)
     if(error){
         res.send(error.details[0].message)
     }else{
@@ -110,6 +111,7 @@ const userVerifiedAccount = (req, res)=>{
 const userLogin = async (req, res)=>{
     const {error, value} = loginValidation(req.body)
     if(error){
+        console.log(error)
         res.send({errorMessage: error.details[0].message})
     }else{
         const userEmail = value.userEmail

@@ -13,7 +13,11 @@ const passport = require('passport');
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const subUserRoute = require('./routes/subUserRoute')
 require('./db/redis')
+
+
 const app = express();
+
+
 const whitelist = [`${process.env.BASE_URL}`]
 const corsOptions = {
   origin: function(origin, callback){
