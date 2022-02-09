@@ -18,6 +18,7 @@ const googleLogin = (req, res)=>{
         userInformation.userFullName = userFullName
         userInformation.userEmail = userEmail
         userInformation.verified = verifiedEmail
+        userInformation.medium="google"
         if(verifiedEmail){
             // console.log("User is verified")
             userCollection.findOne({userEmail: userEmail}, (err, result)=>{

@@ -33,6 +33,7 @@ const userRegistration = async (req, res)=>{
                 userInformation.userToken = userRandomToken
                 console.log(`user token: ${userRandomToken}`)
                 userInformation.verified = false
+                userInformation.medium= "normal"
                 userCollection.insertOne(userInformation)
                 const transporter = nodeMailer.createTransport({
                     service: "gmail",
@@ -119,7 +120,7 @@ const userLogin = async (req, res)=>{
         userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
             if(err) return res.send({errorMessage: "Something went wrong"})
             if(result != null){
-                if(result.verified){
+                if(result.verified && result.medium === "normal"){ 
                     const validPassword = await bcrypt.compare(userPassword,result.userPassword)
                     console.log(validPassword)
                     if(validPassword){
@@ -136,6 +137,10 @@ const userLogin = async (req, res)=>{
                     }else{
                         return res.send({ errorMessage: "Password is incorrect."})
                     }
+                }else if(result.verified && result.medium === "google"){
+                    return res.send({errorMessage: "You have signed in using google before. Please login using google account"})
+                }else if(result.verified && result.medium === "linkedIn"){
+                    return res.send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
                 }else{
                     return res.send({ errorMessage: "Please Verify your email first."})
                 }
@@ -157,7 +162,7 @@ const mailForgetPasswordResetLink = (req, res)=>{
         if(err) return res.send({errorMessage: "Something went wrong"})
         if(user==null){
             res.send({resetPasswordErrorMessage: "This email is not registered. Please registered this email first."})
-        }else{
+        }else if(user.verified && user.medium === "normal"){
             const transporter = nodeMailer.createTransport({
                 service: "gmail",
                 auth:{
@@ -205,9 +210,12 @@ const mailForgetPasswordResetLink = (req, res)=>{
                 if(err) return res.send({errorMessage: "Something went wrong"})
             })
             res.send({ resetPasswordMessage: "A link has been sent to your gmail to reset your password."})
+        }else if(user.verified && user.medium === "google"){
+            return res.send({ errorMessage: "You cannot reset your password. Because you have signed in using google account before. Please login using google account"})
+        }else{
+            return res.send({ errorMessage: "You cannot reset your password. Because you have signed in using linkedin account before. Please login using linkedin account"})
         }
     })
-
 }
 
 //user Forget password

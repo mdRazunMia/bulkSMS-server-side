@@ -22,7 +22,9 @@ router.get('/linkedin/callback',
     const linkedInUser = {
       "userFullName":userFullName,
       "userEmail": userEmail,
-      "verified": true
+      "verified": true,
+      "medium": "linkedIn"
+
     }
     userCollection.findOne({userEmail: userEmail}, (err, result)=>{
       if(err) return res.send({errorMessage: "Something went wrong"})
