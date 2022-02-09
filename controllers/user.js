@@ -29,7 +29,7 @@ const userRegistration = async (req, res)=>{
         const userPassword = await bcrypt.hash(value.userPassword1, salt)
         console.log(userPassword)
         userCollection.findOne({userEmail: userEmail}, (err, result)=>{
-            if(err) return res.send({errorMessage: "Something went wrong"})
+            if(err) return res.status(500).send({errorMessage: "Something went wrong"})
             if(result == null){
                 const userInformation = {}
                 userInformation.userFullName = userFullName
@@ -85,7 +85,7 @@ const userRegistration = async (req, res)=>{
                     `
                 }
                 transporter.sendMail(mailOption, (err, data )=>{
-                    if(err) return res.send({errorMessage: "Something went wrong when sent the mail."})
+                    if(err) return res.status(500).send({errorMessage: "Something went wrong when sent the mail."})
                 })
                 res.send({ userRegisterSuccessMessage: "User has been registered successfully. A link has been sent to your gmail to verify your account."})
             }else{
@@ -107,7 +107,7 @@ const userVerifiedAccount = (req, res)=>{
     const userInformation = { userEmail: userEmail, userToken: userToken};
     const updatedUserInformation = { $set: {verified: true} };
     userCollection.updateOne(userInformation, updatedUserInformation, function(err, res) {
-    if (err) return res.send({errorMessage: "Something went wrong"})
+    if (err) return res.status(500).send({errorMessage: "Something went wrong"})
   });
   res.json({ verifiedMessage: "Account has been verified successfully."})
 }
@@ -123,7 +123,7 @@ const userLogin = async (req, res)=>{
         const userEmail = value.userEmail
         const userPassword = value.userPassword
         userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
-            if(err) return res.send({errorMessage: "Something went wrong"})
+            if(err) return res.status(500).send({errorMessage: "Something went wrong"})
             if(result != null){
                 if(result.verified && result.medium === "normal"){ 
                     const validPassword = await bcrypt.compare(userPassword,result.userPassword)
@@ -136,7 +136,7 @@ const userLogin = async (req, res)=>{
                             expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
                         })
                         redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
-                            if(err) return res.send({errorMessage:"Something went wrong."})
+                            if(err) return res.status(500).send({errorMessage:"Something went wrong."})
                             console.log(`reply from login redis: ${reply}`)
                         })
                         res.header('auth-token').send({
@@ -168,7 +168,7 @@ const mailForgetPasswordResetLink = (req, res)=>{
     const userEmail = req.body.userEmail
     console.log(userEmail)
     userCollection.findOne({userEmail: userEmail},(err, user)=>{
-        if(err) return res.send({errorMessage: "Something went wrong"})
+        if(err) return res.status(500).send({errorMessage: "Something went wrong"})
         if(user==null){
             res.send({resetPasswordErrorMessage: "This email is not registered. Please registered this email first."})
         }else if(user.verified && user.medium === "normal"){
@@ -215,7 +215,7 @@ const mailForgetPasswordResetLink = (req, res)=>{
                 `
             }
             transporter.sendMail(mailOption, (err, data )=>{
-                if(err) return res.send({errorMessage: "Something went wrong"})
+                if(err) return res.status(500).send({errorMessage: "Something went wrong"})
             })
             res.send({ resetPasswordMessage: "A link has been sent to your gmail to reset your password."})
         }else if(user.verified && user.medium === "google"){
@@ -237,7 +237,7 @@ const userForgetPassword = async(req, res)=>{
     const salt = await bcrypt.genSalt(10)
     const hashedUserNewPassword =  await bcrypt.hash(userNewPassword, salt)
     userCollection.findOne({userEmail: userEmail},async(err, user)=>{
-        if(err) return res.send({ errorMessage: "Something went wrong."})
+        if(err) return res.status(500).send({ errorMessage: "Something went wrong."})
         if(user==null){
             res.send({message: "There is no user to update the password. Please register first."})
         }else{
@@ -265,7 +265,7 @@ const userUpdatePassword = (req, res)=>{
         console.log(userId)
         const userNewPassword = value.userPassword1
         userCollection.findOne({_id: ObjectId(userId)},async(err, user)=>{
-            if(err) return res.send({errorMessage: "Something went wrong"})
+            if(err) return res.status(500).send({errorMessage: "Something went wrong"})
             if(user==null){
                 res.send({message: "There is no user to update."})
             }else{
@@ -278,7 +278,7 @@ const userUpdatePassword = (req, res)=>{
                 const hashedUserNewPassword =  await bcrypt.hash(userNewPassword, salt)
                 const updatedUserInformation = { $set: {userPassword: hashedUserNewPassword} };
                 userCollection.updateOne(userInformation, updatedUserInformation, function(err, object) {
-                    if (err) return res.send({errorMessage: "Something went wrong"})
+                    if (err) return res.status(500).send({errorMessage: "Something went wrong"})
                     res.send({ updateSuccessMessage:"user password has been updated successfully."})
                 });
             }else{
@@ -309,7 +309,7 @@ const deleteSingleUser = (req, res)=>{
     console.log(userId)
     var deletedUserId = { _id: ObjectId(userId) };
     userCollection.deleteOne(deletedUserId,(err,data)=>{
-        if(err) return res.send({errorMessage: "Something went wrong"})
+        if(err) return res.status(500).send({errorMessage: "Something went wrong"})
         res.send({
             message: `user id ${userId} has been deleted successfully`
         })
@@ -319,7 +319,6 @@ const deleteSingleUser = (req, res)=>{
 // get all the info of requested user
 const getUserProfile = (req,res)=>{
     const userEmail = req.user.userEmail
-    console.log(`user email from getUserProfile: ${userEmail}`)
     userCollection.find({ userEmail: userEmail}).toArray((err, result)=>{
         let user = {}
         user.userFullName = result[0].userFullName
@@ -332,13 +331,10 @@ const getUserProfile = (req,res)=>{
 //user refresh token
 const userRefreshToken = async(req, res)=>{
     const refreshToken = req.header('refresh-token')
-    console.log(`userToken: ${refreshToken}`)
     if(!refreshToken) return res.send({ errorMessage: "Access Denied." })
     const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
     const userEmail = verified.userEmail
-    console.log(userEmail)
     const redisUserEmail = await redisClient.get(userEmail)
-    console.log(`from refresh token for redis: ${redisUserEmail}`)
     if(redisUserEmail === null){
         return res.send({errorMessage: "Please login first"})
     }else{
