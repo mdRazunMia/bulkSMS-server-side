@@ -15,7 +15,12 @@ const subUserRoute = require('./routes/subUserRoute')
 require('./db/redis')
 
 
+// const createClient = require('./db/database')
+// createClient.createClient()
+
+
 const app = express();
+
 
 
 const whitelist = [`${process.env.BASE_URL}`]

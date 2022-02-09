@@ -16,4 +16,5 @@ router.post('/forgetPassword', userController.userForgetPassword)
 router.post('/userUpdatePassword',auth,userController.userUpdatePassword)
 router.get('/userProfile',auth,userController.getUserProfile)
 router.get('/refreshToken',authRefreshToken,userController.userRefreshToken)
+router.get('/logout',authRefreshToken,userController.userLogOut)
 module.exports = router;

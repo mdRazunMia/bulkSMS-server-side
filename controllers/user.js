@@ -6,17 +6,23 @@ const bcrypt = require('bcryptjs')
 const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
 const {registerValidation,loginValidation, userUpdatePasswordValidation, userForgetPasswordValidation} = require('../validations/validation')
-const { ObjectId } = require('mongodb')
-// const { client } = require('../db/redis')
+const redisClient  = require('../db/redis')
+
+// const createDatabase = require('../db/database')
+
+// const database = createDatabase.createDatabase()
+// console.log(database)
+// const userCollection = database.collection("user")
+
+
+
 
 //user registration
 const userRegistration = async (req, res)=>{
     const {error, value} = registerValidation(req.body) 
-    // console.log(error)
     if(error){
         res.send(error.details[0].message)
     }else{
-        // res.send(value)
         const userFullName = value.userFullName
         const userEmail = value.userEmail
         const salt = await bcrypt.genSalt(10)
@@ -44,7 +50,6 @@ const userRegistration = async (req, res)=>{
                 })
                 const url = `${process.env.BASE_URL}/verify/${userEmail}/${userRandomToken}`
                 const mailOption ={
-                    // from: 'test.sustneub@gmail.com',
                     from: process.env.EMAIL_ID,
                     to: userEmail,
                     subject: 'Please Verify your account',
@@ -130,6 +135,9 @@ const userLogin = async (req, res)=>{
                         const refreshToken = jwt.sign({userEmail: result.userEmail}, process.env.REFRESH_TOKEN_SECRET,{
                             expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
                         })
+                        redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+                            if(err) return res.send({errorMessage:"Something went wrong."})
+                        } )
                         res.header('auth-token').send({
                             authToken: token,
                             refreshToken: refreshToken
@@ -175,7 +183,6 @@ const mailForgetPasswordResetLink = (req, res)=>{
                 from: process.env.EMAIL_ID,
                 to: userEmail,
                 subject: 'Please Verify your account',
-                // html: `Click <a href = '${url}'>here</a> to change your password.`
                 html: `
                 <!DOCTYPE html>
                 <html lang="en">
@@ -259,7 +266,6 @@ const userUpdatePassword = (req, res)=>{
         userCollection.findOne({_id: ObjectId(userId)},async(err, user)=>{
             if(err) return res.send({errorMessage: "Something went wrong"})
             if(user==null){
-                // const userNotExistError = "There is no user to update."
                 res.send({message: "There is no user to update."})
             }else{
             console.log(user)
@@ -320,24 +326,32 @@ const getUserProfile = (req,res)=>{
 
 
 //user refresh token
-const userRefreshToken = (req, res)=>{
+const userRefreshToken = async(req, res)=>{
     const refreshToken = req.header('refresh-token')
     console.log(`userToken: ${refreshToken}`)
     if(!refreshToken) return res.send({ errorMessage: "Access Denied." })
     const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
     const userEmail = verified.userEmail
     console.log(userEmail)
-    try {
-        const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET,{expiresIn: process.env.JWT_EXPIRE_TIME})
-        res.send({authToken: authToken, refreshToken: refreshToken})          
-    } catch (error) {
-        res.send({ userRefreshTokenErrorMessage: "Something went wrong."})
+    const redisUserEmail = await redisClient.get(userEmail)
+    console.log(`from reresh token for redis: ${redisUserEmail}`)
+    if(redisUserEmail === null){
+        return res.send({errorMessage: "Please login first"})
+    }else{
+        try {
+            const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET,{expiresIn: process.env.JWT_EXPIRE_TIME})
+            res.send({authToken: authToken, refreshToken: refreshToken})          
+        } catch (error) {
+            res.send({ userRefreshTokenErrorMessage: "Something went wrong."})
+        }
     }
-    
 }
 
 const userLogOut = (req, res)=>{
-    
+    const userEmail = req.user.userEmail
+    console.log(userEmail)
+    redisClient.del(userEmail)
+    res.send({userLogoutMessage: "User has been logged out successfully."})
 }
 
 module.exports = {
@@ -350,7 +364,8 @@ module.exports = {
     mailForgetPasswordResetLink,
     userForgetPassword,
     getUserProfile,
-    userRefreshToken
+    userRefreshToken,
+    userLogOut
 }
 
 
