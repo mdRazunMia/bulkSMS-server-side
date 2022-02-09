@@ -2,6 +2,7 @@ const database = require('../db/database')
 const {OAuth2Client} = require('google-auth-library')
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
+const redisClient  = require('../db/redis')
 
 const clientAccount = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 const  userCollection = database.collection("user")
@@ -29,12 +30,20 @@ const googleLogin = (req, res)=>{
                     userCollection.insertOne(userInformation)
                     // const googleSuccessMessageAndInserted = "user has been logged in successfully."
                     // res.header('auth-token').send({googleSuccessMessageAndInserted:"user has been logged in successfully.", user: {userEmail: userEmail, userFullName: userFullName}})
+                    redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+                        if(err) return res.send({errorMessage:"Something went wrong."})
+                        console.log(`reply from login redis: ${reply}`)
+                    })
                     res.send({googleSuccessMessageAndInserted:"user has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
                 }else{
                     const authToken = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
                     // console.log("User Already exist.")
                     // const googleExistingSuccessMessage = "User Already exist."
+                    redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+                        if(err) return res.send({errorMessage:"Something went wrong."})
+                        console.log(`reply from login redis: ${reply}`)
+                    })
                     res.header('auth-token').send({googleExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
                 }
             })

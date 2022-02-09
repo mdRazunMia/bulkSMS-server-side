@@ -137,7 +137,8 @@ const userLogin = async (req, res)=>{
                         })
                         redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
                             if(err) return res.send({errorMessage:"Something went wrong."})
-                        } )
+                            console.log(`reply from login redis: ${reply}`)
+                        })
                         res.header('auth-token').send({
                             authToken: token,
                             refreshToken: refreshToken
@@ -290,7 +291,10 @@ const userUpdatePassword = (req, res)=>{
    
 }
 
-
+//update user information
+const updateUserInformation = (req, res)=>{
+    const userEmail = req.params.userEmail
+}
 
 // get all users
 const allUser = (req, res)=>{
@@ -334,7 +338,7 @@ const userRefreshToken = async(req, res)=>{
     const userEmail = verified.userEmail
     console.log(userEmail)
     const redisUserEmail = await redisClient.get(userEmail)
-    console.log(`from reresh token for redis: ${redisUserEmail}`)
+    console.log(`from refresh token for redis: ${redisUserEmail}`)
     if(redisUserEmail === null){
         return res.send({errorMessage: "Please login first"})
     }else{
@@ -349,9 +353,9 @@ const userRefreshToken = async(req, res)=>{
 
 const userLogOut = (req, res)=>{
     const userEmail = req.user.userEmail
-    console.log(userEmail)
     redisClient.del(userEmail)
     res.send({userLogoutMessage: "User has been logged out successfully."})
+    console.log("user has been logged out successfully.")
 }
 
 module.exports = {
@@ -364,6 +368,7 @@ module.exports = {
     mailForgetPasswordResetLink,
     userForgetPassword,
     getUserProfile,
+    updateUserInformation,
     userRefreshToken,
     userLogOut
 }

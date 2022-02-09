@@ -5,7 +5,7 @@ const database = require('../db/database')
 const jwt = require('jsonwebtoken');
 const auth = require("../validations/verified");
 require('dotenv').config()
-
+const redisClient  = require('../db/redis')
 const  userCollection = database.collection("user")
 
 router.get('/linkedin',  passport.authenticate('linkedin', {
@@ -32,10 +32,18 @@ router.get('/linkedin/callback',
         const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
         const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
         userCollection.insertOne(linkedInUser)
+        redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+          if(err) return res.send({errorMessage:"Something went wrong."})
+          console.log(`reply from login redis: ${reply}`)
+      })
         res.send({linkedInSuccessMessageAndInserted:"User has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
       }else{
           const authToken = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET)
           const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
+          redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+            if(err) return res.send({errorMessage:"Something went wrong."})
+            console.log(`reply from login redis: ${reply}`)
+        })
           res.send({linkedInExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
       }
   }
