@@ -25,7 +25,6 @@ const userRegistration = async (req, res)=>{
     if(error){
         res.send(error.details[0].message)
     }else{
-
         // ---------------------recapcha code------------------
         // const recapchaVerifyToken = req.body.recapchaToken
         // const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
