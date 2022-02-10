@@ -18,4 +18,6 @@ router.get('/userProfile',auth,userController.getUserProfile)
 router.put('/updateUserInformation/:userEmail',userController.updateUserInformation)
 router.get('/refreshToken',authRefreshToken,userController.userRefreshToken)
 router.get('/logout',authRefreshToken,userController.userLogOut)
+
+
 module.exports = router;

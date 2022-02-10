@@ -19,7 +19,8 @@ const registerValidation = (data) => {
         'string.min': `Password should have a minimum length of 8 characters`,
         'any.required': `Password is a required field`
       }),
-    userPassword2:  Joi.ref('userPassword1')
+    userPassword2:  Joi.ref('userPassword1'),
+    // recapchaToken: Joi.string().required()
     })
     return schema.validate(data)
 }

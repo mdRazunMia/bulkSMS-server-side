@@ -7,6 +7,8 @@ const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
 const {registerValidation,loginValidation, userUpdatePasswordValidation, userForgetPasswordValidation} = require('../validations/validation')
 const redisClient  = require('../db/redis')
+// const https = require('https')
+const axios = require("axios")
 
 // const createDatabase = require('../db/database')
 
@@ -23,6 +25,18 @@ const userRegistration = async (req, res)=>{
     if(error){
         res.send(error.details[0].message)
     }else{
+
+        // ---------------------recapcha code------------------
+        // const recapchaVerifyToken = req.body.recapchaToken
+        // const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
+        // const recapchaVerifyResponse = await axios.post(recapchaVerifyURL)
+        // if(recapchaVerifyResponse.data.success){
+        //     res.send("success")
+        // }else{
+        //     res.send("failed")
+        // }
+        //--------------------recapcha code-------------------
+
         const userFullName = value.userFullName
         const userEmail = value.userEmail
         const salt = await bcrypt.genSalt(10)
