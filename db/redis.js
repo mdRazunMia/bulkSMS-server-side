@@ -18,7 +18,7 @@ client.connect()
  client.on('error',(error)=>{
     console.log(error.message)
  })
- client.set('fooo','bar')
+ 
  client.on('end', ()=>{
      console.log("Client disconnected from redis.")
  })

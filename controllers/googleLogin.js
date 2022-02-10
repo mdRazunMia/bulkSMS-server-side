@@ -27,8 +27,6 @@ const googleLogin = (req, res)=>{
                     const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
                     userCollection.insertOne(userInformation)
-                    // const googleSuccessMessageAndInserted = "user has been logged in successfully."
-                    // res.header('auth-token').send({googleSuccessMessageAndInserted:"user has been logged in successfully.", user: {userEmail: userEmail, userFullName: userFullName}})
                     redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
                         if(err) return res.status(500).send({errorMessage:"Something went wrong."})
                         console.log(`reply from login redis: ${reply}`)
@@ -37,18 +35,16 @@ const googleLogin = (req, res)=>{
                 }else{
                     const authToken = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
-                    // console.log("User Already exist.")
-                    // const googleExistingSuccessMessage = "User Already exist."
                     redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
                         if(err) return res.status(500).send({errorMessage:"Something went wrong."})
                         console.log(`reply from login redis: ${reply}`)
                     })
-                    res.status(400).send({googleExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
+                    res.status(200).send({googleExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
                 }
             })
 
         }else{
-            res.status(400).send({ errorMessage: "User is not verified."})
+            res.status(400).send({ errorMessage: "User google account is not verified."})
         }
     })
 }

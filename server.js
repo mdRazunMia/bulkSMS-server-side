@@ -8,7 +8,6 @@ const userRoute = require("./routes/userRoute.js")
 const campaignRoute = require("./routes/campaignRoute.js")
 const googleLoginRoute = require("./routes/googleLoginRoute.js")
 const linkedinLoginRoute = require('./routes/linkedinRoute'); 
-const logoutRoute = require('./routes/logout')
 const passport = require('passport');
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const subUserRoute = require('./routes/subUserRoute')
@@ -72,31 +71,14 @@ passport.use(new LinkedInStrategy({
   });
 }));
 
-// //midleware
-// app.use(express.json());
-// app.use('/uploads', express.static('./uploads'));
-//Routes
+
 app.use('/', userRoute);
 app.use('/auth',googleLoginRoute)
 app.use('/auth', linkedinLoginRoute)
 app.use('/campaign',campaignRoute)
-app.use('/logout',logoutRoute)
 app.use('/subUser',subUserRoute)
 
-// app.use(function(req,res,next){
-//     if(req.session.email == null || req.session.email.length ==0 ){
-//         res.redirect('/login'); 
-//     }
-//     else{
-//       next();
-//     }
-//   });
 
-// app.get('/logoutRedirect', (req, res)=>{
-//   res.send({
-//     logoutState: true
-//   })
-// })
 app.listen(port, () => {
     console.log('Dot Online Server is running on port', port);
 });
