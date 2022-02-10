@@ -87,9 +87,9 @@ const userRegistration = async (req, res)=>{
                 transporter.sendMail(mailOption, (err, data )=>{
                     if(err) return res.status(500).send({errorMessage: "Something went wrong when sent the mail."})
                 })
-                res.send({ userRegisterSuccessMessage: "User has been registered successfully. A link has been sent to your gmail to verify your account."})
+                res.status(201).send({ userRegisterSuccessMessage: "User has been registered successfully. A link has been sent to your gmail to verify your account."})
             }else{
-                res.send({ message: "This email is already registered."})
+                res.status(400).send({ message: "This email is already registered."})
             }
         })
     }
@@ -109,7 +109,7 @@ const userVerifiedAccount = (req, res)=>{
     userCollection.updateOne(userInformation, updatedUserInformation, function(err, res) {
     if (err) return res.status(500).send({errorMessage: "Something went wrong"})
   });
-  res.json({ verifiedMessage: "Account has been verified successfully."})
+  res.status(200).send({ verifiedMessage: "Account has been verified successfully."})
 }
 
 
@@ -118,7 +118,7 @@ const userLogin = async (req, res)=>{
     const {error, value} = loginValidation(req.body)
     if(error){
         console.log(error)
-        res.send({errorMessage: error.details[0].message})
+        res.status(400).send({errorMessage: error.details[0].message})
     }else{
         const userEmail = value.userEmail
         const userPassword = value.userPassword
@@ -139,22 +139,22 @@ const userLogin = async (req, res)=>{
                             if(err) return res.status(500).send({errorMessage:"Something went wrong."})
                             console.log(`reply from login redis: ${reply}`)
                         })
-                        res.header('auth-token').send({
+                        res.status(200).send({
                             authToken: token,
                             refreshToken: refreshToken
                         })
                     }else{
-                        return res.send({ errorMessage: "Password is incorrect."})
+                        return res.status(401).send({ errorMessage: "Password is incorrect."})
                     }
                 }else if(result.verified && result.medium === "google"){
-                    return res.send({errorMessage: "You have signed in using google before. Please login using google account"})
+                    return res.status(401).send({errorMessage: "You have signed in using google before. Please login using google account"})
                 }else if(result.verified && result.medium === "linkedIn"){
-                    return res.send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
+                    return res.status(401).send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
                 }else{
-                    return res.send({ errorMessage: "Please Verify your email first."})
+                    return res.status(401).send({ errorMessage: "Please Verify your email first."})
                 }
             }else{
-                return  res.send({errorMessage: "Email incorrect or registered first"})
+                return  res.status(401).send({errorMessage: "Email incorrect or registered first"})
             }
             
         })
@@ -170,7 +170,7 @@ const mailForgetPasswordResetLink = (req, res)=>{
     userCollection.findOne({userEmail: userEmail},(err, user)=>{
         if(err) return res.status(500).send({errorMessage: "Something went wrong"})
         if(user==null){
-            res.send({resetPasswordErrorMessage: "This email is not registered. Please registered this email first."})
+            res.status(401).send({resetPasswordErrorMessage: "This email is not registered. Please registered this email first."})
         }else if(user.verified && user.medium === "normal"){
             const transporter = nodeMailer.createTransport({
                 service: "gmail",
@@ -217,11 +217,11 @@ const mailForgetPasswordResetLink = (req, res)=>{
             transporter.sendMail(mailOption, (err, data )=>{
                 if(err) return res.status(500).send({errorMessage: "Something went wrong"})
             })
-            res.send({ resetPasswordMessage: "A link has been sent to your gmail to reset your password."})
+            res.status(200).send({ resetPasswordMessage: "A link has been sent to your gmail to reset your password."})
         }else if(user.verified && user.medium === "google"){
-            return res.send({ errorMessage: "You cannot reset your password. Because you have signed in using google account before. Please login using google account"})
+            return res.status(401).send({ errorMessage: "You cannot reset your password. Because you have signed in using google account before. Please login using google account"})
         }else{
-            return res.send({ errorMessage: "You cannot reset your password. Because you have signed in using linkedin account before. Please login using linkedin account"})
+            return res.status(401).send({ errorMessage: "You cannot reset your password. Because you have signed in using linkedin account before. Please login using linkedin account"})
         }
     })
 }
@@ -231,7 +231,7 @@ const userForgetPassword = async(req, res)=>{
     const userEmail = req.query.userEmail
    const {error, value} = userForgetPasswordValidation(req.body)
    if(error){
-    res.send(error.details[0].message)
+    res.status(400).send(error.details[0].message)
    }else{
     const userNewPassword = req.body.userPassword1
     const salt = await bcrypt.genSalt(10)
@@ -244,8 +244,8 @@ const userForgetPassword = async(req, res)=>{
             const userInformation = { userEmail: userEmail};
             const updatedUserInformation = { $set: {userPassword: hashedUserNewPassword} };
             userCollection.updateOne(userInformation, updatedUserInformation, function(err, object) {
-                if (err) return res.send({errorMessage: "Something went wrong"})
-                res.send({ updateSuccessMessage:"user password has been updated successfully."})
+                if (err) return res.status(500).send({errorMessage: "Something went wrong"})
+                res.status(200).send({ updateSuccessMessage:"user password has been updated successfully."})
             });
         }
     })
@@ -279,10 +279,10 @@ const userUpdatePassword = (req, res)=>{
                 const updatedUserInformation = { $set: {userPassword: hashedUserNewPassword} };
                 userCollection.updateOne(userInformation, updatedUserInformation, function(err, object) {
                     if (err) return res.status(500).send({errorMessage: "Something went wrong"})
-                    res.send({ updateSuccessMessage:"user password has been updated successfully."})
+                    res.status(200).send({ updateSuccessMessage:"user password has been updated successfully."})
                 });
             }else{
-                return res.send({ passwordNotMatchedError: "Current password is not matched wih the given current password."})
+                return res.status(401).send({ passwordNotMatchedError: "Current password is not matched wih the given current password."})
             }
             
             }
@@ -299,7 +299,7 @@ const updateUserInformation = (req, res)=>{
 // get all users
 const allUser = (req, res)=>{
     userCollection.find({}).toArray((err, result)=>{
-        res.json(result)
+        res.status(200).send(result)
     })
 }
 
@@ -310,7 +310,7 @@ const deleteSingleUser = (req, res)=>{
     var deletedUserId = { _id: ObjectId(userId) };
     userCollection.deleteOne(deletedUserId,(err,data)=>{
         if(err) return res.status(500).send({errorMessage: "Something went wrong"})
-        res.send({
+        res.status(200).send({
             message: `user id ${userId} has been deleted successfully`
         })
     })
@@ -323,7 +323,7 @@ const getUserProfile = (req,res)=>{
         let user = {}
         user.userFullName = result[0].userFullName
         user.userEmail = result[0].userEmail
-        res.send({user: user}) 
+        res.status(200).send({user: user}) 
     })
 }
 
@@ -336,13 +336,13 @@ const userRefreshToken = async(req, res)=>{
     const userEmail = verified.userEmail
     const redisUserEmail = await redisClient.get(userEmail)
     if(redisUserEmail === null){
-        return res.send({errorMessage: "Please login first"})
+        return res.status(401).send({errorMessage: "Please login first"})
     }else{
         try {
             const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET,{expiresIn: process.env.JWT_EXPIRE_TIME})
-            res.send({authToken: authToken, refreshToken: refreshToken})          
+            res.status(200).send({authToken: authToken, refreshToken: refreshToken})          
         } catch (error) {
-            res.send({ userRefreshTokenErrorMessage: "Something went wrong."})
+            res.status(500).send({ userRefreshTokenErrorMessage: "Something went wrong."})
         }
     }
 }
@@ -350,7 +350,7 @@ const userRefreshToken = async(req, res)=>{
 const userLogOut = (req, res)=>{
     const userEmail = req.user.userEmail
     redisClient.del(userEmail)
-    res.send({userLogoutMessage: "User has been logged out successfully."})
+    res.status(200).send({userLogoutMessage: "User has been logged out successfully."})
     console.log("user has been logged out successfully.")
 }
 

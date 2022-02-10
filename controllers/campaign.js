@@ -7,21 +7,21 @@ const createCampaign = (req, res)=>{
     //res.json(campaignInformation)
     let verified = false
     campaignCollection.insertOne(campaignInformation, (err, response)=>{
-        if(err) return res.send({errorMessage: "Something went wrong"})
+        if(err) return res.status(500).send({errorMessage: "Something went wrong"})
         if(response.acknowledged){
             // console.log("Campaign has been created successfully.")
             verified = true
         }
     })
     
-   res.send({ message: "Campaign has been created successfully."})
+   res.status(201).send({ message: "Campaign has been created successfully."})
 }
 
 const showAllCampaign = (req, res)=>{
     campaignCollection.find({}).toArray((err, result)=>{
-        if(err) return res.send({errorMessage: "Something went wrong"})
+        if(err) return res.status(500).send({errorMessage: "Something went wrong"})
         // res.json(result)
-        res.send({
+        res.status(200).send({
             campaigns: result
         })
     })
@@ -33,8 +33,8 @@ const deleteCampaign = (req, res)=>{
     console.log(campaignId)
     var deletedCampaignId = { _id: ObjectId(campaignId) };
     campaignCollection.deleteOne(deletedCampaignId,(err,data)=>{
-        if(err) return res.send({errorMessage: "Something went wrong"})
-        res.send({
+        if(err) return res.status(500).send({errorMessage: "Something went wrong"})
+        res.status(200).send({
             message: `Campaign id ${campaignId} has been deleted successfully`
         })
     })

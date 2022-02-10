@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 
 const authRefreshToken = (req, res, next) => {
     const token = req.header('refresh-token')
-    if (!token) return res.send({ 
+    if (!token) return res.status(401).send({ 
         errorMessage: "Access Denied."
     })
     try {
@@ -11,7 +11,7 @@ const authRefreshToken = (req, res, next) => {
         console.log(req.user)
         next()
     } catch (error) {
-        res.send({ 
+        res.status(401).send({ 
             errorMessage: "Invalid Token or time is expired",
             verify: false
         })

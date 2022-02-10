@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 
 const auth = (req, res, next) => {
     const token = req.header('auth-token')
-    if (!token) return res.send({ 
+    if (!token) return res.status(401).send({ 
         errorMessage: "Access Denied."
     })
     try {
@@ -11,7 +11,7 @@ const auth = (req, res, next) => {
         console.log(`from authentication: ${req.user.userEmail}`)
         next()
     } catch (error) {
-        res.send({ 
+        res.status(400).send({ 
             errorMessage: "Invalid Token or time is expired",
             verify: false
         })

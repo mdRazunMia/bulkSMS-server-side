@@ -21,9 +21,8 @@ const googleLogin = (req, res)=>{
         userInformation.verified = verifiedEmail
         userInformation.medium="google"
         if(verifiedEmail){
-            // console.log("User is verified")
             userCollection.findOne({userEmail: userEmail}, (err, result)=>{
-                if(err) return res.send({errorMessage: "Something went wrong"})
+                if(err) return res.status(500).send({errorMessage: "Something went wrong"})
                 if(result==null){
                     const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
@@ -31,37 +30,30 @@ const googleLogin = (req, res)=>{
                     // const googleSuccessMessageAndInserted = "user has been logged in successfully."
                     // res.header('auth-token').send({googleSuccessMessageAndInserted:"user has been logged in successfully.", user: {userEmail: userEmail, userFullName: userFullName}})
                     redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
-                        if(err) return res.send({errorMessage:"Something went wrong."})
+                        if(err) return res.status(500).send({errorMessage:"Something went wrong."})
                         console.log(`reply from login redis: ${reply}`)
                     })
-                    res.send({googleSuccessMessageAndInserted:"user has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
+                    res.status(200).send({googleSuccessMessageAndInserted:"user has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
                 }else{
                     const authToken = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
                     // console.log("User Already exist.")
                     // const googleExistingSuccessMessage = "User Already exist."
                     redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
-                        if(err) return res.send({errorMessage:"Something went wrong."})
+                        if(err) return res.status(500).send({errorMessage:"Something went wrong."})
                         console.log(`reply from login redis: ${reply}`)
                     })
-                    res.header('auth-token').send({googleExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
+                    res.status(400).send({googleExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
                 }
             })
 
         }else{
-            // console.log("User is not verified")
-            res.send({ errorMessage: "User is not verified."})
+            res.status(400).send({ errorMessage: "User is not verified."})
         }
-    //     const {email_verified, name, email} = response.payload
-    //     console.log(response.payload)
     })
 }
 
-const googleLogOut = (req, res)=>{
-
-}
 
 module.exports = {
-    googleLogin,
-    googleLogOut
+    googleLogin
 }

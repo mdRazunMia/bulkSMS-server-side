@@ -27,33 +27,29 @@ router.get('/linkedin/callback',
 
     }
     userCollection.findOne({userEmail: userEmail}, (err, result)=>{
-      if(err) return res.send({errorMessage: "Something went wrong"})
+      if(err) return res.status(500).send({errorMessage: "Something went wrong"})
       if(result==null){
         const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
         const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
         userCollection.insertOne(linkedInUser)
         redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
-          if(err) return res.send({errorMessage:"Something went wrong."})
+          if(err) return res.status5(500).send({errorMessage:"Something went wrong."})
           console.log(`reply from login redis: ${reply}`)
       })
-        res.send({linkedInSuccessMessageAndInserted:"User has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
+        res.status(200).send({linkedInSuccessMessageAndInserted:"User has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
       }else{
           const authToken = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET)
           const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
           redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
-            if(err) return res.send({errorMessage:"Something went wrong."})
+            if(err) return res.status(500).send({errorMessage:"Something went wrong."})
             console.log(`reply from login redis: ${reply}`)
         })
-          res.send({linkedInExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
+          res.status(400).send({linkedInExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
       }
   }
   )
   }
   );
 
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated())
-        return next()
-}
 
 module.exports = router
