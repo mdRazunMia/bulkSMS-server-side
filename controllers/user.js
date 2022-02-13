@@ -136,11 +136,11 @@ const userLogin = async (req, res)=>{
         res.status(400).send({errorMessage: error.details[0].message})
     }else{
         //recaptcha code
-        const recapchaVerifyToken = req.body.recaptchaToken
-        const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
-        const recapchaVerifyResponse = await axios.post(recapchaVerifyURL)
+       // const recapchaVerifyToken = req.body.recaptchaToken
+       // const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
+       // const recapchaVerifyResponse = await axios.post(recapchaVerifyURL)
          //recaptcha code
-        if(recapchaVerifyResponse.data.success){
+       // if(recapchaVerifyResponse.data.success){
             const userEmail = value.userEmail
             const userPassword = value.userPassword
             userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
@@ -179,11 +179,10 @@ const userLogin = async (req, res)=>{
                 }
                 
             })
-        }else{
-            res.status(200).send("Recaptcha is failed")
-        }
+       // }else{
+       //     res.status(200).send("Recaptcha is failed")
+       // }
     }
-    
 }
 
 

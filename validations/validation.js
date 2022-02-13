@@ -15,11 +15,11 @@ const registerValidation = (data) => {
     }),
     userPassword1: Joi.string().min(8).max(25).required().messages({
         'string.empty': `Password cannot be an empty field`,
-        'string.max': `Password should have a minimum length of 25 characters`,
+        'string.max': `Password should have a maximum length of 25 characters`,
         'string.min': `Password should have a minimum length of 8 characters`,
         'any.required': `Password is a required field`
       }),
-    userPassword2:  Joi.ref('userPassword1'),
+    userPassword2: Joi.any().equal(Joi.ref('userPassword1')).required().messages({ 'any.only': 'Confirm password does not match' }),
     recaptchaToken: Joi.string().required().messages({
       'string.empty': `Recaptcha cannot be an empty field`,
       'any.required': `Recaptcha is a required field`
@@ -37,14 +37,14 @@ const loginValidation = (data) => {
     }),
     userPassword: Joi.string().min(8).max(25).required().messages({
       'string.empty': `Password cannot be an empty field`,
-      'string.max': `Password should have a minimum length of 25 characters`,
+      'string.max': `Password should have a maximum length of 25 characters`,
       'string.min': `Password should have a minimum length of 8 characters`,
       'any.required': `Password is a required field`
     }),
-    recaptchaToken: Joi.string().required().messages({
-      'string.empty': `Recaptcha cannot be an empty field`,
-      'any.required': `Recaptcha is a required field`
-    })
+    // recaptchaToken: Joi.string().required().messages({
+    //   'string.empty': `Recaptcha cannot be an empty field`,
+    //   'any.required': `Recaptcha is a required field`
+    // })
     })
     return schema.validate(data)
 }
@@ -64,7 +64,7 @@ const userUpdatePasswordValidation = (data) => {
             'string.min': `Password should have a minimum length of 8 characters`,
             'any.required': `Password is a required field`
           }),
-        userPassword2:  Joi.ref('userPassword1')
+        userPassword2:  Joi.any().equal(Joi.ref('userPassword1')).required().messages({ 'any.only': 'Confirm password does not match' })
     })
     return schema.validate(data)
 }
@@ -78,7 +78,7 @@ const userForgetPasswordValidation = (data) => {
             'string.min': `Password should have a minimum length of 8 characters`,
             'any.required': `Password is a required field`
           }),
-        userPassword2:  Joi.ref('userPassword1')
+        userPassword2:  Joi.any().equal(Joi.ref('userPassword1')).required().messages({ 'any.only': 'Confirm password does not match' })
     })
     return schema.validate(data)
 }
@@ -159,7 +159,7 @@ const subUserPasswordResetValidation = (data)=>{
             'string.min': `Password should have a minimum length of 8 characters`,
             'any.required': `Password is a required field`
           }),
-        subUserPassword2:  Joi.ref('subUserPassword1')
+        subUserPassword2:  Joi.any().equal(Joi.ref('subUserPassword1')).required().messages({ 'any.only': 'Confirm password does not match' })
     })
     return schema.validate(data)
 }
