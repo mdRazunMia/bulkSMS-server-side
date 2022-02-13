@@ -5,7 +5,11 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
-const {registerValidation,loginValidation, userUpdatePasswordValidation, userForgetPasswordValidation} = require('../validations/validation')
+const {
+    registerValidation,loginValidation, 
+    userUpdatePasswordValidation, 
+    userForgetPasswordValidation
+} = require('../validations/validation')
 const redisClient  = require('../db/redis')
 const axios = require("axios")
 
@@ -22,88 +26,86 @@ const axios = require("axios")
 const userRegistration = async (req, res)=>{
     const {error, value} = registerValidation(req.body) 
     if(error){
-        res.send(error.details[0].message)
+        res.status(200).send({message: error.details[0].message})
     }else{
-        // ---------------------recapcha code------------------
-        // const recapchaVerifyToken = req.body.recapchaToken
-        // const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
-        // const recapchaVerifyResponse = await axios.post(recapchaVerifyURL)
-        // if(recapchaVerifyResponse.data.success){
-        //     res.send("success")
-        // }else{
-        //     res.send("failed")
-        // }
-        //--------------------recapcha code-------------------
-
-        const userFullName = value.userFullName
-        const userEmail = value.userEmail
-        const salt = await bcrypt.genSalt(10)
-        const userPassword = await bcrypt.hash(value.userPassword1, salt)
-        console.log(userPassword)
-        userCollection.findOne({userEmail: userEmail}, (err, result)=>{
-            if(err) return res.status(500).send({errorMessage: "Something went wrong"})
-            if(result == null){
-                const userInformation = {}
-                userInformation.userFullName = userFullName
-                userInformation.userEmail = userEmail
-                userInformation.userPassword = userPassword
-                const userRandomToken = Str.random(50)
-                userInformation.userToken = userRandomToken
-                console.log(`user token: ${userRandomToken}`)
-                userInformation.verified = false
-                userInformation.medium= "normal"
-                userCollection.insertOne(userInformation)
-                const transporter = nodeMailer.createTransport({
-                    service: "gmail",
-                    auth:{
-                        user:process.env.EMAIL_ID,
-                        pass:process.env.EMAIL_PASSWORD
+        //recaptcha code
+        const recapchaVerifyToken = req.body.recaptchaToken
+        const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
+        const recapchaVerifyResponse = await axios.post(recapchaVerifyURL)
+         //recaptcha code
+        if(recapchaVerifyResponse.data.success){
+            const userFullName = value.userFullName
+            const userEmail = value.userEmail
+            const salt = await bcrypt.genSalt(10)
+            const userPassword = await bcrypt.hash(value.userPassword1, salt)
+            console.log(userPassword)
+            userCollection.findOne({userEmail: userEmail}, (err, result)=>{
+                if(err) return res.status(500).send({errorMessage: "Something went wrong"})
+                if(result == null){
+                    const userInformation = {}
+                    userInformation.userFullName = userFullName
+                    userInformation.userEmail = userEmail
+                    userInformation.userPassword = userPassword
+                    const userRandomToken = Str.random(50)
+                    userInformation.userToken = userRandomToken
+                    console.log(`user token: ${userRandomToken}`)
+                    userInformation.verified = false
+                    userInformation.medium= "normal"
+                    userCollection.insertOne(userInformation)
+                    const transporter = nodeMailer.createTransport({
+                        service: "gmail",
+                        auth:{
+                            user:process.env.EMAIL_ID,
+                            pass:process.env.EMAIL_PASSWORD
+                        }
+                    })
+                    const url = `${process.env.BASE_URL}/verify/${userEmail}/${userRandomToken}`
+                    const mailOption ={
+                        from: process.env.EMAIL_ID,
+                        to: userEmail,
+                        subject: 'Please Verify your account',
+                        html: `
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Document</title>
+                        </head>
+                        <body>
+                            <div style="margin:30px; padding:20px;"  >
+                                <img width="100px" src="https://i.ibb.co/vmVVp11/logo.png"  alt="" />   
+                               <hr />
+                               <div>
+                                 <h3 style="font-size:30px;">Please Verify your e-mail to finish signing up for DotOnline</h3>
+                                 <p>Thank you for choosing DotOnline</p>
+                                 <p> Please confirm that ${userEmail} is your e-mail address by clicking on the button. </p>
+                               <a href=${url}>  <button style="color:white; border:0; width:100%; height:50px; border-radius:4px; background-color:#61D2D2;">VERIFY</button></a>
+                               </div>
+                               <hr />
+                        
+                               <h4>Need help?Ask at <a href="#">${process.env.OFFICIAL_WEB_ADDRESS}</a> or visit Our <a href="${process.env.OFFICIAL_WEB_ADDRESS_URL}">Help Center</a> </h4>
+                              <div style="text-align:center; margin-top:20px;">
+                                <h4>DotOnline,Inc.</h4>
+                                <h4>${process.env.OFFICE_ADDRESS}</h4>
+                              </div>
+                               </div>
+                        </body>
+                        </html>
+                        `
                     }
-                })
-                const url = `${process.env.BASE_URL}/verify/${userEmail}/${userRandomToken}`
-                const mailOption ={
-                    from: process.env.EMAIL_ID,
-                    to: userEmail,
-                    subject: 'Please Verify your account',
-                    html: `
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Document</title>
-                    </head>
-                    <body>
-                        <div style="margin:30px; padding:20px;"  >
-                            <img width="100px" src="https://i.ibb.co/vmVVp11/logo.png"  alt="" />   
-                           <hr />
-                           <div>
-                             <h3 style="font-size:30px;">Please Verify your e-mail to finish signing up for DotOnline</h3>
-                             <p>Thank you for choosing DotOnline</p>
-                             <p> Please confirm that ${userEmail} is your e-mail address by clicking on the button. </p>
-                           <a href=${url}>  <button style="color:white; border:0; width:100%; height:50px; border-radius:4px; background-color:#61D2D2;">VERIFY</button></a>
-                           </div>
-                           <hr />
-                    
-                           <h4>Need help?Ask at <a href="#">${process.env.OFFICIAL_WEB_ADDRESS}</a> or visit Our <a href="${process.env.OFFICIAL_WEB_ADDRESS_URL}">Help Center</a> </h4>
-                          <div style="text-align:center; margin-top:20px;">
-                            <h4>DotOnline,Inc.</h4>
-                            <h4>${process.env.OFFICE_ADDRESS}</h4>
-                          </div>
-                           </div>
-                    </body>
-                    </html>
-                    `
+                    transporter.sendMail(mailOption, (err, data )=>{
+                        if(err) return res.status(500).send({errorMessage: "Something went wrong when sent the mail."})
+                    })
+                    res.status(201).send({ userRegisterSuccessMessage: "User has been registered successfully. A link has been sent to your gmail to verify your account."})
+                }else{
+                    res.status(200).send({ message: "This email is already registered."})
                 }
-                transporter.sendMail(mailOption, (err, data )=>{
-                    if(err) return res.status(500).send({errorMessage: "Something went wrong when sent the mail."})
-                })
-                res.status(201).send({ userRegisterSuccessMessage: "User has been registered successfully. A link has been sent to your gmail to verify your account."})
-            }else{
-                res.status(400).send({ message: "This email is already registered."})
-            }
-        })
+            })
+        }else{
+            res.status(200).send("Recaptcha is failed")
+        }
     }
 
 

@@ -20,7 +20,10 @@ const registerValidation = (data) => {
         'any.required': `Password is a required field`
       }),
     userPassword2:  Joi.ref('userPassword1'),
-    // recapchaToken: Joi.string().required()
+    recaptchaToken: Joi.string().required().messages({
+      'string.empty': `Recaptcha cannot be an empty field`,
+      'any.required': `Recaptcha is a required field`
+    })
     })
     return schema.validate(data)
 }
