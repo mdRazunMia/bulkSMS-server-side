@@ -11,8 +11,10 @@ const linkedinLoginRoute = require('./routes/linkedinRoute');
 const passport = require('passport');
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const subUserRoute = require('./routes/subUserRoute')
-require('./db/redis')
 
+//connect databases
+require('./db/redis')
+require('./db/database')
 
 // const createClient = require('./db/database')
 // createClient.createClient()

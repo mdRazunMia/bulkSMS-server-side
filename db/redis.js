@@ -8,11 +8,11 @@ const client = redis.createClient({
 client.connect()
  
  client.on('connect', ()=>{
-     console.log("client connected to redis.")
+     console.log("Successfully connected to redis database.")
  })
 
  client.on('ready', ()=>{
-     console.log("Client connected to redis and ready to use...")
+     console.log("Client connected to redis database and ready to use...")
  })
 
  client.on('error',(error)=>{
@@ -27,6 +27,4 @@ client.connect()
      client.quit()
  })
  
-
-
  module.exports = client

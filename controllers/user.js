@@ -7,7 +7,6 @@ const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
 const {registerValidation,loginValidation, userUpdatePasswordValidation, userForgetPasswordValidation} = require('../validations/validation')
 const redisClient  = require('../db/redis')
-// const https = require('https')
 const axios = require("axios")
 
 // const createDatabase = require('../db/database')
