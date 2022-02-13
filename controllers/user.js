@@ -12,6 +12,7 @@ const {
 } = require('../validations/validation')
 const redisClient  = require('../db/redis')
 const axios = require("axios")
+const e = require('express')
 
 // const createDatabase = require('../db/database')
 
@@ -134,44 +135,53 @@ const userLogin = async (req, res)=>{
         console.log(error)
         res.status(400).send({errorMessage: error.details[0].message})
     }else{
-        const userEmail = value.userEmail
-        const userPassword = value.userPassword
-        userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
-            if(err) return res.status(500).send({errorMessage: "Something went wrong"})
-            if(result != null){
-                if(result.verified && result.medium === "normal"){ 
-                    const validPassword = await bcrypt.compare(userPassword,result.userPassword)
-                    console.log(validPassword)
-                    if(validPassword){
-                        const token = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET, {
-                            expiresIn: process.env.JWT_EXPIRE_TIME
-                        })
-                        const refreshToken = jwt.sign({userEmail: result.userEmail}, process.env.REFRESH_TOKEN_SECRET,{
-                            expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
-                        })
-                        redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
-                            if(err) return res.status(500).send({errorMessage:"Something went wrong."})
-                            console.log(`reply from login redis: ${reply}`)
-                        })
-                        res.status(200).send({
-                            authToken: token,
-                            refreshToken: refreshToken
-                        })
+        //recaptcha code
+        const recapchaVerifyToken = req.body.recaptchaToken
+        const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
+        const recapchaVerifyResponse = await axios.post(recapchaVerifyURL)
+         //recaptcha code
+        if(recapchaVerifyResponse.data.success){
+            const userEmail = value.userEmail
+            const userPassword = value.userPassword
+            userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
+                if(err) return res.status(500).send({errorMessage: "Something went wrong"})
+                if(result != null){
+                    if(result.verified && result.medium === "normal"){ 
+                        const validPassword = await bcrypt.compare(userPassword,result.userPassword)
+                        console.log(validPassword)
+                        if(validPassword){
+                            const token = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET, {
+                                expiresIn: process.env.JWT_EXPIRE_TIME
+                            })
+                            const refreshToken = jwt.sign({userEmail: result.userEmail}, process.env.REFRESH_TOKEN_SECRET,{
+                                expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
+                            })
+                            redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+                                if(err) return res.status(500).send({errorMessage:"Something went wrong."})
+                                console.log(`reply from login redis: ${reply}`)
+                            })
+                            res.status(200).send({
+                                authToken: token,
+                                refreshToken: refreshToken
+                            })
+                        }else{
+                            return res.status(401).send({ errorMessage: "Password is incorrect."})
+                        }
+                    }else if(result.verified && result.medium === "google"){
+                        return res.status(401).send({errorMessage: "You have signed in using google before. Please login using google account"})
+                    }else if(result.verified && result.medium === "linkedIn"){
+                        return res.status(401).send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
                     }else{
-                        return res.status(401).send({ errorMessage: "Password is incorrect."})
+                        return res.status(401).send({ errorMessage: "Please Verify your email first."})
                     }
-                }else if(result.verified && result.medium === "google"){
-                    return res.status(401).send({errorMessage: "You have signed in using google before. Please login using google account"})
-                }else if(result.verified && result.medium === "linkedIn"){
-                    return res.status(401).send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
                 }else{
-                    return res.status(401).send({ errorMessage: "Please Verify your email first."})
+                    return  res.status(401).send({errorMessage: "Email incorrect or registered first"})
                 }
-            }else{
-                return  res.status(401).send({errorMessage: "Email incorrect or registered first"})
-            }
-            
-        })
+                
+            })
+        }else{
+            res.status(200).send("Recaptcha is failed")
+        }
     }
     
 }

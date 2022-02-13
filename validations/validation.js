@@ -40,6 +40,10 @@ const loginValidation = (data) => {
       'string.max': `Password should have a minimum length of 25 characters`,
       'string.min': `Password should have a minimum length of 8 characters`,
       'any.required': `Password is a required field`
+    }),
+    recaptchaToken: Joi.string().required().messages({
+      'string.empty': `Recaptcha cannot be an empty field`,
+      'any.required': `Recaptcha is a required field`
     })
     })
     return schema.validate(data)
