@@ -15,7 +15,7 @@ router.post('/forgetPasswordResetLink', userController.mailForgetPasswordResetLi
 router.post('/forgetPassword', userController.userForgetPassword)
 router.post('/userUpdatePassword',auth,userController.userUpdatePassword)
 router.get('/userProfile',auth,userController.getUserProfile)
-router.put('/updateUserInformation/:userEmail',userController.updateUserInformation)
+router.put('/updateUserInformation/:userEmail',auth,userController.updateUserInformation)
 router.get('/refreshToken',authRefreshToken,userController.userRefreshToken)
 router.get('/logout',authRefreshToken,userController.userLogOut)
 

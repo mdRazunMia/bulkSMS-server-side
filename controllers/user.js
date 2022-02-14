@@ -8,7 +8,8 @@ const  userCollection = database.collection("user")
 const {
     registerValidation,loginValidation, 
     userUpdatePasswordValidation, 
-    userForgetPasswordValidation
+    userForgetPasswordValidation,
+    updateUserInformationValidation
 } = require('../validations/validation')
 const redisClient  = require('../db/redis')
 const axios = require("axios")
@@ -280,7 +281,7 @@ const userForgetPassword = async(req, res)=>{
 const userUpdatePassword = (req, res)=>{
     const {error, value} = userUpdatePasswordValidation(req.body)
     if(error){
-        res.send(error.details[0].message)
+        res.send({ message: error.details[0].message})
     }else{
         const userCurrentPassword = value.userCurrentPassword
         console.log(userCurrentPassword)
@@ -316,7 +317,28 @@ const userUpdatePassword = (req, res)=>{
 
 //update user information
 const updateUserInformation = (req, res)=>{
-    const userEmail = req.params.userEmail
+    const userEmailParam = req.params.userEmail
+    const {error, value}= updateUserInformationValidation(req.body)
+    if(error) return res.status(400).send({message: error.details[0].message})
+    const userFullName = value.userFullName
+    const userEmail = value.userEmail
+    const userPassword = value.userPassword
+    userCollection.findOne({userEmail: userEmailParam}, async (error, user)=>{
+        if(error) return res.status(500).send({errorMessage: "Something went wrong"})
+        if(user==null){
+            return res.status(400).send({errorMessage: "User is not available to update the information."})
+        }else{
+            const userInformation = {userEmail: userEmailParam};
+            const salt = await bcrypt.genSalt(10)
+            const hashedUserNewPassword =  await bcrypt.hash(userPassword, salt)
+            const updatedUserInformation = { $set: {userFullName: userFullName, userEmail: userEmail,userPassword: hashedUserNewPassword} };
+            userCollection.updateOne(userInformation, updatedUserInformation, function(err, object) {
+            if (err) return res.status(500).send({errorMessage: "Something went wrong"})
+            return res.status(200).send({ updateSuccessMessage:"user information has been updated successfully."})
+            });
+        }
+    })
+
 }
 
 // get all users
@@ -386,8 +408,8 @@ module.exports = {
     userUpdatePassword,
     mailForgetPasswordResetLink,
     userForgetPassword,
-    getUserProfile,
     updateUserInformation,
+    getUserProfile,
     userRefreshToken,
     userLogOut
 }
