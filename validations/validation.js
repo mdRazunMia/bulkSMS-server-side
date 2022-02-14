@@ -145,6 +145,12 @@ const subUserLoginValidation = (data)=>{
             'string.max': `Password should have a minimum length of 25 characters`,
             'string.min': `Password should have a minimum length of 8 characters`,
             'any.required': `Password is a required field`
+          }),
+          subUserRole: Joi.string().min(3).max(25).messages({
+            'string.empty': `Sub user role cannot be an empty field`,
+            'string.max': `Sub user role should have a minimum length of 25 characters`,
+            'string.min': `Sub user role should have a minimum length of 3 characters`,
+            'any.required': `Sub user role is a required field`
           })
     })
 
@@ -175,6 +181,8 @@ const subUserEditValidation = (data)=>{
 
     return schema.validate(data)
 }
+
+
 
 const subUserPasswordResetValidation = (data)=>{
     const schema = Joi.object({

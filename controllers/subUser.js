@@ -13,10 +13,13 @@ const {
 
 
 const createSubUser = async (req, res)=>{
+    const {error, value } = subUserCreateValidation(req.body)
+    if(error) return res.status(400).send({message: {message: error.details[0].message}})
+
     const userRole = req.query.role
-    const subUserName = req.body.subUserName
-    const password = req.body.subUserPassword
-    const subUserRole = req.body.subUserRole
+    const subUserName = value.subUserName
+    const password = value.subUserPassword
+    const subUserRole = value.subUserRole
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
     const subUserPassword = hashedPassword
@@ -38,10 +41,12 @@ const createSubUser = async (req, res)=>{
 }
 
 const logInSubUser = (req, res)=>{
-    const subUserName = req.body.subUserName
-    const subUserPassword = req.body.subUserPassword
+    const {error, value} = subUserLoginValidation(req.body)
+    if(error) return res.status(400).send({message: error.details[0].message})
+    const subUserName = value.subUserName
+    const subUserPassword = value.subUserPassword
     console.log(subUserPassword)
-    const subUserRole = req.body.subUserRole
+    const subUserRole = value.subUserRole
     subUserCollection.findOne({subUserName: subUserName, subUserRole: subUserRole}, async (error, result)=>{
         if(error) return res.status(500).send({ errorMessage: "Something went wrong."})
         if(!result){
@@ -88,15 +93,18 @@ const getSubUserInformationForEdit = (req, res)=>{
 const editSubUserInformation = (req, res)=>{
     const subUserId = req.params.id
     const role = req.query.role
-    const subUserName = req.body.subUserName
-    const subUserRole = req.body.subUserRole
+    const {error, value } = subUserEditValidation(req.body)
+    if(error) return res.status(400).send({message: error.details[0].message})
+    const subUserName = value.subUserName
+    const subUserPassword = value.subUserPassword
+    const subUserRole = value.subUserRole
     console.log(`subUserName: ${subUserName}, subUserRole: ${subUserRole}`)
     if(role === 'admin' || role ==='sub-admin'){
         subUserCollection.findOne({_id: ObjectId(subUserId)}, (error, subUser)=>{
             if(error) return res.status(500).send({errorMessage: "Something went wrong"})
             if(subUser !== null){
                 const subUserInformationFilter = {_id: ObjectId(subUserId)}
-                const subUserEditedInfo = { $set:{subUserName: subUserName, subUserRole: subUserRole}}
+                const subUserEditedInfo = { $set:{subUserName: subUserName, subUserPassword: subUserPassword, subUserRole: subUserRole}}
                 subUserCollection.updateOne(subUserInformationFilter,subUserEditedInfo,(error, data)=>{
                     if(error) return res.status(400).send({errorMessage: "sub-user information has not been updated."})
                     return res.status(200).send({

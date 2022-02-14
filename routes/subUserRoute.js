@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const subUserController = require("../controllers/subUser.js");
-const auth = require('../validations/verified')
+// const auth = require('../validations/verified')
 
 router.post('/create',subUserController.createSubUser)
 router.post('/login',subUserController.logInSubUser)
