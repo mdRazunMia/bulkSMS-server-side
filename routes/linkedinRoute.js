@@ -44,7 +44,7 @@ router.get('/linkedin/callback',
             if(err) return res.status(500).send({errorMessage:"Something went wrong."})
             console.log(`reply from login redis: ${reply}`)
         })
-          res.status(400).send({linkedInExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
+          res.status(200).send({linkedInExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
       }
   }
   )
