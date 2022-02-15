@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport')
 const database = require('../db/database')
 const jwt = require('jsonwebtoken');
-const auth = require("../validations/verified");
+// const auth = require("../validations/verified");
 require('dotenv').config()
 const redisClient  = require('../db/redis')
 const  userCollection = database.collection("user")
