@@ -12,6 +12,7 @@ const {
     updateUserInformationValidation
 } = require('../validations/validation')
 const redisClient  = require('../db/redis')
+const logger = require('../logger/logger')
 const axios = require("axios")
 const e = require('express')
 
@@ -161,6 +162,8 @@ const userLogin = async (req, res)=>{
                                 if(err) return res.status(500).send({errorMessage:"Something went wrong."})
                                 console.log(`reply from login redis: ${reply}`)
                             })
+                            const loginMessage = "User successfully logged in. "
+                            logger.log({level: 'info', message: loginMessage})
                             res.status(200).send({
                                 authToken: token,
                                 refreshToken: refreshToken
