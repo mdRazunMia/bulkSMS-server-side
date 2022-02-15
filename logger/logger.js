@@ -19,7 +19,7 @@ const logger = createLogger({
       new transports.File({ filename: 'logFile.log'}),
       new transports.MongoDB({
           db: uri,
-          level: 'error',
+        //   level: 'error',
           collection: 'error-log',
           options: {
               useUnifiedTopology: true

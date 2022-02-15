@@ -163,7 +163,7 @@ const userLogin = async (req, res)=>{
                                 console.log(`reply from login redis: ${reply}`)
                             })
                             const loginMessage = "User successfully logged in. "
-                            logger.log({level: 'error', message: loginMessage})
+                            logger.log({level: 'info', message: loginMessage})
                             res.status(200).send({
                                 authToken: token,
                                 refreshToken: refreshToken
