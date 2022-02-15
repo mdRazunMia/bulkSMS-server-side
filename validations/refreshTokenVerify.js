@@ -8,7 +8,6 @@ const authRefreshToken = (req, res, next) => {
     try {
         const verified = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET)
         req.user = verified
-        console.log(req.user)
         next()
     } catch (error) {
         res.status(401).send({ 

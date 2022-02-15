@@ -34,7 +34,6 @@ router.get('/linkedin/callback',
         userCollection.insertOne(linkedInUser)
         redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
           if(err) return res.status5(500).send({errorMessage:"Something went wrong."})
-          console.log(`reply from login redis: ${reply}`)
       })
         res.status(200).send({linkedInSuccessMessageAndInserted:"User has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
       }else{
@@ -42,7 +41,6 @@ router.get('/linkedin/callback',
           const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
           redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
             if(err) return res.status(500).send({errorMessage:"Something went wrong."})
-            console.log(`reply from login redis: ${reply}`)
         })
           res.status(200).send({linkedInExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
       }

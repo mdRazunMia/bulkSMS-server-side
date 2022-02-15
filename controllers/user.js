@@ -12,8 +12,9 @@ const {
     updateUserInformationValidation
 } = require('../validations/validation')
 const redisClient  = require('../db/redis')
+const logger = require('../logger/logger')
 const axios = require("axios")
-const e = require('express')
+
 
 // const createDatabase = require('../db/database')
 
@@ -28,7 +29,7 @@ const e = require('express')
 const userRegistration = async (req, res)=>{
     const {error, value} = registerValidation(req.body) 
     if(error){
-        res.status(200).send({message: error.details[0].message})
+        res.status(400).send({message: error.details[0].message})
     }else{
         //recaptcha code
         const recapchaVerifyToken = req.body.recaptchaToken
@@ -40,7 +41,6 @@ const userRegistration = async (req, res)=>{
             const userEmail = value.userEmail
             const salt = await bcrypt.genSalt(10)
             const userPassword = await bcrypt.hash(value.userPassword1, salt)
-            console.log(userPassword)
             userCollection.findOne({userEmail: userEmail}, (err, result)=>{
                 if(err) return res.status(500).send({errorMessage: "Something went wrong"})
                 if(result == null){
@@ -102,11 +102,11 @@ const userRegistration = async (req, res)=>{
                     })
                     res.status(201).send({ userRegisterSuccessMessage: "User has been registered successfully. A link has been sent to your gmail to verify your account."})
                 }else{
-                    res.status(200).send({ message: "This email is already registered."})
+                    res.status(400).send({ message: "This email is already registered."})
                 }
             })
         }else{
-            res.status(200).send("Recaptcha is failed")
+            res.status(400).send("Recaptcha is failed")
         }
     }
 
@@ -117,9 +117,7 @@ const userRegistration = async (req, res)=>{
 //verify user account
 const userVerifiedAccount = (req, res)=>{
     const userEmail = req.params.userEmail
-    console.log(userEmail)
     const userToken = req.params.userRandomToken
-    console.log(userToken)
     const userInformation = { userEmail: userEmail, userToken: userToken};
     const updatedUserInformation = { $set: {verified: true} };
     userCollection.updateOne(userInformation, updatedUserInformation, function(err, res) {
@@ -133,7 +131,6 @@ const userVerifiedAccount = (req, res)=>{
 const userLogin = async (req, res)=>{
     const {error, value} = loginValidation(req.body)
     if(error){
-        console.log(error)
         res.status(400).send({errorMessage: error.details[0].message})
     }else{
         //recaptcha code
@@ -149,7 +146,6 @@ const userLogin = async (req, res)=>{
                 if(result != null){
                     if(result.verified && result.medium === "normal"){ 
                         const validPassword = await bcrypt.compare(userPassword,result.userPassword)
-                        console.log(validPassword)
                         if(validPassword){
                             const token = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET, {
                                 expiresIn: process.env.JWT_EXPIRE_TIME
@@ -159,8 +155,9 @@ const userLogin = async (req, res)=>{
                             })
                             redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
                                 if(err) return res.status(500).send({errorMessage:"Something went wrong."})
-                                console.log(`reply from login redis: ${reply}`)
                             })
+                            const loginMessage = "User successfully logged in. "
+                            logger.log({level: 'info', message: loginMessage})
                             res.status(200).send({
                                 authToken: token,
                                 refreshToken: refreshToken
@@ -169,14 +166,14 @@ const userLogin = async (req, res)=>{
                             return res.status(401).send({ errorMessage: "Password is incorrect."})
                         }
                     }else if(result.verified && result.medium === "google"){
-                        return res.status(401).send({errorMessage: "You have signed in using google before. Please login using google account"})
+                        return res.status(400).send({errorMessage: "You have signed in using google before. Please login using google account"})
                     }else if(result.verified && result.medium === "linkedIn"){
-                        return res.status(401).send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
+                        return res.status(400).send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
                     }else{
-                        return res.status(401).send({ errorMessage: "Please Verify your email first."})
+                        return res.status(400).send({ errorMessage: "Please Verify your email first."})
                     }
                 }else{
-                    return  res.status(401).send({errorMessage: "Email incorrect or registered first"})
+                    return  res.status(400).send({errorMessage: "Email incorrect or registered first"})
                 }
                 
             })
@@ -190,11 +187,10 @@ const userLogin = async (req, res)=>{
 // send reset mail
 const mailForgetPasswordResetLink = (req, res)=>{
     const userEmail = req.body.userEmail
-    console.log(userEmail)
     userCollection.findOne({userEmail: userEmail},(err, user)=>{
         if(err) return res.status(500).send({errorMessage: "Something went wrong"})
         if(user==null){
-            res.status(401).send({resetPasswordErrorMessage: "This email is not registered. Please registered this email first."})
+            res.status(400).send({resetPasswordErrorMessage: "This email is not registered. Please registered this email first."})
         }else if(user.verified && user.medium === "normal"){
             const transporter = nodeMailer.createTransport({
                 service: "gmail",
@@ -284,18 +280,14 @@ const userUpdatePassword = (req, res)=>{
         res.send({ message: error.details[0].message})
     }else{
         const userCurrentPassword = value.userCurrentPassword
-        console.log(userCurrentPassword)
         const userId = req.query.id
-        console.log(userId)
         const userNewPassword = value.userPassword1
         userCollection.findOne({_id: ObjectId(userId)},async(err, user)=>{
             if(err) return res.status(500).send({errorMessage: "Something went wrong"})
             if(user==null){
                 res.send({message: "There is no user to update."})
             }else{
-            console.log(user)
             const isValidPassword = await bcrypt.compare(userCurrentPassword, user.userPassword)
-            console.log(isValidPassword)
             if(isValidPassword){
                 const userInformation = {_id: ObjectId(userId)};
                 const salt = await bcrypt.genSalt(10)
@@ -351,7 +343,6 @@ const allUser = (req, res)=>{
 // delete single user 
 const deleteSingleUser = (req, res)=>{
     const userId = req.params.userId
-    console.log(userId)
     var deletedUserId = { _id: ObjectId(userId) };
     userCollection.deleteOne(deletedUserId,(err,data)=>{
         if(err) return res.status(500).send({errorMessage: "Something went wrong"})
