@@ -14,7 +14,7 @@ const {
 const redisClient  = require('../db/redis')
 const logger = require('../logger/logger')
 const axios = require("axios")
-const e = require('express')
+
 
 // const createDatabase = require('../db/database')
 
@@ -29,7 +29,7 @@ const e = require('express')
 const userRegistration = async (req, res)=>{
     const {error, value} = registerValidation(req.body) 
     if(error){
-        res.status(200).send({message: error.details[0].message})
+        res.status(400).send({message: error.details[0].message})
     }else{
         //recaptcha code
         const recapchaVerifyToken = req.body.recaptchaToken
@@ -103,11 +103,11 @@ const userRegistration = async (req, res)=>{
                     })
                     res.status(201).send({ userRegisterSuccessMessage: "User has been registered successfully. A link has been sent to your gmail to verify your account."})
                 }else{
-                    res.status(200).send({ message: "This email is already registered."})
+                    res.status(400).send({ message: "This email is already registered."})
                 }
             })
         }else{
-            res.status(200).send("Recaptcha is failed")
+            res.status(400).send("Recaptcha is failed")
         }
     }
 
@@ -172,14 +172,14 @@ const userLogin = async (req, res)=>{
                             return res.status(401).send({ errorMessage: "Password is incorrect."})
                         }
                     }else if(result.verified && result.medium === "google"){
-                        return res.status(401).send({errorMessage: "You have signed in using google before. Please login using google account"})
+                        return res.status(400).send({errorMessage: "You have signed in using google before. Please login using google account"})
                     }else if(result.verified && result.medium === "linkedIn"){
-                        return res.status(401).send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
+                        return res.status(400).send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
                     }else{
-                        return res.status(401).send({ errorMessage: "Please Verify your email first."})
+                        return res.status(400).send({ errorMessage: "Please Verify your email first."})
                     }
                 }else{
-                    return  res.status(401).send({errorMessage: "Email incorrect or registered first"})
+                    return  res.status(400).send({errorMessage: "Email incorrect or registered first"})
                 }
                 
             })
@@ -197,7 +197,7 @@ const mailForgetPasswordResetLink = (req, res)=>{
     userCollection.findOne({userEmail: userEmail},(err, user)=>{
         if(err) return res.status(500).send({errorMessage: "Something went wrong"})
         if(user==null){
-            res.status(401).send({resetPasswordErrorMessage: "This email is not registered. Please registered this email first."})
+            res.status(400).send({resetPasswordErrorMessage: "This email is not registered. Please registered this email first."})
         }else if(user.verified && user.medium === "normal"){
             const transporter = nodeMailer.createTransport({
                 service: "gmail",
