@@ -45,16 +45,13 @@ const logInSubUser = (req, res)=>{
     if(error) return res.status(400).send({message: error.details[0].message})
     const subUserName = value.subUserName
     const subUserPassword = value.subUserPassword
-    console.log(subUserPassword)
     const subUserRole = value.subUserRole
     subUserCollection.findOne({subUserName: subUserName, subUserRole: subUserRole}, async (error, result)=>{
         if(error) return res.status(500).send({ errorMessage: "Something went wrong."})
         if(!result){
            return res.status(404).send({errorMessage: "No user found for this user name"})
         }else{
-            console.log(result.subUserPassword)
             const isValid = await bcrypt.compare(subUserPassword,result.subUserPassword)
-            console.log(isValid)
             if(isValid){
               return  res.status(200).send({
                     successMessage: "User has been logged in successfully.",
@@ -94,11 +91,13 @@ const editSubUserInformation = (req, res)=>{
     const subUserId = req.params.id
     const role = req.query.role
     const {error, value } = subUserEditValidation(req.body)
+
     if(error) return res.status(400).send({message: error.details[0].message})
+
     const subUserName = value.subUserName
     const subUserPassword = value.subUserPassword
     const subUserRole = value.subUserRole
-    console.log(`subUserName: ${subUserName}, subUserRole: ${subUserRole}`)
+
     if(role === 'admin' || role ==='sub-admin'){
         subUserCollection.findOne({_id: ObjectId(subUserId)}, (error, subUser)=>{
             if(error) return res.status(500).send({errorMessage: "Something went wrong"})
@@ -163,7 +162,6 @@ const editSubUserPassword = async (req, res)=>{
 const deleteSubUser = (req, res)=>{
     const subUserId = req.params.id
     const userRole = req.query.role
-    console.log(`user id: ${subUserId} and user role: ${userRole}`)
     const deletedUserId = {_id: ObjectId(subUserId)}
     if(userRole === 'admin'){
         subUserCollection.deleteOne(deletedUserId,(err,data)=>{
