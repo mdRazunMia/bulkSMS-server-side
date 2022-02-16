@@ -3,6 +3,7 @@ const {OAuth2Client} = require('google-auth-library')
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const redisClient  = require('../db/redis')
+const logger = require('../logger/logger')
 
 const clientAccount = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 const  userCollection = database.collection("user")
@@ -21,26 +22,38 @@ const googleLogin = (req, res)=>{
         userInformation.medium="google"
         if(verifiedEmail){
             userCollection.findOne({userEmail: userEmail}, (err, result)=>{
-                if(err) return res.status(500).send({errorMessage: "Something went wrong"})
+                if(err){
+                    logger.log({level: 'error', message: 'Internal error for login user in database'})
+                    return res.status(500).send({errorMessage: "Something went wrong"})
+                } 
                 if(result==null){
                     const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
                     userCollection.insertOne(userInformation)
                     redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
-                        if(err) return res.status(500).send({errorMessage:"Something went wrong."})
+                        if(err){
+                            logger.log({level: 'error', message: 'Internal error for login user in database'})
+                            return res.status(500).send({errorMessage:"Something went wrong."})
+                        } 
                     })
+                    logger.log({level: 'info', message: 'User has been logged in successfully by using google account'})
                     res.status(200).send({googleSuccessMessageAndInserted:"user has been logged in successfully.",authToken: authToken, refreshToken: refreshToken})
                 }else{
                     const authToken = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
                     redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
-                        if(err) return res.status(500).send({errorMessage:"Something went wrong."})
+                        if(err){
+                            logger.log({level: 'error', message: 'Internal error for login user in database for google login'})
+                            return res.status(500).send({errorMessage:"Something went wrong."})
+                        } 
                     })
+                    logger.log({level: 'warn', message: 'User Already exist in this email'})
                     res.status(200).send({googleExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
                 }
             })
 
         }else{
+            logger.log({level: 'warn', message: 'User google account is not verified.'})
             res.status(400).send({ errorMessage: "User google account is not verified."})
         }
     })
