@@ -11,7 +11,6 @@ const createCampaign = (req, res)=>{
             verified = true
         }
     })
-    
    res.status(201).send({ message: "Campaign has been created successfully."})
 }
 
@@ -23,7 +22,6 @@ const showAllCampaign = (req, res)=>{
         })
     })
 }
-
 
 const deleteCampaign = (req, res)=>{
     const campaignId = req.params.campaignId
