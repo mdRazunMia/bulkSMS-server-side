@@ -44,3 +44,15 @@
 { 2022-02-16 16:00:49 | info : Authentication and refresh token have been sent }
 { 2022-02-16 16:02:24 | info : Authentication and refresh token have been sent }
 { 2022-02-16 16:11:54 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 17:15:56 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 17:17:01 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 17:21:51 | info : User has been logged out successfully. }
+{ 2022-02-16 17:22:13 | warn : User Already exist in this email }
+{ 2022-02-16 17:22:13 | info : Get all the info of requested user after login. }
+{ 2022-02-16 17:22:16 | info : User has been logged out successfully. }
+{ 2022-02-16 17:22:55 | info : Get all the info of requested user after login. }
+{ 2022-02-16 17:23:55 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 17:25:15 | info : User has been logged out successfully. }
+{ 2022-02-16 17:25:40 | info : Get all the info of requested user after login. }
+{ 2022-02-16 17:26:39 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 17:30:40 | info : User has been logged out successfully. }
