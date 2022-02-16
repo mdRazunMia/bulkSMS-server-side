@@ -5,3 +5,42 @@
 {2022-02-15 13:51:45 info : User successfully logged in. }
 {2022-02-15 13:52:55 info : User successfully logged in. }
 {2022-02-15 14:17:38 info : User successfully logged in. }
+{2022-02-15 16:35:54 info : User successfully logged in. }
+{2022-02-16 12:44:07 info : Authentication and refresh token has been sent}
+{2022-02-16 12:46:29 info : Authentication and refresh token has been sent}
+{2022-02-16 12:46:48 info : User has been logged out successfully.}
+{2022-02-16 12:47:06 info : Get all the info of requested user after login.}
+{ 2022-02-16 12:48:06 | info : Authentication and refresh token has been sent}
+{ 2022-02-16 12:49:07 | info : Authentication and refresh token have been sent}
+{ 2022-02-16 12:50:10 | info : User has been logged out successfully.}
+{ 2022-02-16 12:50:30 | info : Login first before get fresh token}
+{ 2022-02-16 12:51:04 | info : Get all the info of requested user after login.}
+{ 2022-02-16 12:51:20 | info : User has been logged out successfully.}
+{ 2022-02-16 12:52:16 | info : Login first before get refresh token }
+{ 2022-02-16 12:53:34 | info : Get all the info of requested user after login. }
+{ 2022-02-16 12:53:41 | info : User has been logged out successfully. }
+{ 2022-02-16 12:54:33 | info : Login first before get refresh token }
+{ 2022-02-16 12:55:33 | info : Login first before get refresh token }
+{ 2022-02-16 12:56:13 | info : Get all the info of requested user after login. }
+{ 2022-02-16 12:57:12 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 12:58:14 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 13:01:11 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 13:01:20 | info : User has been logged out successfully. }
+{ 2022-02-16 13:09:05 | info : Get all the info of requested user after login. }
+{ 2022-02-16 13:10:05 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 13:10:50 | info : User has been logged out successfully. }
+{ 2022-02-16 13:10:57 | info : Get all the info of requested user after login. }
+{ 2022-02-16 13:16:15 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 15:00:17 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 15:03:12 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 15:06:58 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 15:09:11 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 15:11:33 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 15:13:25 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 15:36:06 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 15:48:38 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 15:51:13 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 15:59:22 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 16:00:49 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 16:02:24 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 16:11:54 | info : Authentication and refresh token have been sent }
