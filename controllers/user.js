@@ -149,12 +149,14 @@ const userLogin = async (req, res)=>{
         logger.log({level: 'error', message: error.details[0].message})
         res.status(400).send({errorMessage: error.details[0].message})
     }else{
+        
+       if(process.env.LOGIN_RECAPTCHA==true){
         //recaptcha code
-       // const recapchaVerifyToken = req.body.recaptchaToken
-       // const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
-       // const recapchaVerifyResponse = await axios.post(recapchaVerifyURL)
+       const recapchaVerifyToken = req.body.recaptchaToken
+       const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
+       const recapchaVerifyResponse = await axios.post(recapchaVerifyURL)
          //recaptcha code
-       // if(recapchaVerifyResponse.data.success){
+       if(recapchaVerifyResponse.data.success){
             const userEmail = value.userEmail
             const userPassword = value.userPassword
             userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
@@ -204,11 +206,61 @@ const userLogin = async (req, res)=>{
                 }
                 
             })
-       // }else{
-       //     res.status(200).send("Recaptcha is failed")
-       // }
+       }else{
+           res.status(200).send("Recaptcha is failed")
+       }
+    }else{
+        const userEmail = value.userEmail
+            const userPassword = value.userPassword
+            userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
+                if(err) {
+                    logger.log({level: 'error', message: 'Internal error when user login the system.'})
+                    return res.status(500).send({errorMessage: "Something went wrong"})
+                }
+                if(result != null){
+                    if(result.verified && result.medium === "normal"){ 
+                        const validPassword = await bcrypt.compare(userPassword,result.userPassword)
+                        if(validPassword){
+                            const token = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET, {
+                                expiresIn: process.env.JWT_EXPIRE_TIME
+                            })
+                            const refreshToken = jwt.sign({userEmail: result.userEmail}, process.env.REFRESH_TOKEN_SECRET,{
+                                expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
+                            })
+                            redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+                                if(err) {
+                                    logger.log({level: 'error', message: 'Internal error in redis client when set the user log in information.'})
+                                    return res.status(500).send({errorMessage:"Something went wrong."})
+                                }
+                            })
+                            const loginMessage = "User successfully logged in. "
+                            logger.log({level: 'info', message: loginMessage})
+                            res.status(200).send({
+                                authToken: token,
+                                refreshToken: refreshToken
+                            })
+                        }else{
+                            logger.log({level: 'error', message: 'User password error'})
+                            return res.status(401).send({ errorMessage: "Password is incorrect."})
+                        }
+                    }else if(result.verified && result.medium === "google"){
+                        logger.log({level: 'warn', message: 'User have signed in using google account before. Now, Trying to login manually.'})
+                        return res.status(400).send({errorMessage: "You have signed in using google before. Please login using google account"})
+                    }else if(result.verified && result.medium === "linkedIn"){
+                        logger.log({level: 'warn', message: 'User have signed in using LinkedIn account before. Now, Trying to login manually.'})
+                        return res.status(400).send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
+                    }else{
+                        logger.log({level: 'warn', message: 'Email is not verified'})
+                        return res.status(400).send({ errorMessage: "Please Verify your email first."})
+                    }
+                }else{
+                    logger.log({level: 'error', message: 'Email incorrect or registered first.'})
+                    return  res.status(400).send({errorMessage: "Email incorrect or registered first"})
+                }
+                
+            })
     }
-}
+}}
 
 
 // send reset mail
@@ -483,10 +535,4 @@ module.exports = {
     userRefreshToken,
     userLogOut
 }
-
-
-
-
-
-
 

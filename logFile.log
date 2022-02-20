@@ -56,3 +56,85 @@
 { 2022-02-16 17:25:40 | info : Get all the info of requested user after login. }
 { 2022-02-16 17:26:39 | info : Authentication and refresh token have been sent }
 { 2022-02-16 17:30:40 | info : User has been logged out successfully. }
+{ 2022-02-16 17:35:18 | warn : User Already exist in this email }
+{ 2022-02-16 17:35:18 | info : Get all the info of requested user after login. }
+{ 2022-02-16 17:35:26 | info : User has been logged out successfully. }
+{ 2022-02-16 17:36:18 | info : Login first before get refresh token }
+{ 2022-02-16 17:38:34 | error : User Already exist for linkedin account. }
+{ 2022-02-16 17:38:36 | error : User Already exist for linkedin account. }
+{ 2022-02-16 17:38:36 | info : Get all the info of requested user after login. }
+{ 2022-02-16 17:39:36 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 17:39:57 | info : User has been logged out successfully. }
+{ 2022-02-16 17:40:14 | error : User Already exist for linkedin account. }
+{ 2022-02-16 17:40:14 | info : Get all the info of requested user after login. }
+{ 2022-02-16 17:41:15 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 17:41:21 | info : User has been logged out successfully. }
+{ 2022-02-16 17:41:28 | error : User Already exist for linkedin account. }
+{ 2022-02-16 17:41:29 | info : Get all the info of requested user after login. }
+{ 2022-02-16 17:41:43 | info : User has been logged out successfully. }
+{ 2022-02-16 17:43:40 | warn : User Already exist in this email }
+{ 2022-02-16 17:43:41 | info : Get all the info of requested user after login. }
+{ 2022-02-16 17:48:56 | info : Authentication and refresh token have been sent }
+{ 2022-02-16 17:51:05 | info : User has been logged out successfully. }
+{ 2022-02-16 18:11:31 | warn : Email already exist }
+{ 2022-02-16 18:11:56 | warn : Email already exist }
+{ 2022-02-17 13:43:01 | warn : User Already exist in this email }
+{ 2022-02-17 13:43:02 | info : Get all the info of requested user after login. }
+{ 2022-02-17 13:44:02 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:04:20 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:06:38 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:11:55 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:15:09 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:16:47 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:18:13 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:20:04 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:23:52 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:26:24 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:29:30 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:31:57 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:35:55 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:37:27 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:40:38 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:43:24 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:46:39 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:48:27 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 14:52:32 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 15:50:26 | info : User has been logged out successfully. }
+{ 2022-02-17 15:51:11 | warn : User have signed in using google account before. Now, Trying to login manually. }
+{ 2022-02-17 15:54:49 | warn : User have signed in using google account before. Now, Trying to login manually. }
+{ 2022-02-17 15:56:43 | warn : User have signed in using google account before. Now, Trying to login manually. }
+{ 2022-02-17 15:59:15 | warn : User Already exist in this email }
+{ 2022-02-17 15:59:15 | info : Get all the info of requested user after login. }
+{ 2022-02-17 16:00:15 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 16:12:10 | info : User has been logged out successfully. }
+{ 2022-02-17 16:21:37 | error : Password should have a minimum length of 8 characters }
+{ 2022-02-17 16:21:52 | error : Email incorrect or registered first. }
+{ 2022-02-17 16:28:23 | warn : User Already exist in this email }
+{ 2022-02-17 16:28:24 | info : Get all the info of requested user after login. }
+{ 2022-02-17 16:30:07 | info : Authentication and refresh token have been sent }
+{ 2022-02-17 16:32:57 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:06:31 | warn : User Already exist in this email }
+{ 2022-02-20 10:06:32 | info : Get all the info of requested user after login. }
+{ 2022-02-20 10:08:34 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:14:35 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:16:03 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:17:55 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:35:55 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:41:51 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:43:29 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:47:13 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:49:13 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:49:21 | info : User has been logged out successfully. }
+{ 2022-02-20 10:49:26 | warn : User Already exist in this email }
+{ 2022-02-20 10:49:27 | info : Get all the info of requested user after login. }
+{ 2022-02-20 10:49:28 | info : User has been logged out successfully. }
+{ 2022-02-20 10:50:06 | info : User has been registered successfully. A link has been sent to user gmail to verify user's account. }
+{ 2022-02-20 10:50:27 | info : User account has been verified successfully. }
+{ 2022-02-20 10:52:27 | info : User successfully logged in.  }
+{ 2022-02-20 10:52:27 | info : Get all the info of requested user after login. }
+{ 2022-02-20 10:55:02 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:55:03 | info : User has been logged out successfully. }
+{ 2022-02-20 10:55:13 | warn : User Already exist in this email }
+{ 2022-02-20 10:55:13 | info : Get all the info of requested user after login. }
+{ 2022-02-20 10:56:13 | info : Authentication and refresh token have been sent }
+{ 2022-02-20 10:56:49 | info : Authentication and refresh token have been sent }
