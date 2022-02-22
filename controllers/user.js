@@ -328,11 +328,11 @@ const mailForgetPasswordResetLink = (req, res)=>{
 
 //user Forget password
 const userForgetPassword = async(req, res)=>{
-    const userEmail = req.query.userEmail
+   const userEmail = req.query.userEmail
    const {error, value} = userForgetPasswordValidation(req.body)
    if(error){
         logger.log({level: 'error', message: `${error.details[0].message}. | code: 4-1 `})
-        res.status(400).send(error.details[0].message)
+        res.status(400).send({message: error.details[0].message})
    }else{
     const userNewPassword = req.body.userPassword1
     const salt = await bcrypt.genSalt(10)
