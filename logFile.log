@@ -307,3 +307,16 @@
 { 2022-02-22 12:34:28 | error : Confirm password does not match | Code: 1-1 }
 { 2022-02-22 12:34:47 | warn : Email already exist | Code: 1-5 }
 { 2022-02-22 12:35:14 | info : User has been registered successfully. A link has been sent to user E-mail to verify user's account. | Code: 1-4 }
+{ 2022-02-22 12:56:15 | error : Confirm password does not match | Code: 1-1 }
+{ 2022-02-22 12:56:24 | warn : Email already exist | Code: 1-5 }
+{ 2022-02-22 12:56:52 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 12:56:52 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 12:57:57 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 12:59:43 | error : Password should have a minimum length of 8 characters | Code: 2-1 }
+{ 2022-02-22 12:59:46 | error : Password should have a minimum length of 8 characters | Code: 2-1 }
+{ 2022-02-22 12:59:46 | error : Password should have a minimum length of 8 characters | Code: 2-1 }
+{ 2022-02-22 12:59:47 | error : Password should have a minimum length of 8 characters | Code: 2-1 }
+{ 2022-02-22 13:06:56 | error : Password should have a minimum length of 8 characters | Code: 2-1 }
+{ 2022-02-22 13:10:13 | error : User password error. | Code: 2-5 }
+{ 2022-02-22 13:10:17 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 13:10:18 | info : Get all the info of requested user after login. | code: 9-1 }
