@@ -323,3 +323,47 @@
 { 2022-02-22 13:27:19 | info : User has been logged out successfully. | 12-1 }
 { 2022-02-22 14:13:51 | info : User successfully logged in. | Code: 2-4 }
 { 2022-02-22 14:13:52 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 15:19:14 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 16:04:51 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 16:04:52 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 16:10:38 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 16:20:00 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 16:20:01 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 16:20:55 | info : Campaign has been created successfully. | code: 22-3 }
+{ 2022-02-22 16:25:57 | info : Campaign has been created successfully. | code: 22-3 }
+{ 2022-02-22 16:32:42 | info : Campaign has been created successfully. | code: 22-3 }
+{ 2022-02-22 16:34:55 | info : Campaign has been created successfully. | code: 22-3 }
+{ 2022-02-22 16:39:14 | info : Campaign has been created successfully. | code: 22-3 }
+{ 2022-02-22 16:52:01 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-22 16:52:15 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-22 16:53:44 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-22 16:54:29 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-22 16:57:44 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-22 16:58:09 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-22 16:58:19 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 16:58:30 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 16:58:31 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 16:58:57 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 16:59:04 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 16:59:04 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 16:59:26 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 16:59:33 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 16:59:34 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 17:00:56 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 17:01:03 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 17:01:04 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 17:01:59 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 17:02:10 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 17:02:10 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 17:03:07 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 17:03:15 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 17:03:15 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 17:07:13 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 17:07:22 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 17:07:22 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 17:11:03 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 17:11:14 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 17:11:14 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 17:52:55 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 17:55:21 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 17:55:21 | info : Get all the info of requested user after login. | code: 9-1 }

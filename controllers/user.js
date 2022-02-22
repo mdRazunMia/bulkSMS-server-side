@@ -171,7 +171,8 @@ const userLogin = async (req, res)=>{
                                 }
                             })
                             const loginMessage = "User successfully logged in. | Code: 2-4"
-                            logger.log({level: 'info', message: loginMessage})
+                            logger.log({level: 'info', message: loginMessage, meta: 'abc'})
+                            // logger.info(`${loginMessage}`,{ code: 2-4, user_id: 123})
                             res.status(200).send({
                                 authToken: token,
                                 refreshToken: refreshToken
