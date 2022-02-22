@@ -320,3 +320,6 @@
 { 2022-02-22 13:10:13 | error : User password error. | Code: 2-5 }
 { 2022-02-22 13:10:17 | info : User successfully logged in. | Code: 2-4 }
 { 2022-02-22 13:10:18 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-22 13:27:19 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-22 14:13:51 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-22 14:13:52 | info : Get all the info of requested user after login. | code: 9-1 }
