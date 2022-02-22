@@ -4,7 +4,7 @@ const logger = require('../logger/logger')
 const auth = (req, res, next) => {
     const token = req.header('auth-token')
     if (!token){
-        logger.log({level: 'error', message: 'Authentication for refresh token access has been denied'})
+        logger.log({level: 'error', message: 'Authentication for auth token access has been denied. | 11-1'})
         return res.status(401).send({ errorMessage: "Access Denied." })
     } 
     try {
@@ -12,7 +12,7 @@ const auth = (req, res, next) => {
         req.user = verified
         next()
     } catch (error) {
-        logger.log({level: 'error', message: 'Invalid Token or time is expired'})
+        logger.log({level: 'error', message: 'Invalid auth token or time is expired. | code: 11-2'})
         res.status(400).send({ errorMessage: "Invalid Token or time is expired",verify: false })
     }
 }
