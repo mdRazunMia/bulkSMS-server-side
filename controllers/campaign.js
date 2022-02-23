@@ -3,21 +3,19 @@ const logger = require('../logger/logger')
 const  campaignCollection = database.collection("campaign_details")
 
 const createCampaign = (req, res)=>{
-    console.log(req.file)
-    console.log(req.body)
-    // const campaignInformation = req.body
-//     let verified = false
-//     campaignCollection.insertOne(campaignInformation, (err, response)=>{
-//         if(err){
-//             logger.log({level: 'error', message: 'Internal error for create campaign in database. | code: 22-2'})
-//             return res.status(500).send({errorMessage: "Something went wrong"})
-//         } 
-//         if(response.acknowledged){
-//             verified = true
-//         }
-//     })
-//     logger.log({level: 'info', message: 'Campaign has been created successfully. | code: 22-3'})
-//    res.status(201).send({ message: "Campaign has been created successfully."})
+    const campaignInformation = req.body
+    let verified = false
+    campaignCollection.insertOne(campaignInformation, (err, response)=>{
+        if(err){
+            logger.log({level: 'error', message: 'Internal error for create campaign in database. | code: 22-2'})
+            return res.status(500).send({errorMessage: "Something went wrong"})
+        } 
+        if(response.acknowledged){
+            verified = true
+        }
+    })
+    logger.log({level: 'info', message: 'Campaign has been created successfully. | code: 22-3'})
+   res.status(201).send({ message: "Campaign has been created successfully."})
 }
 
 //show campaign list
@@ -27,8 +25,7 @@ const showAllCampaign = (req, res)=>{
             logger.log({level: 'error', message: 'Internal error for create campaign in database. | code: 23-1'})
             return res.status(500).send({errorMessage: "Something went wrong"})
         }
-        // logger.log({level: 'info', message: 'Send all the campaign information. | code: 23-2'})
-        logger.log('info', 'test message %s, %s', 'first', 'second', { number: 123 })
+        logger.log({level: 'info', message: 'Send all the campaign information. | code: 23-2'})
         res.status(200).send({
             campaigns: result
         })

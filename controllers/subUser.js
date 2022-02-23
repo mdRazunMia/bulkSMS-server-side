@@ -18,7 +18,7 @@ const createSubUser = async (req, res)=>{
     const {error, value } = subUserCreateValidation(req.body)
     if(error) {
         logger.log({level: 'error', message: `${error.details[0].message}. | code: 15-1`})
-        return res.status(400).send({message: {message: error.details[0].message}})
+        return res.status(422).send({message: {message: error.details[0].message}})
     }
 
     const userRole = req.query.role
@@ -54,7 +54,7 @@ const logInSubUser = (req, res)=>{
     const {error, value} = subUserLoginValidation(req.body)
     if(error){
         logger.log({level: 'error', message: `${error.details[0].message}. | code: 16-1`})
-        return res.status(400).send({message: error.details[0].message})
+        return res.status(422).send({message: error.details[0].message})
     } 
     const subUserName = value.subUserName
     const subUserPassword = value.subUserPassword
@@ -117,7 +117,7 @@ const editSubUserInformation = (req, res)=>{
     const {error, value } = subUserEditValidation(req.body)
     if(error){
         logger.log({level: 'error', message: `${error.details[0].message}. | code: 18-1`})
-        return res.status(400).send({message: error.details[0].message})
+        return res.status(422).send({message: error.details[0].message})
     } 
     const subUserName = value.subUserName
     const subUserPassword = value.subUserPassword
@@ -231,7 +231,7 @@ const showAllSubUser = async (req, res)=>{
     subUserCollection.find({}).toArray((err, result)=>{
         if(err){
             logger.log({level: 'error', message: 'Internal error for show sub-user function in database. | code: 21-1'})
-            return res.send({errorMessage: "Something went wrong."})
+            return res.status(500).send({errorMessage: "Something went wrong."})
         } 
         if(!result){
             logger.log({level: 'error', message: 'There is no sub-user to show. | code: 21-2'})

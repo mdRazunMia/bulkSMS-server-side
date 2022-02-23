@@ -21,7 +21,7 @@ const userRegistration = async (req, res)=>{
     const {error, value} = registerValidation(req.body) 
     if(error){
         logger.log({level: 'error', message: `${error.details[0].message} | Code: 1-1`})
-        res.status(400).send({message: error.details[0].message})
+        res.status(422).send({message: error.details[0].message})
     }else{
         //recaptcha code
         const recapchaVerifyToken = req.body.recaptchaToken
@@ -137,7 +137,7 @@ const userLogin = async (req, res)=>{
     const {error, value} = loginValidation(req.body)
     if(error){
         logger.log({level: 'error', message: `${error.details[0].message} | Code: 2-1`})
-        res.status(400).send({errorMessage: error.details[0].message})
+        res.status(422).send({errorMessage: error.details[0].message})
     }else{
         
        if(process.env.LOGIN_RECAPTCHA==true){
@@ -333,7 +333,7 @@ const userForgetPassword = async(req, res)=>{
    const {error, value} = userForgetPasswordValidation(req.body)
    if(error){
         logger.log({level: 'error', message: `${error.details[0].message}. | code: 4-1 `})
-        res.status(400).send({message: error.details[0].message})
+        res.status(422).send({message: error.details[0].message})
    }else{
     const userNewPassword = req.body.userPassword1
     const salt = await bcrypt.genSalt(10)
@@ -345,7 +345,7 @@ const userForgetPassword = async(req, res)=>{
         } 
         if(user==null){
             logger.log({ level: 'error', message: 'There is no user to update the password. Please register first. | | code: 4-3'})
-            res.send({message: "There is no user to update the password. Please register first."})
+            res.status(404).send({message: "There is no user to update the password. Please register first."})
         }else{
             const userInformation = { userEmail: userEmail};
             const updatedUserInformation = { $set: {userPassword: hashedUserNewPassword} };
@@ -368,7 +368,7 @@ const userUpdatePassword = (req, res)=>{
     const {error, value} = userUpdatePasswordValidation(req.body)
     if(error){
         logger.log({level: 'error', message: `${error.details[0].message}. | | code: 5-1`})
-        res.send({ message: error.details[0].message})
+        res.status(422).send({ message: error.details[0].message})
     }else{
         const userCurrentPassword = value.userCurrentPassword
         const userId = req.query.id
@@ -380,7 +380,7 @@ const userUpdatePassword = (req, res)=>{
             } 
             if(user==null){
                 logger.log({level: 'error', message: 'There is no user to update. | code: 5-3'})
-                res.send({message: "There is no user to update."})
+                res.status(404).send({message: "There is no user to update."})
             }else{
             const isValidPassword = await bcrypt.compare(userCurrentPassword, user.userPassword)
             if(isValidPassword){
@@ -413,7 +413,7 @@ const updateUserInformation = (req, res)=>{
     const {error, value}= updateUserInformationValidation(req.body)
     if(error) {
         logger.log({level: 'error', message: `${error.details[0].message}. | | code: 6-1`})
-        return res.status(400).send({message: error.details[0].message})
+        return res.status(422).send({message: error.details[0].message})
     }
     const userFullName = value.userFullName
     const userEmail = value.userEmail
@@ -486,7 +486,7 @@ const userRefreshToken = async(req, res)=>{
     const refreshToken = req.header('refresh-token')
     if(!refreshToken) {
         logger.log({level: 'error', message: 'Access denied because token is not available. | code: 10-1'})
-        return res.send({ errorMessage: "Access Denied." })
+        return res.status(401).send({ errorMessage: "Access Denied." })
     }
     const verified = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
     const userEmail = verified.userEmail
