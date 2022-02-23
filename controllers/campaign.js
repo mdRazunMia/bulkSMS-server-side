@@ -1,21 +1,39 @@
 const database = require('../db/database')
 const logger = require('../logger/logger')
+const multer = require("multer")
+const fs = require("fs")
+const path = require("path")
+const md5 = require("md5")
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, './uploads');
+    },
+    filename: function(req, file, cb){
+        cb(null, md5(file.originalname)+path.extname(file.originalname))
+    }
+})
+//image is the name of the input field. 
+const uploadImageInfo = multer({storage: storage}).single('file')
+
 const  campaignCollection = database.collection("campaign_details")
 
 const createCampaign = (req, res)=>{
     const campaignInformation = req.body
-    let verified = false
-    campaignCollection.insertOne(campaignInformation, (err, response)=>{
-        if(err){
-            logger.log({level: 'error', message: 'Internal error for create campaign in database. | code: 22-2'})
-            return res.status(500).send({errorMessage: "Something went wrong"})
-        } 
-        if(response.acknowledged){
-            verified = true
-        }
-    })
-    logger.log({level: 'info', message: 'Campaign has been created successfully. | code: 22-3'})
-   res.status(201).send({ message: "Campaign has been created successfully."})
+    console.log(req.body)
+    console.log(req.file)
+//     let verified = false
+//     campaignCollection.insertOne(campaignInformation, (err, response)=>{
+//         if(err){
+//             logger.log({level: 'error', message: 'Internal error for create campaign in database. | code: 22-2'})
+//             return res.status(500).send({errorMessage: "Something went wrong"})
+//         } 
+//         if(response.acknowledged){
+//             verified = true
+//         }
+//     })
+//     logger.log({level: 'info', message: 'Campaign has been created successfully. | code: 22-3'})
+//    res.status(201).send({ message: "Campaign has been created successfully."})
 }
 
 //show campaign list
@@ -50,5 +68,6 @@ const deleteCampaign = (req, res)=>{
 module.exports = {
     createCampaign,
     showAllCampaign,
-    deleteCampaign
+    deleteCampaign,
+    uploadImageInfo
 }

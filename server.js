@@ -49,7 +49,7 @@ app.use(session({
   }))
 app.use(passport.initialize())
 app.use(passport.session())
-
+app.use('/uploads', express.static('./uploads'))
 passport.serializeUser((profile, cb)=>{
     cb(null, profile)
 })

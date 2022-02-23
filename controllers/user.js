@@ -165,7 +165,7 @@ const userLogin = async (req, res)=>{
                             const refreshToken = jwt.sign({userEmail: result.userEmail}, process.env.REFRESH_TOKEN_SECRET,{
                                 expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
                             })
-                            redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+                            redisClient.set(userEmail, refreshToken,{ EX: process.env.REDIS_EXPIRE_TIME} , (err, reply)=>{
                                 if(err) {
                                     logger.log({level: 'error', message: 'Internal error in redis client when set the user log in information. | Code: 2-3'})
                                     return res.status(500).send({errorMessage:"Something went wrong."})
