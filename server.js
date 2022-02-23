@@ -16,10 +16,6 @@ const subUserRoute = require('./routes/subUserRoute')
 require('./db/redis')
 require('./db/database')
 
-// const createClient = require('./db/database')
-// createClient.createClient()
-
-
 const app = express();
 
 
