@@ -6,7 +6,8 @@ const bcrypt = require('bcryptjs')
 const Str = require('@supercharge/strings')
 const  userCollection = database.collection("user")
 const {
-    registerValidation,loginValidation, 
+    registerValidation,
+    loginValidation, 
     userUpdatePasswordValidation, 
     userForgetPasswordValidation,
     updateUserInformationValidation

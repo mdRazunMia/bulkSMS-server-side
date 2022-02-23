@@ -3,7 +3,6 @@ const router = express.Router();
 const passport = require('passport')
 const database = require('../db/database')
 const jwt = require('jsonwebtoken');
-// const auth = require("../validations/verified");
 require('dotenv').config()
 const redisClient  = require('../db/redis')
 const  userCollection = database.collection("user")
@@ -17,7 +16,6 @@ router.get('/linkedin',  passport.authenticate('linkedin', {
 router.get('/linkedin/callback',
   passport.authenticate('linkedin', { failureRedirect: '/auth/linkedInError' }),
   function(req, res) {
-    // console.log(req.user.displayName)
     const userFullName = req.user.displayName
     const linkedInUserEmail = req.user.emails[0]
     const userEmail = linkedInUserEmail.value

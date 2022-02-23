@@ -2,7 +2,7 @@ const { createLogger, format, transports } = require('winston');
 const { combine, timestamp, printf } = format;
 require('winston-mongodb')
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rv6z4.mongodb.net/bulkSMS?retryWrites=true&w=majority`;
+const uri = `${process.env.MONGO_BASE_URL}${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rv6z4.mongodb.net/${process.env.MONGO_DB_NAME}?retryWrites=true&w=majority`;
 
 let transport_array = []
 
