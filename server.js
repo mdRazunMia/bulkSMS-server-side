@@ -16,10 +16,6 @@ const subUserRoute = require('./routes/subUserRoute')
 require('./db/redis')
 require('./db/database')
 
-// const createClient = require('./db/database')
-// createClient.createClient()
-
-
 const app = express();
 
 
@@ -53,7 +49,7 @@ app.use(session({
   }))
 app.use(passport.initialize())
 app.use(passport.session())
-
+app.use('/uploads', express.static('./uploads'))
 passport.serializeUser((profile, cb)=>{
     cb(null, profile)
 })
