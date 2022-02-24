@@ -430,3 +430,11 @@
 { 2022-02-24 12:02:52 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
 { 2022-02-24 12:03:20 | error : Recapcha is failed in user login. | Code: 2-10 }
 { 2022-02-24 12:04:26 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-24 15:20:16 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-24 15:35:21 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-24 15:35:21 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-24 15:35:56 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-24 15:35:56 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-24 16:27:07 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-24 16:27:07 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-24 17:45:27 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
