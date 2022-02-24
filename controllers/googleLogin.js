@@ -30,7 +30,7 @@ const googleLogin = (req, res)=>{
                     const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
                     userCollection.insertOne(userInformation)
-                    redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+                    redisClient.set(userEmail, refreshToken,{ EX: process.env.REDIS_EXPIRE_TIME} , (err, reply)=>{
                         if(err){
                             logger.log({level: 'error', message: 'Internal error for login user in database. | code: 13-1'})
                             return res.status(500).send({errorMessage:"Something went wrong."})
@@ -41,7 +41,7 @@ const googleLogin = (req, res)=>{
                 }else{
                     const authToken = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET)
                     const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
-                    redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+                    redisClient.set(userEmail, refreshToken,{ EX: process.env.REDIS_EXPIRE_TIME} , (err, reply)=>{
                         if(err){
                             logger.log({level: 'error', message: 'Internal error for login user in database for google login. | code: 13-3'})
                             return res.status(500).send({errorMessage:"Something went wrong."})

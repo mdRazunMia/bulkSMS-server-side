@@ -35,7 +35,7 @@ router.get('/linkedin/callback',
         const authToken = jwt.sign({userEmail: userEmail},process.env.TOKEN_SECRET)
         const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
         userCollection.insertOne(linkedInUser)
-        redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+        redisClient.set(userEmail, refreshToken,{ EX: process.env.REDIS_EXPIRE_TIME} , (err, reply)=>{
           if(err){
             logger.log({level: 'error', message: 'Internal error for user login by using linkedin. | code: 14-2'})
             return res.status(500).send({errorMessage: "Something went wrong"})
@@ -46,7 +46,7 @@ router.get('/linkedin/callback',
       }else{
           const authToken = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET)
           const refreshToken = jwt.sign({userEmail: userEmail}, process.env.REFRESH_TOKEN_SECRET)
-          redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+          redisClient.set(userEmail, refreshToken,{ EX: process.env.REDIS_EXPIRE_TIME} , (err, reply)=>{
             if(err){
               logger.log({level: 'error', message: 'Internal error for user login by using linkedin. | code: 14-2'})
               return res.status(500).send({errorMessage:"Something went wrong."})

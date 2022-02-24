@@ -140,8 +140,7 @@ const userLogin = async (req, res)=>{
         logger.log({level: 'error', message: `${error.details[0].message} | Code: 2-1`})
         res.status(422).send({errorMessage: error.details[0].message})
     }else{
-        
-       if(process.env.LOGIN_RECAPTCHA==true){
+       if(process.env.LOGIN_RECAPTCHA == 'true'){
         //recaptcha code
        const recapchaVerifyToken = req.body.recaptchaToken
        const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
@@ -220,7 +219,7 @@ const userLogin = async (req, res)=>{
                             const refreshToken = jwt.sign({userEmail: result.userEmail}, process.env.REFRESH_TOKEN_SECRET,{
                                 expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
                             })
-                            redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
+                            redisClient.set(userEmail, refreshToken,{ EX: process.env.REDIS_EXPIRE_TIME} , (err, reply)=>{
                                 if(err) {
                                     logger.log({level: 'error', message: 'Internal error in redis client when set the user log in information. | Code: 2-3'})
                                     return res.status(500).send({errorMessage:"Something went wrong."})

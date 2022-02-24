@@ -6,17 +6,17 @@ const uri = `${process.env.MONGO_BASE_URL}${process.env.DB_USER}:${process.env.D
 
 let transport_array = []
 
-if(process.env.LOGGER_CONSOLE==true){
+if(process.env.LOGGER_CONSOLE == 'true'){
   const trans_con = new transports.Console()
   transport_array.push(trans_con)
 }
 
-if(process.env.LOGGER_FILE==true){
+if(process.env.LOGGER_FILE == 'true'){
   const trans_file = new transports.File({ filename: 'logFile.log'})
   transport_array.push(trans_file)
 }
 
-if(process.env.LOGGER_DB==true){
+if(process.env.LOGGER_DB == 'true'){
   const trans_db = new transports.MongoDB({
     db: uri,
    //level: 'error',
