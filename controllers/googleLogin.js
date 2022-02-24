@@ -20,7 +20,10 @@ const googleLogin = (req, res)=>{
         userInformation.userEmail = userEmail
         userInformation.verified = verifiedEmail
         userInformation.medium="google"
-        if(verifiedEmail){
+        if(!verifiedEmail){
+            logger.log({level: 'warn', message: 'User google account is not verified. | code: 13-5'})
+            res.status(400).send({ errorMessage: "User google account is not verified."})
+        }else{
             userCollection.findOne({userEmail: userEmail}, (err, result)=>{
                 if(err){
                     logger.log({level: 'error', message: 'Internal error for login user in database'})
@@ -51,10 +54,6 @@ const googleLogin = (req, res)=>{
                     res.status(200).send({googleExistingSuccessMessage: "User Already exist.", authToken: authToken, refreshToken: refreshToken})
                 }
             })
-
-        }else{
-            logger.log({level: 'warn', message: 'User google account is not verified. | code: 13-5'})
-            res.status(400).send({ errorMessage: "User google account is not verified."})
         }
     })
 }
