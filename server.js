@@ -16,6 +16,13 @@ db.ConnectAndGetInstance()
     const LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
     const subUserRoute = require("./routes/subUserRoute");
     require("./db/redis");
+    const redisClient = require("./db/redis");
+    redisClient
+      .redisConnectAndGetTheInstance()
+      .then((res) => {
+        console.log("Redis database connect successfully");
+      })
+      .catch((error) => console.log("Redis database is not connected."));
     const app = express();
     const whitelist = [`${process.env.BASE_URL}`];
     const corsOptions = {

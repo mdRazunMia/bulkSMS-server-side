@@ -438,3 +438,7 @@
 { 2022-02-24 16:27:07 | error : Invalid auth token or time is expired. | code: 11-2 }
 { 2022-02-24 16:27:07 | info : Authentication and refresh token have been sent. | code: 10-5 }
 { 2022-02-24 17:45:27 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-27 10:45:18 | warn : User Already exist in this email. | code: 13-4 }
+{ 2022-02-27 10:45:19 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-27 13:05:30 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-27 16:43:31 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
