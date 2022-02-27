@@ -4,7 +4,7 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const Str = require('@supercharge/strings')
-const  userCollection = database.collection("user")
+const userCollection = database.GetCollection().userCollection();
 const {
     registerValidation,
     loginValidation, 
@@ -29,7 +29,10 @@ const userRegistration = async (req, res)=>{
         const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
         const recapchaVerifyResponse = await axios.post(recapchaVerifyURL)
          //recaptcha code
-        if(recapchaVerifyResponse.data.success){
+        if(!recapchaVerifyResponse.data.success){
+            logger.log({level: 'error', message: 'Recaptcha is failed | Code: 1-6'})
+            res.status(400).send("Recaptcha is failed")
+        }else{
             const userFullName = value.userFullName
             const userEmail = value.userEmail
             const salt = await bcrypt.genSalt(10)
@@ -106,9 +109,6 @@ const userRegistration = async (req, res)=>{
                     res.status(400).send({ message: "This email is already registered."})
                 }
             })
-        }else{
-            logger.log({level: 'error', message: 'Recaptcha is failed | Code: 1-6'})
-            res.status(400).send("Recaptcha is failed")
         }
     }
 
@@ -140,19 +140,73 @@ const userLogin = async (req, res)=>{
         logger.log({level: 'error', message: `${error.details[0].message} | Code: 2-1`})
         res.status(422).send({errorMessage: error.details[0].message})
     }else{
-        
-       if(process.env.LOGIN_RECAPTCHA==true){
+       if(process.env.LOGIN_RECAPTCHA == 'true'){
         //recaptcha code
        const recapchaVerifyToken = req.body.recaptchaToken
        const recapchaVerifyURL = `${process.env.RECAPCHA_VERIFY_URL}?secret=${process.env.RECAPCHA_SECRET_KEY}&response=${recapchaVerifyToken}`
        const recapchaVerifyResponse = await axios.post(recapchaVerifyURL)
          //recaptcha code
-       if(recapchaVerifyResponse.data.success){
-            const userEmail = value.userEmail
+       if(!recapchaVerifyResponse.data.success){
+        logger.log({ level: 'error', message: 'Recapcha is failed in user login. | Code: 2-10'})
+        res.status(200).send("Recaptcha is failed")
+       }else{
+        const userEmail = value.userEmail
+        const userPassword = value.userPassword
+        userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
+            if(err) {
+                logger.log({level: 'error', message: 'Internal error when user login the system. | Code: 2-2'})
+                return res.status(500).send({errorMessage: "Something went wrong"})
+            }
+            if(result != null){
+                if(result.verified && result.medium === "normal"){ 
+                    const validPassword = await bcrypt.compare(userPassword,result.userPassword)
+                    if(validPassword){
+                        const token = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET, {
+                            expiresIn: process.env.JWT_EXPIRE_TIME
+                        })
+                        const refreshToken = jwt.sign({userEmail: result.userEmail}, process.env.REFRESH_TOKEN_SECRET,{
+                            expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
+                        })
+                        redisClient.set(userEmail, refreshToken,{ EX: process.env.REDIS_EXPIRE_TIME} , (err, reply)=>{
+                            if(err) {
+                                logger.log({level: 'error', message: 'Internal error in redis client when set the user log in information. | Code: 2-3'})
+                                return res.status(500).send({errorMessage:"Something went wrong."})
+                            }
+                        })
+                        const loginMessage = "User successfully logged in."
+                        logger.log({level: 'info', message: `${loginMessage}. | code: 2-4`})
+                        // logger.info(`${loginMessage}`,{ code: 2-4, user_id: 123})
+                        res.status(200).send({
+                            authToken: token,
+                            refreshToken: refreshToken
+                        })
+                    }else{
+                        logger.log({level: 'error', message: 'User password error | Code: 2-5'})
+                        return res.status(401).send({ errorMessage: "Password is incorrect."})
+                    }
+                }else if(result.verified && result.medium === "google"){
+                    logger.log({level: 'warn', message: 'User have signed in using google account before. Now, Trying to login manually. | Code: 2-6'})
+                    return res.status(400).send({errorMessage: "You have signed in using google before. Please login using google account"})
+                }else if(result.verified && result.medium === "linkedIn"){
+                    logger.log({level: 'warn', message: 'User have signed in using LinkedIn account before. Now, Trying to login manually. | Code: 2-7'})
+                    return res.status(400).send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
+                }else{
+                    logger.log({level: 'warn', message: 'Email is not verified. | Code: 2-8'})
+                    return res.status(400).send({ errorMessage: "Please Verify your email first."})
+                }
+            }else{
+                logger.log({level: 'error', message: 'Email incorrect or registered first. | Code: 2-9'})
+                return  res.status(400).send({errorMessage: "Email incorrect or registered first"})
+            }
+            
+        })
+       }
+    }else{
+        const userEmail = value.userEmail
             const userPassword = value.userPassword
             userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
                 if(err) {
-                    logger.log({level: 'error', message: 'Internal error when user login the system. | Code: 2-2'})
+                    logger.log({level: 'error', message: 'Internal error when user login the system. | code: 2-2'})
                     return res.status(500).send({errorMessage: "Something went wrong"})
                 }
                 if(result != null){
@@ -171,62 +225,7 @@ const userLogin = async (req, res)=>{
                                     return res.status(500).send({errorMessage:"Something went wrong."})
                                 }
                             })
-                            const loginMessage = "User successfully logged in. | Code: 2-4"
-                            logger.log({level: 'info', message: loginMessage, meta: 'abc'})
-                            // logger.info(`${loginMessage}`,{ code: 2-4, user_id: 123})
-                            res.status(200).send({
-                                authToken: token,
-                                refreshToken: refreshToken
-                            })
-                        }else{
-                            logger.log({level: 'error', message: 'User password error | Code: 2-5'})
-                            return res.status(401).send({ errorMessage: "Password is incorrect."})
-                        }
-                    }else if(result.verified && result.medium === "google"){
-                        logger.log({level: 'warn', message: 'User have signed in using google account before. Now, Trying to login manually. | Code: 2-6'})
-                        return res.status(400).send({errorMessage: "You have signed in using google before. Please login using google account"})
-                    }else if(result.verified && result.medium === "linkedIn"){
-                        logger.log({level: 'warn', message: 'User have signed in using LinkedIn account before. Now, Trying to login manually. | Code: 2-7'})
-                        return res.status(400).send({errorMessage: "You have signed in using linkedIn before. Please login using google account"})
-                    }else{
-                        logger.log({level: 'warn', message: 'Email is not verified. | Code: 2-8'})
-                        return res.status(400).send({ errorMessage: "Please Verify your email first."})
-                    }
-                }else{
-                    logger.log({level: 'error', message: 'Email incorrect or registered first. | Code: 2-9'})
-                    return  res.status(400).send({errorMessage: "Email incorrect or registered first"})
-                }
-                
-            })
-       }else{
-           logger.log({ level: 'error', message: 'Recapcha is failed in user login. | Code: 2-10'})
-           res.status(200).send("Recaptcha is failed")
-       }
-    }else{
-        const userEmail = value.userEmail
-            const userPassword = value.userPassword
-            userCollection.findOne({userEmail: userEmail}, async (err, result)=>{
-                if(err) {
-                    logger.log({level: 'error', message: 'Internal error when user login the system.'})
-                    return res.status(500).send({errorMessage: "Something went wrong"})
-                }
-                if(result != null){
-                    if(result.verified && result.medium === "normal"){ 
-                        const validPassword = await bcrypt.compare(userPassword,result.userPassword)
-                        if(validPassword){
-                            const token = jwt.sign({userEmail: result.userEmail},process.env.TOKEN_SECRET, {
-                                expiresIn: process.env.JWT_EXPIRE_TIME
-                            })
-                            const refreshToken = jwt.sign({userEmail: result.userEmail}, process.env.REFRESH_TOKEN_SECRET,{
-                                expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME
-                            })
-                            redisClient.set(userEmail, refreshToken,{ EX: 365*24*60*60} , (err, reply)=>{
-                                if(err) {
-                                    logger.log({level: 'error', message: 'Internal error in redis client when set the user log in information. | Code: 2-3'})
-                                    return res.status(500).send({errorMessage:"Something went wrong."})
-                                }
-                            })
-                            const loginMessage = "User successfully logged in. | Code: 2-4"
+                            const loginMessage = `User successfully logged in.| user id: ${result._id} | Code: 2-4`
                             logger.log({level: 'info', message: loginMessage})
                             res.status(200).send({
                                 authToken: token,
@@ -384,7 +383,10 @@ const userUpdatePassword = (req, res)=>{
                 res.status(404).send({message: "There is no user to update."})
             }else{
             const isValidPassword = await bcrypt.compare(userCurrentPassword, user.userPassword)
-            if(isValidPassword){
+            if(!isValidPassword){
+                logger.log({level: 'error', message: 'Current password is not matched wih the given current password. | code: 5-5'})
+                return res.status(401).send({ passwordNotMatchedError: "Current password is not matched wih the given current password."})
+            }else{
                 const userInformation = {_id: ObjectId(userId)};
                 const salt = await bcrypt.genSalt(10)
                 const hashedUserNewPassword =  await bcrypt.hash(userNewPassword, salt)
@@ -397,9 +399,6 @@ const userUpdatePassword = (req, res)=>{
                     logger.log({level: 'info', message: 'User password has been updated successfully. | | code: 5-4'})
                     res.status(200).send({ updateSuccessMessage:"user password has been updated successfully."})
                 });
-            }else{
-                logger.log({level: 'error', message: 'Current password is not matched wih the given current password. | code: 5-5'})
-                return res.status(401).send({ passwordNotMatchedError: "Current password is not matched wih the given current password."})
             }
             
             }

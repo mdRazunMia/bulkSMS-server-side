@@ -367,3 +367,74 @@
 { 2022-02-22 17:52:55 | info : User has been logged out successfully. | 12-1 }
 { 2022-02-22 17:55:21 | info : User successfully logged in. | Code: 2-4 }
 { 2022-02-22 17:55:21 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-24 10:52:02 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 10:53:32 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-24 10:53:32 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-24 10:57:17 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 10:57:23 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 10:58:16 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 10:58:45 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 10:59:18 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:00:03 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:00:15 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:01:04 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:02:16 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:04:17 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:04:52 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:04:54 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:06:22 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:06:43 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:08:11 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:08:12 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:08:13 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:08:47 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:08:48 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:08:49 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:08:50 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:08:51 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:10:37 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:10:38 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:10:39 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:10:40 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:10:41 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:10:42 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:10:42 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:12:53 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:12:55 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:12:56 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:12:59 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:01 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:02 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:03 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:04 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:05 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:06 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:07 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:32 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:34 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:36 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:37 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:38 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:39 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:40 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:41 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:43 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:44 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:13:45 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:14:42 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 11:15:38 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:16:43 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:30:25 | info : User successfully logged in. | Code: 2-4 }
+{ 2022-02-24 11:45:02 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-24 12:01:11 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-24 12:02:52 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-24 12:03:20 | error : Recapcha is failed in user login. | Code: 2-10 }
+{ 2022-02-24 12:04:26 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-24 15:20:16 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-24 15:35:21 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-24 15:35:21 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-24 15:35:56 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-24 15:35:56 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-24 16:27:07 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-24 16:27:07 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-24 17:45:27 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
