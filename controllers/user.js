@@ -4,8 +4,7 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const Str = require('@supercharge/strings')
-// const  userCollection = database.collections.userCollection
-const userCollection = database.collection('user')
+const userCollection = database.GetCollection().userCollection();
 const {
     registerValidation,
     loginValidation, 

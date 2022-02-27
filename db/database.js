@@ -1,87 +1,73 @@
-const { MongoClient } = require('mongodb')
+const MongoClient = require("mongodb").MongoClient;
+require("dotenv").config();
+module.exports = (function () {
+  let dbConnectionInstance;
+  let bulkSmsDb;
 
+  function ConnectAndGetInstance() {
+    return new Promise(function (resolve, reject) {
+      if (dbConnectionInstance) {
+        console.log("Using already created db connection instance");
+        return resolve(dbConnectionInstance);
+      }
 
-//database uri
-const uri = `${process.env.MONGO_BASE_URL}${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rv6z4.mongodb.net`;///${process.env.MONGO_DB_NAME}?retryWrites=true&w=majority
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, maxPoolSize: 10 })
-client.connect(((err, client)=>{
-    if(err){
-        throw err
+      const options = {
+        useNewUrlParser: true,
+      };
+      const uri = `${process.env.MONGO_BASE_URL}${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rv6z4.mongodb.net/${process.env.MONGO_DB_NAME}?retryWrites=true&w=majority`;
+      const dbName = process.env.MONGO_DB_NAME;
+      MongoClient.connect(uri, options, function (err, client) {
+        if (err) {
+          return reject(err);
+        }
+
+        dbConnectionInstance = client;
+        bulkSmsDb = client.db(dbName);
+
+        console.log("Using newly created db connection instance");
+        return resolve(dbConnectionInstance);
+      });
+    });
+  }
+
+  function getBulkSmsDb() {
+    if (!bulkSmsDb) {
+      throw new Error("bulkSmsDb object is not initialized!");
     }
-    console.log('successfully connected to the MongoDB database')
-})
-)
-const database = client.db("bulkSMS")
+    return bulkSmsDb;
+  }
 
-module.exports = database
+  function GetCollection() {
+    if (!bulkSmsDb) {
+      throw new Error("bulkSmsDb object is not initialized!");
+    }
 
+    function CampaignCollection() {
+      return bulkSmsDb.collection("campaign_details");
+    }
 
+    function SmsCollection() {
+      return bulkSmsDb.collection("sms_details");
+    }
 
-// const { MongoClient } = require('mongodb');
+    function userCollection() {
+      return bulkSmsDb.collection("user");
+    }
+    function subUserCollection() {
+      return bulkSmsDb.collection("sub-user");
+    }
 
-// require('dotenv').config()
+    return {
+      CampaignCollection,
+      SmsCollection,
+      userCollection,
+      subUserCollection,
+    };
+  }
 
-// const DbConnection = function () {
-//     let dbInstance = null;
-
-//     // All mongo db collections
-//     const collections = {
-//         campaignCollection: null,
-//         smsCollection: null,
-//         userCollection: null
-//         // Add more if needed // OR CREATE Functions
-//     };
-
-//     // function CampaignCollection(){
-//     //     return dbInstance.collection('campain');
-//     // }
-
-//     async function ConnectMongoDb() {
-//         // TODO GET FROM ENV
-//         const uri = `${process.env.MONGO_BASE_URL}${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rv6z4.mongodb.net`;
-//         // console.log(uri);
-//         const mongoDbClient = new MongoClient(uri);
-
-//         mongoDbClient.connect(function (err, database) {
-//             if (err !== undefined) {
-//                 console.log(err);
-//             }else{
-//                 dbInstance = database.db(process.env.MONGO_DB_NAME); // TODO GET FROM ENV
-//                 console.log('inside the function')
-//                 collections.campaignCollection = dbInstance.collection('campaign_details');
-//                 // collections.smsCollection = dbInstance.collection('smsCollection');
-//                 collections.userCollection = dbInstance.collection('user')
-//                 // Add more collections as needed
-//             }
-//         });
-
-//         if (dbInstance == null) {
-//             return Promise.reject('COULD NOT CONNECT TO MONGODB');
-//         }
-//         return dbInstance;
-//     }
-
-//     // Returns DB instance
-//     async function GetDbInstance() {
-//         try {
-//             if (dbInstance != null) {
-//                 console.log(`db connection is already alive`);
-//                 return dbInstance;
-//             } else {
-//                 console.log(`getting new db connection`);
-//                 dbInstance = await ConnectMongoDb();
-//                 return dbInstance;
-//             }
-//         } catch (e) {
-//             return Promise.reject(e);
-//         }
-//     }
-
-//     return {
-//         GetDbInstance: GetDbInstance,
-//         collections: collections
-//     };
-// };
-
-// module.exports = DbConnection();
-
+  return {
+    ConnectAndGetInstance,
+    getBulkSmsDb,
+    GetCollection,
+  };
+})();

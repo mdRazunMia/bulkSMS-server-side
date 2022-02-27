@@ -3,7 +3,7 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const Str = require('@supercharge/strings')
-const  subUserCollection = database.collection("sub-user")
+const  subUserCollection = database.GetCollection().subUserCollection()
 const {
     subUserCreateValidation, 
     subUserLoginValidation,

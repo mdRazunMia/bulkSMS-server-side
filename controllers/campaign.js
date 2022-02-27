@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 //image is the name of the input field. 
 const uploadImageInfo = multer({storage: storage}).single('file')
 
-const  campaignCollection = database.collection("campaign_details")
+const campaignCollection = database.GetCollection().CampaignCollection()
 
 const createCampaign = (req, res)=>{
     const campaignInformation = req.body

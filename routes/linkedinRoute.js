@@ -5,7 +5,7 @@ const database = require('../db/database')
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const redisClient  = require('../db/redis')
-const  userCollection = database.collection("user")
+const userCollection = database.GetCollection().userCollection();
 const logger = require('../logger/logger')
 
 

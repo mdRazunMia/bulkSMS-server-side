@@ -6,7 +6,7 @@ const redisClient  = require('../db/redis')
 const logger = require('../logger/logger')
 
 const clientAccount = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
-const  userCollection = database.collection("user")
+const userCollection = database.GetCollection().userCollection();
 
 const googleLogin = (req, res)=>{
     tokenId = req.body.tokenId
