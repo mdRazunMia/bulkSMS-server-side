@@ -1,22 +1,33 @@
 const db = require("./db/database");
 
-db.ConnectAndGetInstance()
-  .then((i) => {
-    console.log("Successfully connected to MongoDb database");
-    const redisClient = require("./db/redis");
-    redisClient
-      .redisConnectAndGetTheInstance()
-      .then((res) => {
-        console.log("Redis database connect successfully");
-        expressServerApp();
-      })
-      .catch((error) => console.log("Redis database is not connected."));
-  })
-  .catch((error) => {
-    console.log("Could not connect to MongoDb database");
-    console.log(error);
-  });
+mongoDB();
 
+//MongoDB code
+function mongoDB() {
+  db.ConnectAndGetInstance()
+    .then((i) => {
+      console.log("Successfully connected to MongoDb database");
+      redisDb();
+    })
+    .catch((error) => {
+      console.log("Could not connect to MongoDb database");
+      console.log(error);
+    });
+}
+
+//RedisDB code
+function redisDb() {
+  const redisClient = require("./db/redis");
+  redisClient
+    .redisConnectAndGetTheInstance()
+    .then((res) => {
+      console.log("Redis database connect successfully");
+      expressServerApp();
+    })
+    .catch((error) => console.log("Redis database is not connected."));
+}
+
+//Express server code
 function expressServerApp() {
   const express = require("express");
   var bodyParser = require("body-parser");
