@@ -3,6 +3,7 @@ const logger = require("../logger/logger");
 const multer = require("multer");
 const path = require("path");
 const md5 = require("md5");
+const { MulterError } = require("multer");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -13,10 +14,18 @@ const storage = multer.diskStorage({
   },
 });
 const Filter = (req, file, cb) => {
-  if (file.mimetype.includes("csv", "xlx", "xlsx")) {
+  //   if (file.mimetype.includes("csv", "xlx", "xlsx")) {
+  if (
+    (file.mimetype == "text/csv" ||
+      file.mimetype ==
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
+    (path.extname(file.originalname) == ".csv" ||
+      path.extname(file.originalname) == ".xlx" ||
+      path.extname(file.originalname) == ".xlsx")
+  ) {
     cb(null, true);
   } else {
-    cb(new Error("Please upload only csv | xlx | xlsx type file."), false);
+    cb("Please upload only csv | xlx | xlsx type file.", false);
   }
 };
 
@@ -30,9 +39,29 @@ const uploadImageInfo = multer({
 const campaignCollection = database.GetCollection().CampaignCollection();
 
 const createCampaign = (req, res) => {
-  const campaignInformation = req.body;
+  uploadImageInfo(req, res, function (error) {
+    if (error instanceof multer.MulterError) {
+      return res.status(500).send(error);
+    } else if (error) {
+      return res.status(422).send(error);
+    }
+    if (req.body.smsType === "Instant SMS") {
+      console.log(req.body);
+      res.send(req.body);
+    }
+    if (req.body.smsType === "Bulk SMS") {
+      console.log(req.file);
+      res.send(req.body);
+    }
+    if (req.body.smsType === "Bulk multi SMS") {
+      console.log(req.file);
+      res.send(req.body);
+    }
+  });
+  //   const campaignInformation = req.body;
+  //   console.log(req);
   //   console.log(`file size: ${parseInt(req.headers["content-length"])}`);
-  console.log(req.file);
+  //   console.log(req.file);
   //     let verified = false
   //     campaignCollection.insertOne(campaignInformation, (err, response)=>{
   //         if(err){
@@ -55,11 +84,13 @@ const showAllCampaign = (req, res) => {
         level: "error",
         message: "Internal error for create campaign in database. | code: 23-1",
       });
-      return res.status(500).send({ errorMessage: "Something went wrong" });
+      return res
+        .status(500)
+        .send({ errorMessage: "Something went wrong | code: 23-2" });
     }
     logger.log({
       level: "info",
-      message: "Send all the campaign information. | code: 23-2",
+      message: "Send all the campaign information. | code: 23-3",
     });
     res.status(200).send({
       campaigns: result,

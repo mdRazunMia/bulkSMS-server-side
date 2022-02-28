@@ -453,3 +453,45 @@
 { 2022-02-27 17:30:06 | info : Get all the info of requested user after login. | code: 9-1 }
 { 2022-02-27 17:45:14 | error : Invalid auth token or time is expired. | code: 11-2 }
 { 2022-02-27 17:45:23 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-27 18:22:25 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-27 18:22:52 | info : User has been registered successfully. A link has been sent to user E-mail to verify user's account. | Code: 1-4 }
+{ 2022-02-27 18:23:01 | info : User account has been verified successfully. | Code: 1-8 }
+{ 2022-02-27 18:23:21 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-02-27 18:23:22 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-27 18:24:05 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-27 18:24:10 | info : A reset password link has been sent to the mail of the user. | code: 3-4 }
+{ 2022-02-27 18:24:37 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-02-27 18:24:37 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-27 18:24:50 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-27 18:25:02 | info : User password has been updated successfully. | code: 4-4 }
+{ 2022-02-27 18:30:03 | error : User password error. | Code: 2-5 }
+{ 2022-02-27 18:31:24 | error : User password error. | Code: 2-5 }
+{ 2022-02-27 18:31:34 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-02-27 18:31:34 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-27 18:32:01 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-27 18:36:06 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-02-27 18:36:06 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-27 18:37:32 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-27 18:39:52 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-02-27 18:39:53 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-28 10:19:13 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-02-28 10:19:14 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-28 10:24:22 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-28 10:28:30 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-02-28 10:28:31 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-28 10:29:39 | info : User has been logged out successfully. | 12-1 }
+{ 2022-02-28 10:35:49 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-02-28 10:35:49 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-02-28 10:41:14 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-28 11:10:59 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-28 11:10:59 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-28 11:19:46 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-28 11:19:56 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-28 11:50:05 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-28 11:50:14 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-02-28 12:25:31 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-28 12:25:31 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-28 12:55:39 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-28 12:55:39 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-28 13:33:49 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-28 13:33:50 | info : Authentication and refresh token have been sent. | code: 10-5 }
