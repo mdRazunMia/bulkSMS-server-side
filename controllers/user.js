@@ -12,15 +12,7 @@ const {
   userForgetPasswordValidation,
   updateUserInformationValidation,
 } = require("../validations/validation");
-// const redisClient = require("../db/redis");
 const redisInstance = require("../db/redis");
-let redisClient;
-redisInstance
-  .redisConnectAndGetTheInstance()
-  .then((res) => {
-    redisClient = res;
-  })
-  .catch((err) => console.log(err));
 
 const logger = require("../logger/logger");
 const axios = require("axios");
@@ -179,6 +171,7 @@ const userVerifiedAccount = (req, res) => {
 
 //user login
 const userLogin = async (req, res) => {
+  const redisClient = redisInstance.getRedisClient();
   const { error, value } = loginValidation(req.body);
   if (error) {
     logger.log({
@@ -795,6 +788,7 @@ const getUserProfile = (req, res) => {
 
 //user refresh token
 const userRefreshToken = async (req, res) => {
+  const redisClient = redisInstance.getRedisClient();
   const refreshToken = req.header("refresh-token");
   if (!refreshToken) {
     logger.log({

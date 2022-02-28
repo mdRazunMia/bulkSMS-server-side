@@ -5,40 +5,40 @@ const path = require("path");
 const md5 = require("md5");
 const { MulterError } = require("multer");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(null, md5(file.originalname) + path.extname(file.originalname));
-  },
-});
-const Filter = (req, file, cb) => {
-  //   if (file.mimetype.includes("csv", "xlx", "xlsx")) {
-  if (
-    (file.mimetype == "text/csv" ||
-      file.mimetype ==
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
-    (path.extname(file.originalname) == ".csv" ||
-      path.extname(file.originalname) == ".xlx" ||
-      path.extname(file.originalname) == ".xlsx")
-  ) {
-    cb(null, true);
-  } else {
-    cb("Please upload only csv | xlx | xlsx type file.", false);
-  }
-};
-
-//image is the name of the input field.
-const uploadImageInfo = multer({
-  storage: storage,
-  fileFilter: Filter,
-  limits: { fileSize: process.env.MAX_UPLOAD_FILE_SIZE },
-}).single("file"); //"file" is the name of the file input field name
-
 const campaignCollection = database.GetCollection().CampaignCollection();
 
 const createCampaign = (req, res) => {
+  const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "./uploads");
+    },
+    filename: function (req, file, cb) {
+      cb(null, md5(file.originalname) + path.extname(file.originalname));
+    },
+  });
+  const Filter = (req, file, cb) => {
+    //   if (file.mimetype.includes("csv", "xlx", "xlsx")) {
+    if (
+      (file.mimetype == "text/csv" ||
+        file.mimetype ==
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
+      (path.extname(file.originalname) == ".csv" ||
+        path.extname(file.originalname) == ".xlx" ||
+        path.extname(file.originalname) == ".xlsx")
+    ) {
+      cb(null, true);
+    } else {
+      cb("Please upload only csv | xlx | xlsx type file.", false);
+    }
+  };
+
+  //image is the name of the input field.
+  const uploadImageInfo = multer({
+    storage: storage,
+    fileFilter: Filter,
+    limits: { fileSize: process.env.MAX_UPLOAD_FILE_SIZE },
+  }).single("file"); //"file" is the name of the file input field name
+
   uploadImageInfo(req, res, function (error) {
     if (error instanceof multer.MulterError) {
       return res.status(500).send(error);
@@ -123,5 +123,5 @@ module.exports = {
   createCampaign,
   showAllCampaign,
   deleteCampaign,
-  uploadImageInfo,
+  // uploadImageInfo,
 };

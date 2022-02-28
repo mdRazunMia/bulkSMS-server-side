@@ -2,13 +2,14 @@ const database = require("../db/database");
 const { OAuth2Client } = require("google-auth-library");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const redisClient = require("../db/redis");
+const redisInstance = require("../db/redis");
 const logger = require("../logger/logger");
 
 const clientAccount = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const userCollection = database.GetCollection().userCollection();
 
 const googleLogin = (req, res) => {
+  const redisClient = redisInstance.getRedisClient();
   tokenId = req.body.tokenId;
   clientAccount
     .verifyIdToken({ idToken: tokenId, audience: process.env.GOOGLE_CLIENT_ID })

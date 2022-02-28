@@ -14,12 +14,11 @@ module.exports = (function () {
       });
 
       client.connect();
-      //   console.log(client);
-      client.on("connect", () => {
-        console.log("success");
-      });
+      // //   console.log(client);
+      // client.on("connect", () => {
+      //   console.log("success");
+      // });
       if (client) {
-        console.log("before resolve");
         return resolve(client);
       }
     });
@@ -30,7 +29,7 @@ module.exports = (function () {
     if (!client) {
       throw new Error("RedisDb object is not initialized!");
     }
-    return { client };
+    return client;
   }
 
   return {
