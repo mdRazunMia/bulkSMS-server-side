@@ -511,3 +511,7 @@
 { 2022-02-28 16:35:44 | error : Invalid auth token or time is expired. | code: 11-2 }
 { 2022-02-28 16:37:20 | error : Invalid auth token or time is expired. | code: 11-2 }
 { 2022-02-28 16:37:20 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-28 17:07:46 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-28 17:07:46 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-02-28 17:38:19 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-02-28 17:38:19 | info : Authentication and refresh token have been sent. | code: 10-5 }
