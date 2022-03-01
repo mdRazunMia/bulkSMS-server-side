@@ -554,11 +554,6 @@ const userForgetPassword = async (req, res) => {
     });
     // res.status(422).send({ message: error.details[0].message });
     res.status(422).send(errors);
-    // logger.log({
-    //   level: "error",
-    //   message: `${error.details[0].message}. | code: 4-1 `,
-    // });
-    // res.status(422).send({ message: error.details[0].message });
   } else {
     const userNewPassword = req.body.userPassword1;
     const salt = await bcrypt.genSalt(10);
@@ -632,11 +627,6 @@ const userUpdatePassword = (req, res) => {
     });
     // res.status(422).send({ message: error.details[0].message });
     res.status(422).send(errors);
-    // logger.log({
-    //   level: "error",
-    //   message: `${error.details[0].message}. | | code: 5-1`,
-    // });
-    // res.status(422).send({ message: error.details[0].message });
   } else {
     const userCurrentPassword = value.userCurrentPassword;
     const userId = req.query.id;
@@ -730,11 +720,6 @@ const updateUserInformation = (req, res) => {
     });
     // res.status(422).send({ message: error.details[0].message });
     res.status(422).send(errors);
-    // logger.log({
-    //   level: "error",
-    //   message: `${error.details[0].message}. | | code: 6-1`,
-    // });
-    // return res.status(422).send({ message: error.details[0].message });
   }
   const userFullName = value.userFullName;
   const userEmail = value.userEmail;
