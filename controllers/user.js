@@ -834,6 +834,7 @@ const userRefreshToken = async (req, res) => {
 };
 
 const userLogOut = (req, res) => {
+  const redisClient = redisInstance.getRedisClient();
   const userEmail = req.user.userEmail;
   redisClient.del(userEmail);
   logger.log({

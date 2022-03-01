@@ -4,16 +4,23 @@ const multer = require("multer");
 const path = require("path");
 const md5 = require("md5");
 const { MulterError } = require("multer");
+const fs = require("fs");
+const csv = require("fast-csv");
+const xlsx = require("xlsx");
 
 const campaignCollection = database.GetCollection().CampaignCollection();
 
 const createCampaign = (req, res) => {
+  let uploadFileName;
+  let uploadFileExtension;
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, "./uploads");
     },
     filename: function (req, file, cb) {
-      cb(null, md5(file.originalname) + path.extname(file.originalname));
+      uploadFileName = md5(file.originalname) + path.extname(file.originalname);
+      uploadFileExtension = path.extname(file.originalname);
+      cb(null, uploadFileName);
     },
   });
   const Filter = (req, file, cb) => {
@@ -39,6 +46,37 @@ const createCampaign = (req, res) => {
     limits: { fileSize: process.env.MAX_UPLOAD_FILE_SIZE },
   }).single("file"); //"file" is the name of the file input field name
 
+  //Read CSV data
+  function readCSV() {
+    let csvData = [];
+    const filePath = path.resolve("./uploads/", uploadFileName);
+    fs.createReadStream(filePath)
+      .pipe(csv.parse({ headers: true }))
+      .on("error", (error) => {
+        throw error.message;
+      })
+      .on("data", (row) => {
+        csvData.push(row);
+      })
+      .on("end", () => {
+        res.send(csvData);
+        //other functionalities will be here
+      });
+  }
+
+  //Read XLX / XLSX data
+  function readXLSXORXLX() {
+    const filePath = path.resolve("./uploads/", uploadFileName);
+    const workBook = xlsx.readFile(filePath);
+    const workSheet = workBook.Sheets["Sheet2"];
+    const data = xlsx.utils.sheet_to_json(workSheet);
+    console.log(data);
+    res.send(data);
+    // for (let i = 0; i < data.length; i++) {
+    //   console.log(data[i]);
+    // }
+  }
+
   uploadImageInfo(req, res, function (error) {
     if (error instanceof multer.MulterError) {
       return res.status(500).send(error);
@@ -50,8 +88,26 @@ const createCampaign = (req, res) => {
       res.send(req.body);
     }
     if (req.body.smsType === "Bulk SMS") {
-      console.log(req.file);
-      res.send(req.body);
+      if (uploadFileExtension === ".csv") {
+        try {
+          readCSV();
+        } catch (error) {
+          res.send(
+            "Unsupported file. Please upload .CSV | .XLX | .XLSX type file."
+          );
+        }
+      } else if (
+        uploadFileExtension === ".xlx" ||
+        uploadFileExtension === ".xlsx"
+      ) {
+        try {
+          readXLSXORXLX();
+        } catch (error) {
+          res.send(
+            "Unsupported file. Please upload .CSV | .XLX | .XLSX type file."
+          );
+        }
+      }
     }
     if (req.body.smsType === "Bulk multi SMS") {
       console.log(req.file);

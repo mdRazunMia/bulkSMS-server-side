@@ -24,16 +24,16 @@ function redisDb() {
       console.log("Redis database connect successfully");
       expressServerApp();
     })
-    .catch((error) => console.log("Redis database is not connected."));
+    .catch((error) => console.log("Redis database is not connected.", error));
 }
 
 //Express server code
 function expressServerApp() {
   const express = require("express");
-  var bodyParser = require("body-parser");
+  const bodyParser = require("body-parser");
   const cors = require("cors");
-  var cookieParser = require("cookie-parser");
-  var session = require("express-session");
+  const cookieParser = require("cookie-parser");
+  const session = require("express-session");
   const userRoute = require("./routes/userRoute.js");
   const campaignRoute = require("./routes/campaignRoute.js");
   const googleLoginRoute = require("./routes/googleLoginRoute.js");
