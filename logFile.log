@@ -531,3 +531,11 @@
 { 2022-03-01 12:51:35 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
 { 2022-03-01 13:05:41 | error : Invalid auth token or time is expired. | code: 11-2 }
 { 2022-03-01 13:05:42 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-03-01 13:46:43 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-03-01 13:46:43 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-03-01 14:09:22 | info : User has been logged out successfully. | 12-1 }
+{ 2022-03-01 14:09:31 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-03-01 14:09:31 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-03-01 14:48:35 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-03-01 14:48:46 | error : Email must be a valid Email. | Code: 2-1 }
+{ 2022-03-01 14:49:07 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
