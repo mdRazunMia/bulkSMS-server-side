@@ -539,3 +539,25 @@
 { 2022-03-01 14:48:35 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
 { 2022-03-01 14:48:46 | error : Email must be a valid Email. | Code: 2-1 }
 { 2022-03-01 14:49:07 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-03-01 15:29:07 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-03-01 15:29:14 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-03-01 15:33:40 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 15:34:37 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 15:36:03 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 15:36:04 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 15:36:05 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:15:23 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:40:59 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:45:57 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:46:38 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:49:01 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:49:56 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:50:24 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:53:39 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:53:39 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:53:39 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:53:39 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:54:33 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:54:33 | error : Email cannot be empty | Code: 1-1 }
+{ 2022-03-01 16:54:33 | error : Password cannot be an empty field | Code: 1-1 }
+{ 2022-03-01 16:54:33 | error : "recaptchaToken" is not allowed | Code: 1-1 }

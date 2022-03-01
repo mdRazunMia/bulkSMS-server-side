@@ -21,11 +21,19 @@ const axios = require("axios");
 const userRegistration = async (req, res) => {
   const { error, value } = registerValidation(req.body);
   if (error) {
-    logger.log({
-      level: "error",
-      message: `${error.details[0].message} | Code: 1-1`,
+    const errors = [];
+    error.details.forEach((detail) => {
+      const currentMessage = detail.message;
+      detail.path.forEach((value) => {
+        logger.log({
+          level: "error",
+          message: `${currentMessage} | Code: 1-1`,
+        });
+        errors.push({ [value]: currentMessage });
+      });
     });
-    res.status(422).send({ message: error.details[0].message });
+    // res.status(422).send({ message: error.details[0].message });
+    res.status(422).send(errors);
   } else {
     //recaptcha code
     const recapchaVerifyToken = req.body.recaptchaToken;
@@ -85,7 +93,7 @@ const userRegistration = async (req, res) => {
                         </head>
                         <body>
                             <div style="margin:30px; padding:20px;"  >
-                                <img width="100px" src="https://i.ibb.co/vmVVp11/logo.png"  alt="" />   
+                                <img width="100px" src="https://i.ibb.co/vmVVp11/logo.png"  alt="" />
                                <hr />
                                <div>
                                  <h3 style="font-size:30px;">Please Verify your e-mail to finish signing up for DotOnline</h3>
@@ -94,7 +102,7 @@ const userRegistration = async (req, res) => {
                                <a href=${url}>  <button style="color:white; border:0; width:100%; height:50px; border-radius:4px; background-color:#61D2D2;">VERIFY</button></a>
                                </div>
                                <hr />
-                        
+
                                <h4>Need help?Ask at <a href="#">${process.env.OFFICIAL_WEB_ADDRESS}</a> or visit Our <a href="${process.env.OFFICIAL_WEB_ADDRESS_URL}">Help Center</a> </h4>
                               <div style="text-align:center; margin-top:20px;">
                                 <h4>DotOnline,Inc.</h4>

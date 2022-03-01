@@ -12,6 +12,10 @@ const campaignCollection = database.GetCollection().CampaignCollection();
 
 // Create Campaign
 const createCampaign = (req, res) => {
+  if (!req.file)
+    return res.status(422).send({
+      errorMessage: "File field is empty. Please upload a file.",
+    });
   let uploadFileName;
   let uploadFileExtension;
   const storage = multer.diskStorage({
@@ -68,6 +72,7 @@ const createCampaign = (req, res) => {
   function readXLSXORXLX() {
     const filePath = path.resolve("./uploads/", uploadFileName);
     const workBook = xlsx.readFile(filePath);
+    //find sheets
     const workSheet = workBook.Sheets["Sheet2"];
     const data = xlsx.utils.sheet_to_json(workSheet);
     console.log(data);

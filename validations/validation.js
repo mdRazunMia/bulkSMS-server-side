@@ -62,7 +62,7 @@ const registerValidation = (data) => {
     });
   }
 
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 const loginValidation = (data) => {
@@ -107,7 +107,7 @@ const loginValidation = (data) => {
     });
   }
 
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 const userUpdatePasswordValidation = (data) => {
@@ -130,7 +130,7 @@ const userUpdatePasswordValidation = (data) => {
       .required()
       .messages({ "any.only": "Confirm password does not match" }),
   });
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 const userForgetPasswordValidation = (data) => {
@@ -146,7 +146,7 @@ const userForgetPasswordValidation = (data) => {
       .required()
       .messages({ "any.only": "Confirm password does not match" }),
   });
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 const updateUserInformationValidation = (data) => {
@@ -172,7 +172,7 @@ const updateUserInformationValidation = (data) => {
       "any.required": `Password is a required field`,
     }),
   });
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 const subUserCreateValidation = (data) => {
@@ -196,7 +196,7 @@ const subUserCreateValidation = (data) => {
       "any.required": `Sub user role is a required field`,
     }),
   });
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 const subUserLoginValidation = (data) => {
@@ -221,7 +221,7 @@ const subUserLoginValidation = (data) => {
     }),
   });
 
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 const subUserEditValidation = (data) => {
@@ -246,7 +246,7 @@ const subUserEditValidation = (data) => {
     }),
   });
 
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 const subUserPasswordResetValidation = (data) => {
@@ -262,7 +262,7 @@ const subUserPasswordResetValidation = (data) => {
       .required()
       .messages({ "any.only": "Confirm password does not match" }),
   });
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 module.exports = {
