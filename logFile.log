@@ -561,3 +561,5 @@
 { 2022-03-01 16:54:33 | error : Email cannot be empty | Code: 1-1 }
 { 2022-03-01 16:54:33 | error : Password cannot be an empty field | Code: 1-1 }
 { 2022-03-01 16:54:33 | error : "recaptchaToken" is not allowed | Code: 1-1 }
+{ 2022-03-01 17:05:52 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-03-01 17:05:52 | info : Authentication and refresh token have been sent. | code: 10-5 }

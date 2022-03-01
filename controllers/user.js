@@ -182,11 +182,19 @@ const userLogin = async (req, res) => {
   const redisClient = redisInstance.getRedisClient();
   const { error, value } = loginValidation(req.body);
   if (error) {
-    logger.log({
-      level: "error",
-      message: `${error.details[0].message} | Code: 2-1`,
+    const errors = [];
+    error.details.forEach((detail) => {
+      const currentMessage = detail.message;
+      detail.path.forEach((value) => {
+        logger.log({
+          level: "error",
+          message: `${currentMessage} | Code: 2-1`,
+        });
+        errors.push({ [value]: currentMessage });
+      });
     });
-    res.status(422).send({ errorMessage: error.details[0].message });
+    // res.status(422).send({ message: error.details[0].message });
+    res.status(422).send(errors);
   } else {
     if (process.env.LOGIN_RECAPTCHA == "true") {
       //recaptcha code
@@ -533,11 +541,24 @@ const userForgetPassword = async (req, res) => {
   const userEmail = req.query.userEmail;
   const { error, value } = userForgetPasswordValidation(req.body);
   if (error) {
-    logger.log({
-      level: "error",
-      message: `${error.details[0].message}. | code: 4-1 `,
+    const errors = [];
+    error.details.forEach((detail) => {
+      const currentMessage = detail.message;
+      detail.path.forEach((value) => {
+        logger.log({
+          level: "error",
+          message: `${currentMessage} | Code: 1-1`,
+        });
+        errors.push({ [value]: currentMessage });
+      });
     });
-    res.status(422).send({ message: error.details[0].message });
+    // res.status(422).send({ message: error.details[0].message });
+    res.status(422).send(errors);
+    // logger.log({
+    //   level: "error",
+    //   message: `${error.details[0].message}. | code: 4-1 `,
+    // });
+    // res.status(422).send({ message: error.details[0].message });
   } else {
     const userNewPassword = req.body.userPassword1;
     const salt = await bcrypt.genSalt(10);
@@ -598,11 +619,24 @@ const userForgetPassword = async (req, res) => {
 const userUpdatePassword = (req, res) => {
   const { error, value } = userUpdatePasswordValidation(req.body);
   if (error) {
-    logger.log({
-      level: "error",
-      message: `${error.details[0].message}. | | code: 5-1`,
+    const errors = [];
+    error.details.forEach((detail) => {
+      const currentMessage = detail.message;
+      detail.path.forEach((value) => {
+        logger.log({
+          level: "error",
+          message: `${currentMessage} | Code: 1-1`,
+        });
+        errors.push({ [value]: currentMessage });
+      });
     });
-    res.status(422).send({ message: error.details[0].message });
+    // res.status(422).send({ message: error.details[0].message });
+    res.status(422).send(errors);
+    // logger.log({
+    //   level: "error",
+    //   message: `${error.details[0].message}. | | code: 5-1`,
+    // });
+    // res.status(422).send({ message: error.details[0].message });
   } else {
     const userCurrentPassword = value.userCurrentPassword;
     const userId = req.query.id;
@@ -683,11 +717,24 @@ const updateUserInformation = (req, res) => {
   const userEmailParam = req.params.userEmail;
   const { error, value } = updateUserInformationValidation(req.body);
   if (error) {
-    logger.log({
-      level: "error",
-      message: `${error.details[0].message}. | | code: 6-1`,
+    const errors = [];
+    error.details.forEach((detail) => {
+      const currentMessage = detail.message;
+      detail.path.forEach((value) => {
+        logger.log({
+          level: "error",
+          message: `${currentMessage} | Code: 1-1`,
+        });
+        errors.push({ [value]: currentMessage });
+      });
     });
-    return res.status(422).send({ message: error.details[0].message });
+    // res.status(422).send({ message: error.details[0].message });
+    res.status(422).send(errors);
+    // logger.log({
+    //   level: "error",
+    //   message: `${error.details[0].message}. | | code: 6-1`,
+    // });
+    // return res.status(422).send({ message: error.details[0].message });
   }
   const userFullName = value.userFullName;
   const userEmail = value.userEmail;

@@ -12,10 +12,6 @@ const campaignCollection = database.GetCollection().CampaignCollection();
 
 // Create Campaign
 const createCampaign = (req, res) => {
-  if (!req.file)
-    return res.status(422).send({
-      errorMessage: "File field is empty. Please upload a file.",
-    });
   let uploadFileName;
   let uploadFileExtension;
   const storage = multer.diskStorage({
@@ -107,6 +103,16 @@ const createCampaign = (req, res) => {
   }
 
   uploadImageInfo(req, res, function (error) {
+    if (
+      req.body.smsType === "Bulk SMS" ||
+      req.body.smsType === "Bulk multi SMS"
+    ) {
+      if (!req.file)
+        return res.status(422).send({
+          errorMessage: "File field is empty. Please upload a file.",
+        });
+    }
+
     if (error instanceof multer.MulterError) {
       return res.status(500).send(error);
     } else if (error) {
