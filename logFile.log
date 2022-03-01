@@ -529,3 +529,5 @@
 { 2022-03-01 12:16:13 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
 { 2022-03-01 12:51:27 | error : Invalid auth token or time is expired. | code: 11-2 }
 { 2022-03-01 12:51:35 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-03-01 13:05:41 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-03-01 13:05:42 | info : Authentication and refresh token have been sent. | code: 10-5 }

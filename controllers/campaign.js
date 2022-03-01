@@ -10,6 +10,7 @@ const xlsx = require("xlsx");
 
 const campaignCollection = database.GetCollection().CampaignCollection();
 
+// Create Campaign
 const createCampaign = (req, res) => {
   let uploadFileName;
   let uploadFileExtension;
@@ -24,7 +25,6 @@ const createCampaign = (req, res) => {
     },
   });
   const Filter = (req, file, cb) => {
-    //   if (file.mimetype.includes("csv", "xlx", "xlsx")) {
     if (
       (file.mimetype == "text/csv" ||
         file.mimetype ==
@@ -77,6 +77,30 @@ const createCampaign = (req, res) => {
     // }
   }
 
+  //Read file function
+  function readFile() {
+    if (uploadFileExtension === ".csv") {
+      try {
+        readCSV();
+      } catch (error) {
+        res.send(
+          "Unsupported file. Please upload .csv | .xlx | .xlsx type file."
+        );
+      }
+    } else if (
+      uploadFileExtension === ".xlx" ||
+      uploadFileExtension === ".xlsx"
+    ) {
+      try {
+        readXLSXORXLX();
+      } catch (error) {
+        res.send(
+          "Unsupported file. Please upload .csv | .xlx | .xlsx type file."
+        );
+      }
+    }
+  }
+
   uploadImageInfo(req, res, function (error) {
     if (error instanceof multer.MulterError) {
       return res.status(500).send(error);
@@ -88,30 +112,11 @@ const createCampaign = (req, res) => {
       res.send(req.body);
     }
     if (req.body.smsType === "Bulk SMS") {
-      if (uploadFileExtension === ".csv") {
-        try {
-          readCSV();
-        } catch (error) {
-          res.send(
-            "Unsupported file. Please upload .CSV | .XLX | .XLSX type file."
-          );
-        }
-      } else if (
-        uploadFileExtension === ".xlx" ||
-        uploadFileExtension === ".xlsx"
-      ) {
-        try {
-          readXLSXORXLX();
-        } catch (error) {
-          res.send(
-            "Unsupported file. Please upload .CSV | .XLX | .XLSX type file."
-          );
-        }
-      }
+      readFile();
     }
     if (req.body.smsType === "Bulk multi SMS") {
-      console.log(req.file);
-      res.send(req.body);
+      readFile();
+      // res.send(req.body);
     }
   });
   //   const campaignInformation = req.body;
@@ -179,5 +184,4 @@ module.exports = {
   createCampaign,
   showAllCampaign,
   deleteCampaign,
-  // uploadImageInfo,
 };

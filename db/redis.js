@@ -25,7 +25,7 @@ module.exports = (function () {
   }
 
   function getRedisClient() {
-    console.log(client);
+    // console.log(client);
     if (!client) {
       throw new Error("RedisDb object is not initialized!");
     }
