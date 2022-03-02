@@ -7,16 +7,22 @@ const { MulterError } = require("multer");
 const fs = require("fs");
 const csv = require("fast-csv");
 const xlsx = require("xlsx");
-
+const {
+  campaignCreateInstantSMSValidation,
+  campaignCreateBulkSMSValidation,
+  campaignCreateBulkMultiSMSValidation,
+} = require("../validations/validation");
 const campaignCollection = database.GetCollection().CampaignCollection();
 
 // Create Campaign
 const createCampaign = (req, res) => {
   let uploadFileName;
   let uploadFileExtension;
+
+  //Define storage and file name
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, "./uploads");
+      cb(null, "./uploads/campaign_files");
     },
     filename: function (req, file, cb) {
       uploadFileName = md5(file.originalname) + path.extname(file.originalname);
@@ -24,6 +30,8 @@ const createCampaign = (req, res) => {
       cb(null, uploadFileName);
     },
   });
+
+  //File filter
   const Filter = (req, file, cb) => {
     if (
       (file.mimetype == "text/csv" ||
@@ -39,7 +47,7 @@ const createCampaign = (req, res) => {
     }
   };
 
-  //image is the name of the input field.
+  //Multer upload function
   const uploadImageInfo = multer({
     storage: storage,
     fileFilter: Filter,
@@ -49,7 +57,7 @@ const createCampaign = (req, res) => {
   //Read CSV data
   function readCSV() {
     let csvData = [];
-    const filePath = path.resolve("./uploads/", uploadFileName);
+    const filePath = path.resolve("./uploads/campaign_files", uploadFileName);
     fs.createReadStream(filePath)
       .pipe(csv.parse({ headers: true }))
       .on("error", (error) => {
@@ -66,7 +74,7 @@ const createCampaign = (req, res) => {
 
   //Read XLX / XLSX data
   function readXLSXORXLX() {
-    const filePath = path.resolve("./uploads/", uploadFileName);
+    const filePath = path.resolve("./uploads/campaign_files/", uploadFileName);
     const workBook = xlsx.readFile(filePath);
     //find sheets
     const workSheet = workBook.Sheets["Sheet2"];
@@ -118,14 +126,65 @@ const createCampaign = (req, res) => {
     } else if (error) {
       return res.status(422).send(error);
     }
+
     if (req.body.smsType === "Instant SMS") {
+      const { error, value } = campaignCreateInstantSMSValidation(req.body);
+      if (error) {
+        const errors = [];
+        error.details.forEach((detail) => {
+          const currentMessage = detail.message;
+          detail.path.forEach((value) => {
+            // logger.log({
+            //   level: "error",
+            //   message: `${currentMessage} | Code: 1-1`,
+            // });
+            errors.push({ [value]: currentMessage });
+          });
+        });
+        // res.status(422).send({ message: error.details[0].message });
+        return res.status(422).send(errors);
+      }
       console.log(req.body);
       res.send(req.body);
     }
+
     if (req.body.smsType === "Bulk SMS") {
+      const { error, value } = campaignCreateBulkSMSValidation(req.body);
+      if (error) {
+        const errors = [];
+        error.details.forEach((detail) => {
+          const currentMessage = detail.message;
+          detail.path.forEach((value) => {
+            // logger.log({
+            //   level: "error",
+            //   message: `${currentMessage} | Code: 1-1`,
+            // });
+            errors.push({ [value]: currentMessage });
+          });
+        });
+        // res.status(422).send({ message: error.details[0].message });
+        return res.status(422).send(errors);
+      }
       readFile();
     }
+
     if (req.body.smsType === "Bulk multi SMS") {
+      const { error, value } = campaignCreateBulkMultiSMSValidation(req.body);
+      if (error) {
+        const errors = [];
+        error.details.forEach((detail) => {
+          const currentMessage = detail.message;
+          detail.path.forEach((value) => {
+            // logger.log({
+            //   level: "error",
+            //   message: `${currentMessage} | Code: 1-1`,
+            // });
+            errors.push({ [value]: currentMessage });
+          });
+        });
+        // res.status(422).send({ message: error.details[0].message });
+        return res.status(422).send(errors);
+      }
       readFile();
       // res.send(req.body);
     }

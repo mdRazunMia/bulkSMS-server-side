@@ -265,6 +265,69 @@ const subUserPasswordResetValidation = (data) => {
   return schema.validate(data, { abortEarly: false });
 };
 
+const campaignCreateInstantSMSValidation = (data) => {
+  const schema = Joi.object({
+    campaignName: Joi.string().required().messages({
+      "string.empty": `Campaign name cannot be an empty field`,
+      "any.required": `Campaign name is a required field`,
+    }),
+    languageName: Joi.string().required().messages({
+      "string.empty": `Language name cannot be an empty field`,
+      "any.required": `Language is a required field`,
+    }),
+    smsType: Joi.required().messages({
+      "any.required": `SMS is a required filed`,
+    }),
+    instantSMS: Joi.string().required().messages({
+      "string.empty": `Instant SMS cannot be an empty field`,
+      "any.required": `Instant SMS is a required field`,
+    }),
+    phoneNumber: Joi.string().required().messages({
+      "string.empty": `Phone number cannot be an empty field`,
+      "any.required": `Phone number is a required field`,
+    }),
+  });
+  return schema.validate(data, { abortEarly: false });
+};
+
+const campaignCreateBulkSMSValidation = (data) => {
+  const schema = Joi.object({
+    campaignName: Joi.string().required().messages({
+      "string.empty": `Campaign name cannot be an empty field`,
+      "any.required": `Campaign name is a required field`,
+    }),
+    languageName: Joi.string().required().messages({
+      "string.empty": `Language name cannot be an empty field`,
+      "any.required": `Language is a required field`,
+    }),
+    smsType: Joi.required().messages({
+      "any.required": `SMS is a required filed`,
+    }),
+    bulkSMS: Joi.string().required().messages({
+      "string.empty": `Bulk SMS cannot be an empty field`,
+      "any.required": `Bulk SMS is a required field`,
+    }),
+  });
+  return schema.validate(data, { abortEarly: false });
+};
+
+const campaignCreateBulkMultiSMSValidation = (data) => {
+  const schema = Joi.object({
+    campaignName: Joi.string().required().messages({
+      "string.empty": `Campaign name cannot be an empty field`,
+      "any.required": `Campaign name is a required field`,
+    }),
+    languageName: Joi.string().required().messages({
+      "string.empty": `Language name cannot be an empty field`,
+      "any.required": `Language is a required field`,
+    }),
+    smsType: Joi.required().messages({
+      "any.required": `SMS is a required filed`,
+    }),
+  });
+  return schema.validate(data, { abortEarly: false });
+};
+
 module.exports = {
   registerValidation,
   loginValidation,
@@ -275,4 +338,7 @@ module.exports = {
   subUserPasswordResetValidation,
   userForgetPasswordValidation,
   updateUserInformationValidation,
+  campaignCreateInstantSMSValidation,
+  campaignCreateBulkSMSValidation,
+  campaignCreateBulkMultiSMSValidation,
 };
