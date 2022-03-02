@@ -574,3 +574,31 @@
 { 2022-03-02 11:51:22 | info : Authentication and refresh token have been sent. | code: 10-5 }
 { 2022-03-02 12:15:39 | error : Invalid auth token or time is expired. | code: 11-2 }
 { 2022-03-02 12:15:49 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-03-02 12:49:19 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-03-02 12:50:36 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-03-02 12:55:18 | error : Invalid auth token or time is expired. | code: 11-2 }
+{ 2022-03-02 12:55:18 | info : Authentication and refresh token have been sent. | code: 10-5 }
+{ 2022-03-02 16:08:26 | error : User name cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 16:08:26 | error : Email cannot be empty | Code: 1-1 }
+{ 2022-03-02 16:08:26 | error : Password cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 16:08:26 | error : "recaptchaToken" is not allowed | Code: 1-1 }
+{ 2022-03-02 16:10:49 | error : User name should have a minimum length of 3 characters | Code: 1-1 }
+{ 2022-03-02 16:10:49 | error : Email cannot be empty | Code: 1-1 }
+{ 2022-03-02 16:10:49 | error : Password cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 16:10:49 | error : "recaptchaToken" is not allowed | Code: 1-1 }
+{ 2022-03-02 16:55:10 | error : Campaign name cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 16:55:10 | error : "smsType" is not allowed | Code: 1-1 }
+{ 2022-03-02 16:55:10 | error : "bulkSMS" is not allowed | Code: 1-1 }
+{ 2022-03-02 17:11:52 | error : Campaign name cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 17:12:08 | error : Campaign name cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 17:12:08 | error : Language name cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 17:12:21 | error : Campaign name cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 17:12:21 | error : Language name cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 17:12:21 | error : Bulk SMS cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 17:33:58 | error : User name should have a minimum length of 3 characters | Code: 1-1 }
+{ 2022-03-02 17:33:58 | error : Email cannot be empty | Code: 1-1 }
+{ 2022-03-02 17:33:58 | error : Password cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 17:33:58 | error : "recaptchaToken" is not allowed | Code: 1-1 }
+{ 2022-03-02 17:34:16 | error : User name should have a minimum length of 3 characters | Code: 1-1 }
+{ 2022-03-02 17:34:16 | error : Email cannot be empty | Code: 1-1 }
+{ 2022-03-02 17:34:16 | error : Password cannot be an empty field | Code: 1-1 }

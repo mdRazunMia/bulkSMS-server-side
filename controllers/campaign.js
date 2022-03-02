@@ -7,11 +7,8 @@ const { MulterError } = require("multer");
 const fs = require("fs");
 const csv = require("fast-csv");
 const xlsx = require("xlsx");
-const {
-  campaignCreateInstantSMSValidation,
-  campaignCreateBulkSMSValidation,
-  campaignCreateBulkMultiSMSValidation,
-} = require("../validations/validation");
+const validatePhoneNumber = require("validate-phone-number-node-js");
+const { createCampaignValidation } = require("../validations/validation");
 const campaignCollection = database.GetCollection().CampaignCollection();
 
 // Create Campaign
@@ -78,9 +75,28 @@ const createCampaign = (req, res) => {
     const workBook = xlsx.readFile(filePath);
     //find sheets
     const workSheet = workBook.Sheets["Sheet2"];
-    const data = xlsx.utils.sheet_to_json(workSheet);
-    console.log(data);
-    res.send(data);
+    const clients_messages = xlsx.utils.sheet_to_json(workSheet);
+    clients_messages.map((client, index) => {
+      const phoneNumber = client["Phone Number"];
+      const message = client["Message"];
+      if (
+        !phoneNumber ||
+        phoneNumber === "undefined" ||
+        !message ||
+        message === "undefined"
+      ) {
+        console.log(`The number or the message are not in the field.`);
+      } else {
+        if (validatePhoneNumber.validate(phoneNumber)) {
+          // console.log("phone number is valid");
+          console.log(`number: ${phoneNumber} | message: ${message}`);
+        } else {
+          console.log("phone number is not valid");
+        }
+      }
+    });
+
+    // res.send(data);
     // for (let i = 0; i < data.length; i++) {
     //   console.log(data[i]);
     // }
@@ -111,33 +127,35 @@ const createCampaign = (req, res) => {
   }
 
   uploadImageInfo(req, res, function (error) {
-    if (
-      req.body.smsType === "Bulk SMS" ||
-      req.body.smsType === "Bulk multi SMS"
-    ) {
+    if (req.body.smsType === "3" || req.body.smsType === "4") {
       if (!req.file)
         return res.status(422).send({
           errorMessage: "File field is empty. Please upload a file.",
         });
     }
-
+    if (req.body.smsType === "0") {
+      return res.status(422).send({
+        errorMessage:
+          "You didn't select any SMS type. Please select a SMS type.",
+      });
+    }
     if (error instanceof multer.MulterError) {
       return res.status(500).send(error);
     } else if (error) {
       return res.status(422).send(error);
     }
 
-    if (req.body.smsType === "Instant SMS") {
-      const { error, value } = campaignCreateInstantSMSValidation(req.body);
+    if (req.body.smsType === "2") {
+      const { error, value } = createCampaignValidation(req.body);
       if (error) {
         const errors = [];
         error.details.forEach((detail) => {
           const currentMessage = detail.message;
           detail.path.forEach((value) => {
-            // logger.log({
-            //   level: "error",
-            //   message: `${currentMessage} | Code: 1-1`,
-            // });
+            logger.log({
+              level: "error",
+              message: `${currentMessage} | Code: 1-1`,
+            });
             errors.push({ [value]: currentMessage });
           });
         });
@@ -148,17 +166,24 @@ const createCampaign = (req, res) => {
       res.send(req.body);
     }
 
-    if (req.body.smsType === "Bulk SMS") {
-      const { error, value } = campaignCreateBulkSMSValidation(req.body);
+    if (req.body.smsType === "3") {
+      const bulkSMSObject = {
+        campaignName: req.body.campaignName,
+        languageName: req.body.languageName,
+        smsType: req.body.smsType,
+        bulkSMS: req.body.bulkSMS,
+      };
+      // console.log(bulkSMSObject);
+      const { error, value } = createCampaignValidation(bulkSMSObject);
       if (error) {
         const errors = [];
         error.details.forEach((detail) => {
           const currentMessage = detail.message;
           detail.path.forEach((value) => {
-            // logger.log({
-            //   level: "error",
-            //   message: `${currentMessage} | Code: 1-1`,
-            // });
+            logger.log({
+              level: "error",
+              message: `${currentMessage} | Code: 1-1`,
+            });
             errors.push({ [value]: currentMessage });
           });
         });
@@ -168,17 +193,22 @@ const createCampaign = (req, res) => {
       readFile();
     }
 
-    if (req.body.smsType === "Bulk multi SMS") {
-      const { error, value } = campaignCreateBulkMultiSMSValidation(req.body);
+    if (req.body.smsType === "4") {
+      const bulkSMSObject = {
+        campaignName: req.body.campaignName,
+        languageName: req.body.languageName,
+        smsType: req.body.smsType,
+      };
+      const { error, value } = createCampaignValidation(bulkSMSObject);
       if (error) {
         const errors = [];
         error.details.forEach((detail) => {
           const currentMessage = detail.message;
           detail.path.forEach((value) => {
-            // logger.log({
-            //   level: "error",
-            //   message: `${currentMessage} | Code: 1-1`,
-            // });
+            logger.log({
+              level: "error",
+              message: `${currentMessage} | Code: 1-1`,
+            });
             errors.push({ [value]: currentMessage });
           });
         });
