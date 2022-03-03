@@ -212,7 +212,6 @@ const createCampaign = (req, res) => {
             errors.push({ [value]: currentMessage });
           });
         });
-        // res.status(422).send({ message: error.details[0].message });
         return res.status(422).send(errors);
       }
       readFile();
