@@ -602,3 +602,8 @@
 { 2022-03-02 17:34:16 | error : User name should have a minimum length of 3 characters | Code: 1-1 }
 { 2022-03-02 17:34:16 | error : Email cannot be empty | Code: 1-1 }
 { 2022-03-02 17:34:16 | error : Password cannot be an empty field | Code: 1-1 }
+{ 2022-03-02 17:39:54 | error : Email must be a valid Email. | Code: 2-1 }
+{ 2022-03-02 17:40:06 | info : User successfully logged in.| user id: 6209df192717df9a29c6cca8 | Code: 2-4 }
+{ 2022-03-03 10:08:46 | error : Email incorrect or registered first. | Code: 2-9 }
+{ 2022-03-03 10:09:01 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-03-03 10:09:02 | info : Get all the info of requested user after login. | code: 9-1 }

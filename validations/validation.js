@@ -289,8 +289,5 @@ module.exports = {
   subUserPasswordResetValidation,
   userForgetPasswordValidation,
   updateUserInformationValidation,
-  // campaignCreateInstantSMSValidation,
-  // campaignCreateBulkSMSValidation,
-  // campaignCreateBulkMultiSMSValidation,
   createCampaignValidation,
 };
