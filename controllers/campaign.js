@@ -11,7 +11,64 @@ const validatePhoneNumber = require("validate-phone-number-node-js");
 const { createCampaignValidation } = require("../validations/validation");
 const campaignCollection = database.GetCollection().CampaignCollection();
 
-// Create Campaign
+// //Define storage and file name
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "/Users/mdrazunmia/Documents/bulkSMS-server-files");
+//   },
+//   filename: function (req, file, cb) {
+//     uploadFileName = md5(file.originalname) + path.extname(file.originalname);
+//     uploadFileExtension = path.extname(file.originalname);
+//     cb(null, uploadFileName);
+//   },
+// });
+
+// //File filter
+// const Filter = (req, file, cb) => {
+//   if (
+//     (file.mimetype == "text/csv" ||
+//       file.mimetype ==
+//         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
+//     (path.extname(file.originalname) == ".csv" ||
+//       path.extname(file.originalname) == ".xlx" ||
+//       path.extname(file.originalname) == ".xlsx")
+//   ) {
+//     cb(null, true);
+//   } else {
+//     cb("Please upload only csv | xlx | xlsx type file.", false);
+//   }
+// };
+
+// //Multer upload function
+// const uploadImageInfo = multer({
+//   storage: storage,
+//   fileFilter: Filter,
+//   limits: { fileSize: process.env.MAX_UPLOAD_FILE_SIZE },
+// }).single("file"); //"file" is the name of the file input field name
+
+// const createCampaign = (req, res) => {
+//   // if (!req.file) {
+//   //   return res.status(422).send({ errorMessage: "There is no file" });
+//   // }
+//   // if (
+//   //   (file.mimetype !== "text/csv" ||
+//   //     file.mimetype !==
+//   //       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
+//   //   (path.extname(file.originalname) !== ".csv" ||
+//   //     path.extname(file.originalname) !== ".xlx" ||
+//   //     path.extname(file.originalname) !== ".xlsx")
+//   // ) {
+//   //   return res
+//   //     .status(422)
+//   //     .send({ errorMessage: "File formate is not supported." });
+//   // } else if (req.file.size > process.env.MAX_UPLOAD_FILE_SIZE) {
+//   //   return res
+//   //     .status(422)
+//   //     .send({ errorMessage: "File size must be less than 10MB." });
+//   // }
+//   res.send(req.body);
+// };
+
 const createCampaign = (req, res) => {
   let uploadFileName;
   let uploadFileExtension;
@@ -19,7 +76,11 @@ const createCampaign = (req, res) => {
   //Define storage and file name
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, "./uploads/campaign_files");
+      // cb(null, "./uploads/campaign_files");
+      cb(
+        null,
+        "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/"
+      );
     },
     filename: function (req, file, cb) {
       uploadFileName = md5(file.originalname) + path.extname(file.originalname);
@@ -156,6 +217,37 @@ const createCampaign = (req, res) => {
     }
   }
 
+  //Move the file from temporary directory to working directory
+  function moveFile() {
+    const oldFilePath = path.resolve(
+      "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/" +
+        uploadFileName
+    );
+    const newFilePath = path.resolve(
+      "./uploads/campaign_files",
+      uploadFileName
+    );
+    fs.rename(oldFilePath, newFilePath, (error) => {
+      if (error) throw error;
+      console.log("File successfully moved to the new destination.");
+    });
+  }
+
+  //Delete file from the temporary directory
+  function deleteFile() {
+    const oldFilePath = path.resolve(
+      "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/" +
+        uploadFileName
+    );
+    fs.unlink(oldFilePath, function (err) {
+      if (err) {
+        throw err;
+      } else {
+        console.log("Successfully deleted the file.");
+      }
+    });
+  }
+
   uploadImageInfo(req, res, function (error) {
     if (req.body.smsType === "3" || req.body.smsType === "4") {
       if (!req.file)
@@ -217,9 +309,11 @@ const createCampaign = (req, res) => {
             errors.push({ [value]: currentMessage });
           });
         });
+        deleteFile();
         // res.status(422).send({ message: error.details[0].message });
         return res.status(422).send(errors);
       }
+      moveFile();
       readFile();
     }
 
@@ -242,8 +336,10 @@ const createCampaign = (req, res) => {
             errors.push({ [value]: currentMessage });
           });
         });
+        deleteFile();
         return res.status(422).send(errors);
       }
+      moveFile();
       readFile();
       // res.send(req.body);
     }
@@ -311,6 +407,7 @@ const deleteCampaign = (req, res) => {
 
 module.exports = {
   createCampaign,
+  // uploadImageInfo,
   showAllCampaign,
   deleteCampaign,
 };
