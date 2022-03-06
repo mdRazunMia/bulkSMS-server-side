@@ -159,6 +159,7 @@ const createCampaign = (req, res) => {
     //find sheets
     const workSheet = workBook.Sheets["Sheet2"];
     const clients_messages = xlsx.utils.sheet_to_json(workSheet);
+    res.send(clients_messages);
     clients_messages.map((client, index) => {
       const phoneNumber = client["Phone Number"];
       const message = client["Message"];
@@ -173,6 +174,7 @@ const createCampaign = (req, res) => {
             index + 1
           } | The number or the message or both the field is not available.`
         );
+        res.send("Fail");
       } else {
         if (validatePhoneNumber(phoneNumber)) {
           console.log(
@@ -180,12 +182,13 @@ const createCampaign = (req, res) => {
               index + 1
             } | number: ${phoneNumber} | message: ${message}`
           );
+          res.send("hello");
         } else {
           console.log(`serial No.: ${index + 1} | phone number is not valid.`);
+          res.send("hello");
         }
       }
     });
-
     // res.send(data);
     // for (let i = 0; i < data.length; i++) {
     //   console.log(data[i]);
