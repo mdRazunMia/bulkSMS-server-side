@@ -249,12 +249,6 @@ const createCampaign = (req, res) => {
   }
 
   uploadImageInfo(req, res, function (error) {
-    if (req.body.smsType === "3" || req.body.smsType === "4") {
-      if (!req.file)
-        return res.status(422).send({
-          errorMessage: "File field is empty. Please upload a file.",
-        });
-    }
     if (req.body.smsType === "0") {
       return res.status(422).send({
         errorMessage:
@@ -264,9 +258,14 @@ const createCampaign = (req, res) => {
     if (error instanceof multer.MulterError) {
       return res.status(500).send(error);
     } else if (error) {
-      return res.status(422).send(error);
+      return res.status(422).send({ errorMessage: error });
     }
-
+    if (req.body.smsType === "3" || req.body.smsType === "4") {
+      if (!req.file)
+        return res.status(422).send({
+          errorMessage: "File field is empty. Please upload a file.",
+        });
+    }
     if (req.body.smsType === "2") {
       const { error, value } = createCampaignValidation(req.body);
       if (error) {
