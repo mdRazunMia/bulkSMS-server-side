@@ -30,13 +30,13 @@ const registerValidation = (data) => {
   });
 
   if (process.env.REGISTRATION_RECAPTCHA === "true") {
-    const registrationRecaptchaSchema = schema.append({
+    schema = schema.append({
       recaptchaToken: Joi.string().required().messages({
         "string.empty": `Recaptcha cannot be an empty field`,
         "any.required": `Recaptcha is a required field`,
       }),
     });
-    return registrationRecaptchaSchema.validate(data, { abortEarly: false });
+    //return registrationRecaptchaSchema.validate(data, { abortEarly: false });
   }
   return schema.validate(data, { abortEarly: false });
 };
@@ -228,11 +228,8 @@ const subUserPasswordResetValidation = (data) => {
 };
 
 const createCampaignValidation = (data) => {
-  console.log(data.smsType);
-  console.log(typeof data.smsType);
-
-  let schema;
-  schema = Joi.object({
+  //console.log(typeof data.smsType);
+  let schema = Joi.object({
     campaignName: Joi.string().required().messages({
       "string.empty": `Campaign name cannot be an empty field`,
       "any.required": `Campaign name is a required field`,
@@ -244,7 +241,7 @@ const createCampaignValidation = (data) => {
   });
   //2-->instance 3-->bulk 4-->bulk multi
   if (data.smsType === "2") {
-    const instanceSchema = schema.append({
+    schema = schema.append({
       smsType: Joi.required().messages({
         "any.required": `SMS is a required filed`,
       }),
@@ -257,9 +254,9 @@ const createCampaignValidation = (data) => {
         "any.required": `Phone number is a required field`,
       }),
     });
-    return instanceSchema.validate(data, { abortEarly: false });
+    // return instanceSchema.validate(data, { abortEarly: false });
   } else if (data.smsType === "3") {
-    const bulKSchema = schema.append({
+    schema = schema.append({
       smsType: Joi.required().messages({
         "any.required": `SMS is a required filed`,
       }),
@@ -268,15 +265,16 @@ const createCampaignValidation = (data) => {
         "any.required": `Bulk SMS is a required field`,
       }),
     });
-    return bulKSchema.validate(data, { abortEarly: false });
+    //return bulKSchema.validate(data, { abortEarly: false });
   } else if (data.smsType === "4") {
-    const bulkMultiSchema = schema.append({
+    schema = schema.append({
       smsType: Joi.required().messages({
         "any.required": `SMS is a required filed`,
       }),
     });
-    return bulkMultiSchema.validate(data, { abortEarly: false });
+    // return bulkMultiSchema.validate(data, { abortEarly: false });
   }
+  return schema.validate(data, { abortEarly: false });
 };
 
 module.exports = {

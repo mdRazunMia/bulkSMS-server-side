@@ -56,7 +56,7 @@ const createCampaign = (req, res) => {
     let csvData = [];
     const filePath = path.resolve("./uploads/campaign_files", uploadFileName);
     fs.createReadStream(filePath)
-      .pipe(csv.parse({ headers: true }))
+      .pipe(csv.parse({ headers: true })) // { headers: true }
       .on("error", (error) => {
         throw error.message;
       })
@@ -64,9 +64,31 @@ const createCampaign = (req, res) => {
         csvData.push(row);
       })
       .on("end", () => {
-        res.send(csvData);
+        // res.send(csvData);
+        csvData.map((value, index) => {
+          const number = "0" + value.number;
+          const message = value.message;
+          if (!number || !message) {
+            `Serial No.: ${index + 1} | Message or Number is null`;
+          } else {
+            if (validatePhoneNumber(number)) {
+              console.log(
+                `Serial No.: ${
+                  index + 1
+                } | Number: ${number} | Message: ${message}`
+              );
+            } else {
+              console.log(`Serial No.: ${index + 1} | Phone number is invalid`);
+            }
+          }
+        });
         //other functionalities will be here
       });
+  }
+
+  function validatePhoneNumber(phoneNumber) {
+    const regex = new RegExp("^(?:\\+88|88)?(01[3-9]\\d{8})$");
+    return regex.test(phoneNumber);
   }
 
   //Read XLX / XLSX data
@@ -85,13 +107,20 @@ const createCampaign = (req, res) => {
         !message ||
         message === "undefined"
       ) {
-        console.log(`The number or the message are not in the field.`);
+        console.log(
+          `serial No.: ${
+            index + 1
+          } | The number or the message or both the field is not available.`
+        );
       } else {
-        if (validatePhoneNumber.validate(phoneNumber)) {
-          // console.log("phone number is valid");
-          console.log(`number: ${phoneNumber} | message: ${message}`);
+        if (validatePhoneNumber(phoneNumber)) {
+          console.log(
+            `serial No.: ${
+              index + 1
+            } | number: ${phoneNumber} | message: ${message}`
+          );
         } else {
-          console.log("phone number is not valid");
+          console.log(`serial No.: ${index + 1} | phone number is not valid.`);
         }
       }
     });
@@ -119,6 +148,7 @@ const createCampaign = (req, res) => {
       try {
         readXLSXORXLX();
       } catch (error) {
+        console.log(error);
         res.send(
           "Unsupported file. Please upload .csv | .xlx | .xlsx type file."
         );
