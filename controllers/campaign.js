@@ -80,6 +80,7 @@ const createCampaign = (req, res) => {
       cb(
         null,
         "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/"
+        // "/var/folders/43/g0ct804976n0ky9fy4_5l3300000gn/T/Documents/bulkSMS-server-files/campaign_files/"
       );
     },
     filename: function (req, file, cb) {
@@ -225,6 +226,8 @@ const createCampaign = (req, res) => {
     const oldFilePath = path.resolve(
       "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/" +
         uploadFileName
+      // "/var/folders/43/g0ct804976n0ky9fy4_5l3300000gn/T/Documents/bulkSMS-server-files/campaign_files/" +
+      //   uploadFileName
     );
     const newFilePath = path.resolve(
       "./uploads/campaign_files",
@@ -241,6 +244,8 @@ const createCampaign = (req, res) => {
     const oldFilePath = path.resolve(
       "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/" +
         uploadFileName
+      // "/var/folders/43/g0ct804976n0ky9fy4_5l3300000gn/T/Documents/bulkSMS-server-files/campaign_files/" +
+      //   uploadFileName
     );
     fs.unlink(oldFilePath, function (err) {
       if (err) {
