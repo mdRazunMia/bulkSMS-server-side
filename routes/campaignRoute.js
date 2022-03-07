@@ -12,5 +12,7 @@ const auth = require("../validations/verify");
 router.post("/create", auth, campaignController.createCampaign);
 router.get("/show", auth, campaignController.showAllCampaign);
 router.delete("/delete/:campaignId", auth, campaignController.deleteCampaign);
+//test data route
+router.get("/data", campaignController.getData);
 
 module.exports = router;
