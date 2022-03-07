@@ -163,6 +163,22 @@ const createCampaign = (req, res) => {
   //Read CSV data
   function readCSV() {
     if (process.env.S3_STORAGE === "true") {
+      aws.config.update({
+        accessKeyId: process.env.AWS_S3_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_S3_SECRET_KEY,
+      });
+      const s3 = new aws.S3();
+      let params = {
+        Bucket: `${process.env.AWS_BUCKET_NAME}`,
+        Key: `${uploadFileName}`,
+      };
+
+      // var file = new aws.S3.getObject(params).createReadStream();
+      let file = s3.getObject(params).createReadStream();
+      const data = csv.parseStream(file);
+      data.on("data", (data) => {
+        console.log(data);
+      });
     }
     if (process.env.LOCAL_STORAGE === "true") {
       let csvData = [];
@@ -352,13 +368,6 @@ const createCampaign = (req, res) => {
   }
 
   uploadImageInfo(req, res, function (error) {
-    if (process.env.S3_STORAGE === "true" && typeof req.file === "undefined") {
-      return res.send({
-        errorMessage:
-          "File format is not supported. Please provide .csv | .xlx | .xlsx type file",
-      });
-    }
-
     if (req.body.smsType === "0") {
       return res.status(422).send({
         errorMessage:
@@ -376,6 +385,7 @@ const createCampaign = (req, res) => {
           errorMessage: "File field is empty. Please upload a file.",
         });
     }
+
     if (req.body.smsType === "2") {
       const { error, value } = createCampaignValidation(req.body);
       if (error) {
