@@ -7,7 +7,9 @@ const { MulterError } = require("multer");
 const fs = require("fs");
 const csv = require("fast-csv");
 const xlsx = require("xlsx");
-const validatePhoneNumber = require("validate-phone-number-node-js");
+const aws = require("aws-sdk");
+const muterS3 = require("multer-s3");
+const xlsx_node_parser = require("node-xlsx");
 const { createCampaignValidation } = require("../validations/validation");
 const campaignCollection = database.GetCollection().CampaignCollection();
 
@@ -72,80 +74,138 @@ const campaignCollection = database.GetCollection().CampaignCollection();
 const createCampaign = (req, res) => {
   let uploadFileName;
   let uploadFileExtension;
+  let localStorage;
+  let uploadImageInfo;
 
-  //Define storage and file name
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      // cb(null, "./uploads/campaign_files");
-      cb(
-        null,
-        "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/"
-        // "/var/folders/43/g0ct804976n0ky9fy4_5l3300000gn/T/Documents/bulkSMS-server-files/campaign_files/"
-      );
-    },
-    filename: function (req, file, cb) {
-      uploadFileName = md5(file.originalname) + path.extname(file.originalname);
-      uploadFileExtension = path.extname(file.originalname);
-      cb(null, uploadFileName);
-    },
-  });
+  if (process.env.S3_STORAGE === "true") {
+    const S3 = new aws.S3({
+      accessKeyId: process.env.AWS_S3_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_S3_SECRET_KEY,
+      region: process.env.AWS_S3_REGION,
+    });
 
-  //File filter
-  const Filter = (req, file, cb) => {
-    if (
-      (file.mimetype == "text/csv" ||
-        file.mimetype ==
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
-      (path.extname(file.originalname) == ".csv" ||
-        path.extname(file.originalname) == ".xlx" ||
-        path.extname(file.originalname) == ".xlsx")
-    ) {
-      cb(null, true);
-    } else {
-      cb("Please upload only csv | xlx | xlsx type file.", false);
-    }
-  };
+    const Filter = (req, file, cb) => {
+      if (
+        (file.mimetype == "text/csv" ||
+          file.mimetype ==
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
+        (path.extname(file.originalname) == ".csv" ||
+          path.extname(file.originalname) == ".xlx" ||
+          path.extname(file.originalname) == ".xlsx")
+      ) {
+        cb(null, true);
+      } else {
+        cb("Please upload only csv | xlx | xlsx type file.", false);
+      }
+    };
+    //upload image into s3
+    uploadImageInfo = multer({
+      storage: muterS3({
+        s3: S3,
+        bucket: process.env.AWS_BUCKET_NAME,
+        metadata: (req, file, cb) => {
+          cb(null, { fileName: file.fieldname });
+        },
+        key: (req, file, cb) => {
+          uploadFileName =
+            md5(file.originalname) + path.extname(file.originalname);
+          uploadFileExtension = path.extname(file.originalname);
+          cb(null, uploadFileName);
+        },
+      }),
+      fileFilter: Filter,
+    }).single("file");
+  }
 
-  //Multer upload function
-  const uploadImageInfo = multer({
-    storage: storage,
-    fileFilter: Filter,
-    limits: { fileSize: process.env.MAX_UPLOAD_FILE_SIZE },
-  }).single("file"); //"file" is the name of the file input field name
+  if (process.env.LOCAL_STORAGE === "true") {
+    //Define storage and file name
+    localStorage = multer.diskStorage({
+      destination: function (req, file, cb) {
+        // cb(null, "./uploads/campaign_files");
+        cb(
+          null,
+          "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/"
+          // "/var/folders/43/g0ct804976n0ky9fy4_5l3300000gn/T/Documents/bulkSMS-server-files/campaign_files/"
+        );
+      },
+      filename: function (req, file, cb) {
+        uploadFileName =
+          md5(file.originalname) + path.extname(file.originalname);
+        uploadFileExtension = path.extname(file.originalname);
+        cb(null, uploadFileName);
+      },
+    });
+
+    //File filter
+    const Filter = (req, file, cb) => {
+      if (
+        (file.mimetype == "text/csv" ||
+          file.mimetype ==
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
+        (path.extname(file.originalname) == ".csv" ||
+          path.extname(file.originalname) == ".xlx" ||
+          path.extname(file.originalname) == ".xlsx")
+      ) {
+        cb(null, true);
+      } else {
+        cb("Please upload only csv | xlx | xlsx type file.", false);
+      }
+    };
+
+    //Multer upload function
+    uploadImageInfo = multer({
+      storage: localStorage,
+      fileFilter: Filter,
+      limits: { fileSize: process.env.MAX_UPLOAD_FILE_SIZE },
+    }).single("file"); //"file" is the name of the file input field name
+  }
 
   //Read CSV data
   function readCSV() {
-    let csvData = [];
-    const filePath = path.resolve("./uploads/campaign_files", uploadFileName);
-    fs.createReadStream(filePath)
-      .pipe(csv.parse({ headers: true })) // { headers: true }
-      .on("error", (error) => {
-        throw error.message;
-      })
-      .on("data", (row) => {
-        csvData.push(row);
-      })
-      .on("end", () => {
-        // res.send(csvData);
-        csvData.map((value, index) => {
-          const number = "0" + value.number;
-          const message = value.message;
-          if (!number || !message) {
-            `Serial No.: ${index + 1} | Message or Number is null`;
-          } else {
-            if (validatePhoneNumber(number)) {
-              console.log(
-                `Serial No.: ${
-                  index + 1
-                } | Number: ${number} | Message: ${message}`
-              );
+    if (process.env.S3_STORAGE === "true") {
+    }
+    if (process.env.LOCAL_STORAGE === "true") {
+      let csvData = [];
+      let filePath;
+      if (process.env.LOCAL_STORAGE === "true")
+        filePath = path.resolve("./uploads/campaign_files", uploadFileName);
+      if (process.env.S3_STORAGE === "true")
+        filePath = path.resolve(
+          "https://dotonline-user-profile-image.s3.us-east-2.amazonaws.com/",
+          uploadFileName
+        );
+      fs.createReadStream(filePath)
+        .pipe(csv.parse({ headers: true })) // { headers: true }
+        .on("error", (error) => {
+          throw error.message;
+        })
+        .on("data", (row) => {
+          csvData.push(row);
+        })
+        .on("end", () => {
+          // res.send(csvData);
+          csvData.map((value, index) => {
+            const number = "0" + value.number;
+            const message = value.message;
+            if (!number || !message) {
+              `Serial No.: ${index + 1} | Message or Number is null`;
             } else {
-              console.log(`Serial No.: ${index + 1} | Phone number is invalid`);
+              if (validatePhoneNumber(number)) {
+                console.log(
+                  `Serial No.: ${
+                    index + 1
+                  } | Number: ${number} | Message: ${message}`
+                );
+              } else {
+                console.log(
+                  `Serial No.: ${index + 1} | Phone number is invalid`
+                );
+              }
             }
-          }
+          });
+          //other functionalities will be here
         });
-        //other functionalities will be here
-      });
+    }
   }
 
   function validatePhoneNumber(phoneNumber) {
@@ -155,41 +215,75 @@ const createCampaign = (req, res) => {
 
   //Read XLX / XLSX data
   function readXLSXORXLX() {
-    const filePath = path.resolve("./uploads/campaign_files/", uploadFileName);
-    const workBook = xlsx.readFile(filePath);
-    //find sheets
-    const workSheet = workBook.Sheets["Sheet2"];
-    const clients_messages = xlsx.utils.sheet_to_json(workSheet);
-    res.send(clients_messages);
-    clients_messages.map((client, index) => {
-      const phoneNumber = client["Phone Number"];
-      const message = client["Message"];
-      if (
-        !phoneNumber ||
-        phoneNumber === "undefined" ||
-        !message ||
-        message === "undefined"
-      ) {
-        console.log(
-          `serial No.: ${
-            index + 1
-          } | The number or the message or both the field is not available.`
-        );
-        res.send("Fail");
-      } else {
-        if (validatePhoneNumber(phoneNumber)) {
+    if (process.env.S3_STORAGE === "true") {
+      aws.config.update({
+        accessKeyId: process.env.AWS_S3_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_S3_SECRET_KEY,
+      });
+      const s3 = new aws.S3();
+      let params = {
+        Bucket: `${process.env.AWS_BUCKET_NAME}`,
+        Key: `${uploadFileName}`,
+      };
+
+      // var file = new aws.S3.getObject(params).createReadStream();
+      let file = s3.getObject(params).createReadStream();
+      let buffers = [];
+
+      file.on("data", function (data) {
+        buffers.push(data);
+      });
+      file.on("end", function () {
+        let buffer = Buffer.concat(buffers);
+        let workBook = xlsx_node_parser.parse(buffer);
+        const data = workBook[0].data;
+        const info = {};
+        data.map((row, index) => {
+          if (index !== 0) {
+            row.map((value, index) => {
+              console.log(value);
+            });
+          }
+        });
+      });
+    }
+    if (process.env.LOCAL_STORAGE === "true") {
+      filePath = path.resolve("./uploads/campaign_files", uploadFileName);
+
+      const workBook = xlsx.readFile(filePath);
+      //find sheets
+      const workSheet = workBook.Sheets["Sheet2"];
+      const clients_messages = xlsx.utils.sheet_to_json(workSheet);
+      res.send(clients_messages);
+      clients_messages.map((client, index) => {
+        const phoneNumber = client["Phone Number"];
+        const message = client["Message"];
+        if (
+          !phoneNumber ||
+          phoneNumber === "undefined" ||
+          !message ||
+          message === "undefined"
+        ) {
           console.log(
             `serial No.: ${
               index + 1
-            } | number: ${phoneNumber} | message: ${message}`
+            } | The number or the message or both the field is not available.`
           );
-          res.send("hello");
         } else {
-          console.log(`serial No.: ${index + 1} | phone number is not valid.`);
-          res.send("hello");
+          if (validatePhoneNumber(phoneNumber)) {
+            console.log(
+              `serial No.: ${
+                index + 1
+              } | number: ${phoneNumber} | message: ${message}`
+            );
+          } else {
+            console.log(
+              `serial No.: ${index + 1} | phone number is not valid.`
+            );
+          }
         }
-      }
-    });
+      });
+    }
     // res.send(data);
     // for (let i = 0; i < data.length; i++) {
     //   console.log(data[i]);
@@ -211,6 +305,7 @@ const createCampaign = (req, res) => {
       uploadFileExtension === ".xlsx"
     ) {
       try {
+        console.log("xlx");
         readXLSXORXLX();
       } catch (error) {
         console.log(error);
@@ -257,6 +352,13 @@ const createCampaign = (req, res) => {
   }
 
   uploadImageInfo(req, res, function (error) {
+    if (process.env.S3_STORAGE === "true" && typeof req.file === "undefined") {
+      return res.send({
+        errorMessage:
+          "File format is not supported. Please provide .csv | .xlx | .xlsx type file",
+      });
+    }
+
     if (req.body.smsType === "0") {
       return res.status(422).send({
         errorMessage:
@@ -316,11 +418,11 @@ const createCampaign = (req, res) => {
             errors.push({ [value]: currentMessage });
           });
         });
-        deleteFile();
+        if (process.env.LOCAL_STORAGE === "true") deleteFile();
         // res.status(422).send({ message: error.details[0].message });
         return res.status(422).send(errors);
       }
-      moveFile();
+      if (process.env.LOCAL_STORAGE === "true") moveFile();
       readFile();
     }
 
@@ -343,14 +445,15 @@ const createCampaign = (req, res) => {
             errors.push({ [value]: currentMessage });
           });
         });
-        deleteFile();
+        if (process.env.LOCAL_STORAGE === "true") deleteFile();
         return res.status(422).send(errors);
       }
-      moveFile();
+      if (process.env.LOCAL_STORAGE === "true") moveFile();
       readFile();
       // res.send(req.body);
     }
   });
+
   //   const campaignInformation = req.body;
   //   console.log(req);
   //   console.log(`file size: ${parseInt(req.headers["content-length"])}`);
