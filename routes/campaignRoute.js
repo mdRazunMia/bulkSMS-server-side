@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const campaignController = require("../controllers/campaign.js");
 const auth = require("../validations/verify");
+// const ACL = require("acl2");
+// const acl = new ACL(new ACL.memoryBackend());
+// acl.allow("sub-admin", ["view"]);
 //CAMPAIGN ROUTE
 // router.post(
 //   "/create",

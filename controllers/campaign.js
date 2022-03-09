@@ -121,12 +121,7 @@ const createCampaign = (req, res) => {
     //Define storage and file name
     localStorage = multer.diskStorage({
       destination: function (req, file, cb) {
-        // cb(null, "./uploads/campaign_files");
-        cb(
-          null,
-          "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/"
-          // "/var/folders/43/g0ct804976n0ky9fy4_5l3300000gn/T/Documents/bulkSMS-server-files/campaign_files/"
-        );
+        cb(null, "./uploads/temp");
       },
       filename: function (req, file, cb) {
         uploadFileName =
@@ -335,10 +330,8 @@ const createCampaign = (req, res) => {
   //Move the file from temporary directory to working directory
   function moveFile() {
     const oldFilePath = path.resolve(
-      "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/" +
+      "/Users/mdrazunmia/Documents/bulkSMS-server-side/uploads/temp/" +
         uploadFileName
-      // "/var/folders/43/g0ct804976n0ky9fy4_5l3300000gn/T/Documents/bulkSMS-server-files/campaign_files/" +
-      //   uploadFileName
     );
     const newFilePath = path.resolve(
       "./uploads/campaign_files",
@@ -353,10 +346,8 @@ const createCampaign = (req, res) => {
   //Delete file from the temporary directory
   function deleteFile() {
     const oldFilePath = path.resolve(
-      "/Users/mdrazunmia/Documents/bulkSMS-server-files/campaign_files/" +
+      "/Users/mdrazunmia/Documents/bulkSMS-server-side/uploads/temp/" +
         uploadFileName
-      // "/var/folders/43/g0ct804976n0ky9fy4_5l3300000gn/T/Documents/bulkSMS-server-files/campaign_files/" +
-      //   uploadFileName
     );
     fs.unlink(oldFilePath, function (err) {
       if (err) {
@@ -571,6 +562,66 @@ const getData = (req, res) => {
             address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
             contact: "+8801754110088",
           },
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
         ],
       },
       {
@@ -595,6 +646,351 @@ const getData = (req, res) => {
           },
         ],
       },
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
       {
         id: "4",
         companyName: "Teletalk",
