@@ -7,83 +7,216 @@ const { MulterError } = require("multer");
 const fs = require("fs");
 const csv = require("fast-csv");
 const xlsx = require("xlsx");
-const validatePhoneNumber = require("validate-phone-number-node-js");
+const aws = require("aws-sdk");
+const muterS3 = require("multer-s3");
+const xlsx_node_parser = require("node-xlsx");
 const { createCampaignValidation } = require("../validations/validation");
 const campaignCollection = database.GetCollection().CampaignCollection();
 
-// Create Campaign
+// //Define storage and file name
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "/Users/mdrazunmia/Documents/bulkSMS-server-files");
+//   },
+//   filename: function (req, file, cb) {
+//     uploadFileName = md5(file.originalname) + path.extname(file.originalname);
+//     uploadFileExtension = path.extname(file.originalname);
+//     cb(null, uploadFileName);
+//   },
+// });
+
+// //File filter
+// const Filter = (req, file, cb) => {
+//   if (
+//     (file.mimetype == "text/csv" ||
+//       file.mimetype ==
+//         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
+//     (path.extname(file.originalname) == ".csv" ||
+//       path.extname(file.originalname) == ".xlx" ||
+//       path.extname(file.originalname) == ".xlsx")
+//   ) {
+//     cb(null, true);
+//   } else {
+//     cb("Please upload only csv | xlx | xlsx type file.", false);
+//   }
+// };
+
+// //Multer upload function
+// const uploadImageInfo = multer({
+//   storage: storage,
+//   fileFilter: Filter,
+//   limits: { fileSize: process.env.MAX_UPLOAD_FILE_SIZE },
+// }).single("file"); //"file" is the name of the file input field name
+
+// const createCampaign = (req, res) => {
+//   // if (!req.file) {
+//   //   return res.status(422).send({ errorMessage: "There is no file" });
+//   // }
+//   // if (
+//   //   (file.mimetype !== "text/csv" ||
+//   //     file.mimetype !==
+//   //       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
+//   //   (path.extname(file.originalname) !== ".csv" ||
+//   //     path.extname(file.originalname) !== ".xlx" ||
+//   //     path.extname(file.originalname) !== ".xlsx")
+//   // ) {
+//   //   return res
+//   //     .status(422)
+//   //     .send({ errorMessage: "File formate is not supported." });
+//   // } else if (req.file.size > process.env.MAX_UPLOAD_FILE_SIZE) {
+//   //   return res
+//   //     .status(422)
+//   //     .send({ errorMessage: "File size must be less than 10MB." });
+//   // }
+//   res.send(req.body);
+// };
+
 const createCampaign = (req, res) => {
   let uploadFileName;
   let uploadFileExtension;
+  let localStorage;
+  let uploadImageInfo;
 
-  //Define storage and file name
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, "./uploads/campaign_files");
-    },
-    filename: function (req, file, cb) {
-      uploadFileName = md5(file.originalname) + path.extname(file.originalname);
-      uploadFileExtension = path.extname(file.originalname);
-      cb(null, uploadFileName);
-    },
-  });
+  if (process.env.S3_STORAGE === "true") {
+    const S3 = new aws.S3({
+      accessKeyId: process.env.AWS_S3_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_S3_SECRET_KEY,
+      region: process.env.AWS_S3_REGION,
+    });
 
-  //File filter
-  const Filter = (req, file, cb) => {
-    if (
-      (file.mimetype == "text/csv" ||
-        file.mimetype ==
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
-      (path.extname(file.originalname) == ".csv" ||
-        path.extname(file.originalname) == ".xlx" ||
-        path.extname(file.originalname) == ".xlsx")
-    ) {
-      cb(null, true);
-    } else {
-      cb("Please upload only csv | xlx | xlsx type file.", false);
-    }
-  };
+    const Filter = (req, file, cb) => {
+      if (
+        (file.mimetype == "text/csv" ||
+          file.mimetype ==
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
+        (path.extname(file.originalname) == ".csv" ||
+          path.extname(file.originalname) == ".xlx" ||
+          path.extname(file.originalname) == ".xlsx")
+      ) {
+        cb(null, true);
+      } else {
+        cb("Please upload only csv | xlx | xlsx type file.", false);
+      }
+    };
+    //upload image into s3
+    uploadImageInfo = multer({
+      storage: muterS3({
+        s3: S3,
+        bucket: process.env.AWS_BUCKET_NAME,
+        metadata: (req, file, cb) => {
+          cb(null, { fileName: file.fieldname });
+        },
+        key: (req, file, cb) => {
+          uploadFileName =
+            md5(file.originalname) + path.extname(file.originalname);
+          uploadFileExtension = path.extname(file.originalname);
+          cb(null, uploadFileName);
+        },
+      }),
+      fileFilter: Filter,
+    }).single("file");
+  }
 
-  //Multer upload function
-  const uploadImageInfo = multer({
-    storage: storage,
-    fileFilter: Filter,
-    limits: { fileSize: process.env.MAX_UPLOAD_FILE_SIZE },
-  }).single("file"); //"file" is the name of the file input field name
+  if (process.env.LOCAL_STORAGE === "true") {
+    //Define storage and file name
+    localStorage = multer.diskStorage({
+      destination: function (req, file, cb) {
+        cb(null, "./uploads/temp");
+      },
+      filename: function (req, file, cb) {
+        uploadFileName =
+          md5(file.originalname) + path.extname(file.originalname);
+        uploadFileExtension = path.extname(file.originalname);
+        cb(null, uploadFileName);
+      },
+    });
+
+    //File filter
+    const Filter = (req, file, cb) => {
+      if (
+        (file.mimetype == "text/csv" ||
+          file.mimetype ==
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") &&
+        (path.extname(file.originalname) == ".csv" ||
+          path.extname(file.originalname) == ".xlx" ||
+          path.extname(file.originalname) == ".xlsx")
+      ) {
+        cb(null, true);
+      } else {
+        cb("Please upload only csv | xlx | xlsx type file.", false);
+      }
+    };
+
+    //Multer upload function
+    uploadImageInfo = multer({
+      storage: localStorage,
+      fileFilter: Filter,
+      limits: { fileSize: process.env.MAX_UPLOAD_FILE_SIZE },
+    }).single("file"); //"file" is the name of the file input field name
+  }
 
   //Read CSV data
   function readCSV() {
-    let csvData = [];
-    const filePath = path.resolve("./uploads/campaign_files", uploadFileName);
-    fs.createReadStream(filePath)
-      .pipe(csv.parse({ headers: true })) // { headers: true }
-      .on("error", (error) => {
-        throw error.message;
-      })
-      .on("data", (row) => {
-        csvData.push(row);
-      })
-      .on("end", () => {
-        // res.send(csvData);
-        csvData.map((value, index) => {
-          const number = "0" + value.number;
-          const message = value.message;
-          if (!number || !message) {
-            `Serial No.: ${index + 1} | Message or Number is null`;
-          } else {
-            if (validatePhoneNumber(number)) {
-              console.log(
-                `Serial No.: ${
-                  index + 1
-                } | Number: ${number} | Message: ${message}`
-              );
-            } else {
-              console.log(`Serial No.: ${index + 1} | Phone number is invalid`);
-            }
-          }
-        });
-        //other functionalities will be here
+    if (process.env.S3_STORAGE === "true") {
+      aws.config.update({
+        accessKeyId: process.env.AWS_S3_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_S3_SECRET_KEY,
       });
+      const s3 = new aws.S3();
+      let params = {
+        Bucket: `${process.env.AWS_BUCKET_NAME}`,
+        Key: `${uploadFileName}`,
+      };
+
+      // var file = new aws.S3.getObject(params).createReadStream();
+      let file = s3.getObject(params).createReadStream();
+      const data = csv.parseStream(file);
+      data.on("data", (data) => {
+        console.log(data);
+      });
+    }
+    if (process.env.LOCAL_STORAGE === "true") {
+      let csvData = [];
+      let filePath;
+      if (process.env.LOCAL_STORAGE === "true")
+        filePath = path.resolve("./uploads/campaign_files", uploadFileName);
+      if (process.env.S3_STORAGE === "true")
+        filePath = path.resolve(
+          "https://dotonline-user-profile-image.s3.us-east-2.amazonaws.com/",
+          uploadFileName
+        );
+      fs.createReadStream(filePath)
+        .pipe(csv.parse({ headers: true })) // { headers: true }
+        .on("error", (error) => {
+          throw error.message;
+        })
+        .on("data", (row) => {
+          csvData.push(row);
+        })
+        .on("end", () => {
+          // res.send(csvData);
+          csvData.map((value, index) => {
+            const number = "0" + value.number;
+            const message = value.message;
+            if (!number || !message) {
+              `Serial No.: ${index + 1} | Message or Number is null`;
+            } else {
+              if (validatePhoneNumber(number)) {
+                console.log(
+                  `Serial No.: ${
+                    index + 1
+                  } | Number: ${number} | Message: ${message}`
+                );
+              } else {
+                console.log(
+                  `Serial No.: ${index + 1} | Phone number is invalid`
+                );
+              }
+            }
+          });
+          //other functionalities will be here
+        });
+    }
   }
 
   function validatePhoneNumber(phoneNumber) {
@@ -93,38 +226,75 @@ const createCampaign = (req, res) => {
 
   //Read XLX / XLSX data
   function readXLSXORXLX() {
-    const filePath = path.resolve("./uploads/campaign_files/", uploadFileName);
-    const workBook = xlsx.readFile(filePath);
-    //find sheets
-    const workSheet = workBook.Sheets["Sheet2"];
-    const clients_messages = xlsx.utils.sheet_to_json(workSheet);
-    clients_messages.map((client, index) => {
-      const phoneNumber = client["Phone Number"];
-      const message = client["Message"];
-      if (
-        !phoneNumber ||
-        phoneNumber === "undefined" ||
-        !message ||
-        message === "undefined"
-      ) {
-        console.log(
-          `serial No.: ${
-            index + 1
-          } | The number or the message or both the field is not available.`
-        );
-      } else {
-        if (validatePhoneNumber(phoneNumber)) {
+    if (process.env.S3_STORAGE === "true") {
+      aws.config.update({
+        accessKeyId: process.env.AWS_S3_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_S3_SECRET_KEY,
+      });
+      const s3 = new aws.S3();
+      let params = {
+        Bucket: `${process.env.AWS_BUCKET_NAME}`,
+        Key: `${uploadFileName}`,
+      };
+
+      // var file = new aws.S3.getObject(params).createReadStream();
+      let file = s3.getObject(params).createReadStream();
+      let buffers = [];
+
+      file.on("data", function (data) {
+        buffers.push(data);
+      });
+      file.on("end", function () {
+        let buffer = Buffer.concat(buffers);
+        let workBook = xlsx_node_parser.parse(buffer);
+        const data = workBook[0].data;
+        const info = {};
+        data.map((row, index) => {
+          if (index !== 0) {
+            row.map((value, index) => {
+              console.log(value);
+            });
+          }
+        });
+      });
+    }
+    if (process.env.LOCAL_STORAGE === "true") {
+      filePath = path.resolve("./uploads/campaign_files", uploadFileName);
+
+      const workBook = xlsx.readFile(filePath);
+      //find sheets
+      const workSheet = workBook.Sheets["Sheet2"];
+      const clients_messages = xlsx.utils.sheet_to_json(workSheet);
+      res.send(clients_messages);
+      clients_messages.map((client, index) => {
+        const phoneNumber = client["Phone Number"];
+        const message = client["Message"];
+        if (
+          !phoneNumber ||
+          phoneNumber === "undefined" ||
+          !message ||
+          message === "undefined"
+        ) {
           console.log(
             `serial No.: ${
               index + 1
-            } | number: ${phoneNumber} | message: ${message}`
+            } | The number or the message or both the field is not available.`
           );
         } else {
-          console.log(`serial No.: ${index + 1} | phone number is not valid.`);
+          if (validatePhoneNumber(phoneNumber)) {
+            console.log(
+              `serial No.: ${
+                index + 1
+              } | number: ${phoneNumber} | message: ${message}`
+            );
+          } else {
+            console.log(
+              `serial No.: ${index + 1} | phone number is not valid.`
+            );
+          }
         }
-      }
-    });
-
+      });
+    }
     // res.send(data);
     // for (let i = 0; i < data.length; i++) {
     //   console.log(data[i]);
@@ -146,6 +316,7 @@ const createCampaign = (req, res) => {
       uploadFileExtension === ".xlsx"
     ) {
       try {
+        console.log("xlx");
         readXLSXORXLX();
       } catch (error) {
         console.log(error);
@@ -156,13 +327,38 @@ const createCampaign = (req, res) => {
     }
   }
 
+  //Move the file from temporary directory to working directory
+  function moveFile() {
+    const oldFilePath = path.resolve(
+      "/Users/mdrazunmia/Documents/bulkSMS-server-side/uploads/temp/" +
+        uploadFileName
+    );
+    const newFilePath = path.resolve(
+      "./uploads/campaign_files",
+      uploadFileName
+    );
+    fs.rename(oldFilePath, newFilePath, (error) => {
+      if (error) throw error;
+      console.log("File successfully moved to the new destination.");
+    });
+  }
+
+  //Delete file from the temporary directory
+  function deleteFile() {
+    const oldFilePath = path.resolve(
+      "/Users/mdrazunmia/Documents/bulkSMS-server-side/uploads/temp/" +
+        uploadFileName
+    );
+    fs.unlink(oldFilePath, function (err) {
+      if (err) {
+        throw err;
+      } else {
+        console.log("Successfully deleted the file.");
+      }
+    });
+  }
+
   uploadImageInfo(req, res, function (error) {
-    if (req.body.smsType === "3" || req.body.smsType === "4") {
-      if (!req.file)
-        return res.status(422).send({
-          errorMessage: "File field is empty. Please upload a file.",
-        });
-    }
     if (req.body.smsType === "0") {
       return res.status(422).send({
         errorMessage:
@@ -172,7 +368,13 @@ const createCampaign = (req, res) => {
     if (error instanceof multer.MulterError) {
       return res.status(500).send(error);
     } else if (error) {
-      return res.status(422).send(error);
+      return res.status(422).send({ errorMessage: error });
+    }
+    if (req.body.smsType === "3" || req.body.smsType === "4") {
+      if (!req.file)
+        return res.status(422).send({
+          errorMessage: "File field is empty. Please upload a file.",
+        });
     }
 
     if (req.body.smsType === "2") {
@@ -217,9 +419,11 @@ const createCampaign = (req, res) => {
             errors.push({ [value]: currentMessage });
           });
         });
+        if (process.env.LOCAL_STORAGE === "true") deleteFile();
         // res.status(422).send({ message: error.details[0].message });
         return res.status(422).send(errors);
       }
+      if (process.env.LOCAL_STORAGE === "true") moveFile();
       readFile();
     }
 
@@ -242,12 +446,15 @@ const createCampaign = (req, res) => {
             errors.push({ [value]: currentMessage });
           });
         });
+        if (process.env.LOCAL_STORAGE === "true") deleteFile();
         return res.status(422).send(errors);
       }
+      if (process.env.LOCAL_STORAGE === "true") moveFile();
       readFile();
       // res.send(req.body);
     }
   });
+
   //   const campaignInformation = req.body;
   //   console.log(req);
   //   console.log(`file size: ${parseInt(req.headers["content-length"])}`);
@@ -309,8 +516,522 @@ const deleteCampaign = (req, res) => {
   });
 };
 
+//test function
+const getData = (req, res) => {
+  let value = {
+    data: [
+      {
+        id: "1",
+        companyName: "Grameenphone",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+      {
+        id: "2",
+        companyName: "Banglalink",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+      {
+        id: "3",
+        companyName: "Robi",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+
+      {
+        id: "4",
+        companyName: "Teletalk",
+        currentBalance: "100000000000  SMS",
+        details: [
+          {
+            name: "Md. Maziru rahman shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "Md.",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+          {
+            name: "shimul",
+            address: "House 55, Road 6, Block C, Niketon, Gulshan, Dhaka",
+            contact: "+8801754110088",
+          },
+        ],
+      },
+    ],
+  };
+  for (let key in value) {
+    let interData = value[key];
+    interData.map((data) => {
+      const details = data.details;
+      details.map((detail) => {
+        console.log(detail.name);
+      });
+    });
+  }
+
+  res.send(value);
+};
+
 module.exports = {
   createCampaign,
+  // uploadImageInfo,
   showAllCampaign,
   deleteCampaign,
+  getData,
 };

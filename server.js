@@ -42,13 +42,14 @@ function expressServerApp() {
   const LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
   const subUserRoute = require("./routes/subUserRoute");
   const app = express();
-  const whitelist = [`${process.env.BASE_URL}`];
+  const whitelist = [`${process.env.BASE_URL_FRONT_END}`];
   const corsOptions = {
     origin: function (origin, callback) {
       if (!origin || whitelist.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
-        callback(new error("Not allowed by CORS"));
+        // callback(new error("Not allowed by CORS"));
+        callback("Not allowed by CORS");
       }
     },
     credentials: true,

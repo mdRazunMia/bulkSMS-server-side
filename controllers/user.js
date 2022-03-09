@@ -858,9 +858,7 @@ const userRefreshToken = async (req, res) => {
         message:
           "Authentication and refresh token have been sent. | code: 10-5",
       });
-      res
-        .status(200)
-        .send({ authToken: authToken, refreshToken: refreshToken });
+      res.status(200).send({ authToken: authToken });
     } catch (error) {
       logger.log({
         level: "error",
