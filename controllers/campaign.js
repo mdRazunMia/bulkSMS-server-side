@@ -1015,15 +1015,15 @@ const getData = (req, res) => {
       },
     ],
   };
-  for (let key in value) {
-    let interData = value[key];
-    interData.map((data) => {
-      const details = data.details;
-      details.map((detail) => {
-        console.log(detail.name);
-      });
-    });
-  }
+  // for (let key in value) {
+  //   let interData = value[key];
+  //   interData.map((data) => {
+  //     const details = data.details;
+  //     details.map((detail) => {
+  //       console.log(detail.name);
+  //     });
+  //   });
+  // }
 
   res.send(value);
 };

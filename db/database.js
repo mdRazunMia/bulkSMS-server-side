@@ -57,11 +57,16 @@ module.exports = (function () {
       return bulkSmsDb.collection("sub-user");
     }
 
+    function apiKeyCollection() {
+      return bulkSmsDb.collection("api_keys");
+    }
+
     return {
       CampaignCollection,
       SmsCollection,
       userCollection,
       subUserCollection,
+      apiKeyCollection,
     };
   }
 

@@ -38,6 +38,7 @@ function expressServerApp() {
   const campaignRoute = require("./routes/campaignRoute.js");
   const googleLoginRoute = require("./routes/googleLoginRoute.js");
   const linkedinLoginRoute = require("./routes/linkedinRoute");
+  const apiKeyRoute = require("./routes/apiKeyRoute");
   const passport = require("passport");
   const LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
   const subUserRoute = require("./routes/subUserRoute");
@@ -103,6 +104,7 @@ function expressServerApp() {
   );
 
   app.use("/", userRoute);
+  app.use("/api-key", apiKeyRoute);
   app.use("/auth", googleLoginRoute);
   app.use("/auth", linkedinLoginRoute);
   app.use("/campaign", campaignRoute);
