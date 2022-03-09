@@ -277,6 +277,51 @@ const createCampaignValidation = (data) => {
   return schema.validate(data, { abortEarly: false });
 };
 
+const apiKeyGenerationUserSignUPValidation = (data) => {
+  let schema;
+  schema = Joi.object({
+    userEmail: Joi.string()
+      .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+      .required()
+      .messages({
+        "string.empty": `Email cannot be empty`,
+        "string.email": `Email must be a valid Email.`,
+        "any.required": `Email is required`,
+      }),
+    userPassword1: Joi.string().min(8).max(25).required().messages({
+      "string.empty": `Password cannot be an empty field`,
+      "string.max": `Password should have a maximum length of 25 characters`,
+      "string.min": `Password should have a minimum length of 8 characters`,
+      "any.required": `Password is a required field`,
+    }),
+    userPassword2: Joi.any()
+      .equal(Joi.ref("userPassword1"))
+      .required()
+      .messages({ "any.only": "Confirm password does not match" }),
+  });
+  return schema.validate(data, { abortEarly: false });
+};
+
+const apiKeyGenerationUserLogInValidation = (data) => {
+  let schema = Joi.object({
+    userEmail: Joi.string()
+      .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+      .required()
+      .messages({
+        "string.empty": `Email cannot be empty`,
+        "string.email": `Email must be a valid Email.`,
+        "any.required": `Email is required`,
+      }),
+    userPassword: Joi.string().min(8).max(25).required().messages({
+      "string.empty": `Password cannot be an empty field`,
+      "string.max": `Password should have a maximum length of 25 characters`,
+      "string.min": `Password should have a minimum length of 8 characters`,
+      "any.required": `Password is a required field`,
+    }),
+  });
+  return schema.validate(data, { abortEarly: false });
+};
+
 module.exports = {
   registerValidation,
   loginValidation,
@@ -288,4 +333,6 @@ module.exports = {
   userForgetPasswordValidation,
   updateUserInformationValidation,
   createCampaignValidation,
+  apiKeyGenerationUserSignUPValidation,
+  apiKeyGenerationUserLogInValidation,
 };
