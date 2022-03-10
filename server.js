@@ -1,4 +1,5 @@
 const db = require("./db/database");
+// const redisInstance = require("./db/redis");
 
 mongoDB();
 
@@ -39,9 +40,11 @@ function expressServerApp() {
   const googleLoginRoute = require("./routes/googleLoginRoute.js");
   const linkedinLoginRoute = require("./routes/linkedinRoute");
   const apiKeyRoute = require("./routes/apiKeyRoute");
+  const sendSMSRoute = require("./routes/sendSMSRoute");
   const passport = require("passport");
   const LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
   const subUserRoute = require("./routes/subUserRoute");
+  let acl = require("acl2");
   const app = express();
   const whitelist = [`${process.env.BASE_URL_FRONT_END}`];
   const corsOptions = {
@@ -102,6 +105,10 @@ function expressServerApp() {
       }
     )
   );
+  // const redisClient = redisInstance.getRedisClient();
+  // acl = new acl(new acl.redisBackend({ client: redisClient }));
+  // console.log(acl)
+  // acl.allow("sub-admin", "showSubUsers", "view");
 
   app.use("/", userRoute);
   app.use("/api-key", apiKeyRoute);
@@ -109,6 +116,7 @@ function expressServerApp() {
   app.use("/auth", linkedinLoginRoute);
   app.use("/campaign", campaignRoute);
   app.use("/subUser", subUserRoute);
+  app.use("/API", sendSMSRoute);
 
   app.listen(port, () => {
     console.log("Dot Online Server is running on port", port);

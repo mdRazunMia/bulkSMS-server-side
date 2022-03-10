@@ -11,6 +11,7 @@ const {
   subUserPasswordResetValidation,
 } = require("../validations/validation");
 const logger = require("../logger/logger");
+let acl = require("acl2");
 
 const createSubUser = async (req, res) => {
   const { error, value } = subUserCreateValidation(req.body);
@@ -55,6 +56,7 @@ const createSubUser = async (req, res) => {
         level: "info",
         message: "Sub-user has been created successfully. | code: 15-3",
       });
+      // acl.addUserRoles(subUserName, "sub-admin");
       res.status(201).send({
         successMessage: "Sub-user has been created successfully.",
       });

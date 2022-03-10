@@ -14,10 +14,6 @@ module.exports = (function () {
       });
 
       client.connect();
-      // //   console.log(client);
-      // client.on("connect", () => {
-      //   console.log("success");
-      // });
       if (client) {
         return resolve(client);
       }
