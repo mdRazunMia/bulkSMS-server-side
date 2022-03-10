@@ -40,10 +40,7 @@ function expressServerApp() {
   const googleLoginRoute = require("./routes/googleLoginRoute.js");
   const linkedinLoginRoute = require("./routes/linkedinRoute");
   const apiKeyRoute = require("./routes/apiKeyRoute");
-<<<<<<< HEAD
   const sendSMSRoute = require("./routes/sendSMSRoute");
-=======
->>>>>>> 7f8cb1a3c827f9e6dd6bbca8e73d92fca8a09dbe
   const passport = require("passport");
   const LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
   const subUserRoute = require("./routes/subUserRoute");
