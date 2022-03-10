@@ -5,6 +5,7 @@ var rand = require("random-key");
 const { ObjectId } = require("mongodb");
 const apiKeyCollection = database.GetCollection().apiKeyCollection();
 const userCollection = database.GetCollection().userCollection();
+
 const generateAPIKey = (req, res) => {
   const userId = req.query.id;
   const scopes = req.body.scopes;
@@ -35,6 +36,7 @@ const generateAPIKey = (req, res) => {
     }
   });
 };
+
 module.exports = {
   generateAPIKey,
 };
