@@ -1,8 +1,5 @@
 const database = require("../db/database");
-const userCollection = database.GetCollection().userCollection();
 const apiKeyCollection = database.GetCollection().apiKeyCollection();
-const os = require("os");
-
 const apiKeyUserVerify = (req, res, next) => {
   const userId = req.query.userId;
   const secretKey = req.query.secretKey;
