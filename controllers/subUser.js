@@ -1,4 +1,5 @@
 const database = require("../db/database");
+const acl = require("./acl");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -11,8 +12,6 @@ const {
   subUserPasswordResetValidation,
 } = require("../validations/validation");
 const logger = require("../logger/logger");
-let acl = require("acl2");
-
 const createSubUser = async (req, res) => {
   const { error, value } = subUserCreateValidation(req.body);
   if (error) {
@@ -120,6 +119,7 @@ const logInSubUser = (req, res) => {
             level: "error",
             message: "Sub-user has been logged in successfully. | code: 16-4",
           });
+          // acl(result.subUserRole);
           return res.status(200).send({
             successMessage: "User has been logged in successfully.",
             subUserId: result._id,

@@ -13,6 +13,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "@supercharge/strings": "^1.25.0",
+    "accesscontrol": "^2.2.1",
     "acl2": "^3.0.0",
     "aws-sdk": "^2.1087.0",
     "axios": "^0.25.0",
