@@ -13,7 +13,7 @@ let grantList = [
   },
   {
     role: "admin",
-    resource: "video",
+    resource: "showSubUsers",
     action: "update:any",
     attributes: "*, !views",
   },

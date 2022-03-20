@@ -7,6 +7,7 @@ const accessVerify = require("../validations/verifyAccess");
 router.post("/create", subUserController.createSubUser);
 router.post("/login", subUserController.logInSubUser);
 router.get("/showSubUsers", accessVerify, subUserController.showAllSubUser);
+// router.get("/showSubUsers", acl, subUserController.showAllSubUser);
 router.delete("/deleteSubUser/:id", subUserController.deleteSubUser);
 router.put(
   "/editSubUserInformation/:id",
