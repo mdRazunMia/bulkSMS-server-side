@@ -44,7 +44,6 @@ function expressServerApp() {
   const passport = require("passport");
   const LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
   const subUserRoute = require("./routes/subUserRoute");
-  let acl = require("acl2");
   const app = express();
   const whitelist = [`${process.env.BASE_URL_FRONT_END}`];
   const corsOptions = {
