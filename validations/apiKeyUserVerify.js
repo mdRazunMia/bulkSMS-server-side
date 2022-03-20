@@ -1,11 +1,15 @@
 const database = require("../db/database");
+const Cryptr = require("cryptr");
+const cryptr = new Cryptr(`${process.env.cryptrSecretKey}`);
 const apiKeyCollection = database.GetCollection().apiKeyCollection();
 const apiKeyUserVerify = (req, res, next) => {
-  // const userId = req.query.userId;
-  const secretKey = req.query.secretKey;
+  const apiSecretKey = req.query.secretKey;
+  const apiClientSecretKey = req.query.apiClientSecretKey;
+  const decryptApiKey = cryptr.decrypt(apiSecretKey);
+  const decryptApiClientKey = cryptr.decrypt(apiClientSecretKey);
   //secret ID
   apiKeyCollection.findOne(
-    { userId: userId, apiSecretKey: secretKey },
+    { apiSecretKey: decryptApiKey, apiClientSecretKey: decryptApiClientKey },
     (error, result) => {
       if (error)
         return res.status(500).send({ errorMessage: "Internal error." });

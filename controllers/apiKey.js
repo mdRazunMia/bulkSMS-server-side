@@ -1,19 +1,23 @@
 const database = require("../db/database");
 const logger = require("../logger/logger");
 const bcrypt = require("bcryptjs");
-var rand = require("random-key");
+const rand = require("random-key");
+const Cryptr = require("cryptr");
+const cryptr = new Cryptr(`${process.env.cryptrSecretKey}`);
 const { ObjectId } = require("mongodb");
 const apiKeyCollection = database.GetCollection().apiKeyCollection();
 const userCollection = database.GetCollection().userCollection();
 
-const generateAPIKey = async (req, res) => {
+const generateAPIKey = (req, res) => {
   const userId = req.user.id;
   const scopes = req.body.scopes;
   const ipSources = req.body.ipSources;
   const expireDate = req.body.expireDate;
-  const salt = await bcrypt.genSalt(10);
-  const apiSecretKey = await bcrypt.hash(rand.generate(), salt);
-  const apiClientSecretKey = await bcrypt.hash(rand.generateDigits(16), salt);
+  // const salt = await bcrypt.genSalt(10);
+  const apiKey = rand.generate();
+  const apiSecretKey = cryptr.encrypt(apiKey);
+  const clientKey = rand.generateDigits(16);
+  const apiClientSecretKey = cryptr.encrypt(clientKey);
   const apiUserObject = {};
   apiUserObject.userId = userId;
   apiUserObject.scopes = scopes;
@@ -36,8 +40,8 @@ const generateAPIKey = async (req, res) => {
             .send({ errorMessage: "Internal server error." });
       });
       res.status(200).send({
-        secretKey: apiSecretKey,
-        apiClientSecretKey: apiClientSecretKey,
+        secretKey: apiKey,
+        apiClientSecretKey: clientKey,
         message: "Please store these keys secure.",
       });
     }
