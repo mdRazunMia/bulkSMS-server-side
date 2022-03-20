@@ -16,11 +16,7 @@ const generateAPIKey = (req, res) => {
   const expireDate = req.body.expireDate;
   const apiKey = rand.generate();
   const md5ApiKey = md5(apiKey);
-  // const apiSecretKey = cryptr.encrypt(apiKey);
-  // console.log(apiSecretKey);
   const clientId = rand.generateDigits(16);
-  // const apiClientSecretKey = cryptr.encrypt(clientKey);
-  // console.log(apiClientSecretKey);
   const md5ClientId = md5(clientId);
   const apiUserObject = {};
   apiUserObject.userEmail = userEmail;

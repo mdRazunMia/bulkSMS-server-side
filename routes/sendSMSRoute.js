@@ -5,9 +5,8 @@ const apiKeyUserVerify = require("../validations/apiKeyUserVerify");
 
 router.post(
   "/sms-send",
-  //   apiKeyUserVerify("send_sms"),
-  apiKeyUserVerify,
-
+  apiKeyUserVerify("sms_send"),
+  // apiKeyUserVerify,
   sendSMSController.sendSMS
 ); //para meters have to be passed
 
