@@ -5,28 +5,32 @@ const rand = require("random-key");
 const Cryptr = require("cryptr");
 const cryptr = new Cryptr(`${process.env.cryptrSecretKey}`);
 const { ObjectId } = require("mongodb");
+const md5 = require("md5");
 const apiKeyCollection = database.GetCollection().apiKeyCollection();
 const userCollection = database.GetCollection().userCollection();
 
 const generateAPIKey = (req, res) => {
-  const userId = req.user.id;
+  const userEmail = req.user.userEmail;
   const scopes = req.body.scopes;
   const ipSources = req.body.ipSources;
   const expireDate = req.body.expireDate;
-  // const salt = await bcrypt.genSalt(10);
   const apiKey = rand.generate();
-  const apiSecretKey = cryptr.encrypt(apiKey);
-  const clientKey = rand.generateDigits(16);
-  const apiClientSecretKey = cryptr.encrypt(clientKey);
+  const md5ApiKey = md5(apiKey);
+  // const apiSecretKey = cryptr.encrypt(apiKey);
+  // console.log(apiSecretKey);
+  const clientId = rand.generateDigits(16);
+  // const apiClientSecretKey = cryptr.encrypt(clientKey);
+  // console.log(apiClientSecretKey);
+  const md5ClientId = md5(clientId);
   const apiUserObject = {};
-  apiUserObject.userId = userId;
+  apiUserObject.userEmail = userEmail;
   apiUserObject.scopes = scopes;
   apiUserObject.ipSources = ipSources;
   apiUserObject.expireDate = expireDate;
-  apiUserObject.apiSecretKey = apiSecretKey;
-  apiUserObject.apiClientSecretKey = apiClientSecretKey;
+  apiUserObject.apiKey = md5ApiKey;
+  apiUserObject.apiClientId = md5ClientId;
 
-  userCollection.findOne({ _id: ObjectId(userId) }, (error, result) => {
+  userCollection.findOne({ userEmail: userEmail }, (error, result) => {
     if (error) {
       return res.status(500).send("Internal error");
     }
@@ -40,8 +44,8 @@ const generateAPIKey = (req, res) => {
             .send({ errorMessage: "Internal server error." });
       });
       res.status(200).send({
-        secretKey: apiKey,
-        apiClientSecretKey: clientKey,
+        apiKey: apiKey,
+        secretKey: clientId,
         message: "Please store these keys secure.",
       });
     }
