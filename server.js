@@ -40,7 +40,9 @@ function expressServerApp() {
   const googleLoginRoute = require("./routes/googleLoginRoute.js");
   const linkedinLoginRoute = require("./routes/linkedinRoute");
   const apiKeyRoute = require("./routes/apiKeyRoute");
+  const jwtApiKeyRoute = require("./routes/jwtApiKeyRoute");
   const sendSMSRoute = require("./routes/sendSMSRoute");
+  const sendSMSJWTRoute = require("./routes/sendSMSJwtRoute");
   const passport = require("passport");
   const LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
   const subUserRoute = require("./routes/subUserRoute");
@@ -111,11 +113,13 @@ function expressServerApp() {
 
   app.use("/", userRoute);
   app.use("/api-key", apiKeyRoute);
+  app.use("/jwt-api-key", jwtApiKeyRoute);
   app.use("/auth", googleLoginRoute);
   app.use("/auth", linkedinLoginRoute);
   app.use("/campaign", campaignRoute);
   app.use("/subUser", subUserRoute);
   app.use("/API", sendSMSRoute);
+  app.use("/API", sendSMSJWTRoute);
 
   app.listen(port, () => {
     console.log("Dot Online Server is running on port", port);
