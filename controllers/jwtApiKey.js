@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const { ObjectId } = require("mongodb");
 const moment = require("moment");
 
-// const apiKeyCollection = database.GetCollection().apiKeyCollection();
 const userCollection = database.GetCollection().userCollection();
 
 const jwtApiKeyGeneration = (req, res) => {
@@ -15,16 +14,7 @@ const jwtApiKeyGeneration = (req, res) => {
   const ipSources = req.body.ipSources;
   const exDate = req.body.expireDate;
   const apiKey = rand.generate();
-  //   const md5ApiKey = md5(apiKey);
   const clientId = rand.generateDigits(16);
-  //   const md5ClientId = md5(clientId);
-  //   const apiUserObject = {};
-  //   apiUserObject.userEmail = userEmail;
-  //   apiUserObject.scopes = scopes;
-  //   apiUserObject.ipSources = ipSources;
-  //   apiUserObject.expireDate = expireDate;
-  //   apiUserObject.apiKey = apiKey;
-  //   apiUserObject.apiClientId = clientId;
 
   userCollection.findOne({ userEmail: userEmail }, (error, result) => {
     if (error) {
@@ -33,17 +23,10 @@ const jwtApiKeyGeneration = (req, res) => {
     if (result === null) {
       return res.status(404).send({ errorMessage: "User is not found" });
     } else {
-      //   apiKeyCollection.insertOne(apiUserObject, (error, res) => {
-      //     if (error)
-      //       return res
-      //         .status(500)
-      //         .send({ errorMessage: "Internal server error." });
-      //   });
       const expireDate = moment(exDate).format("YYYY-MM-DD");
       const currentDate = moment(new Date()).format("YYYY-MM-DD");
       const remainingDays = moment(expireDate).diff(currentDate, "days");
-      const expireIn = `${remainingDays}d`;
-      console.log(expireIn);
+      const expireIn = remainingDays + "d";
       const token = jwt.sign(
         {
           userEmail: userEmail,
