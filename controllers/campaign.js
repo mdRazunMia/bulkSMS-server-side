@@ -378,7 +378,14 @@ const createCampaign = (req, res) => {
     }
 
     if (req.body.smsType === "2") {
-      const { error, value } = createCampaignValidation(req.body);
+      const requestedObject = {};
+      requestedObject.campaignName = req.body.campaignName;
+      requestedObject.languageName = req.body.languageName;
+      requestedObject.smsType = req.body.smsType;
+      requestedObject.instantSMS = req.body.instantSMS;
+      requestedObject.phoneNumber = req.body.phoneNumber;
+
+      const { error, value } = createCampaignValidation(requestedObject);
       if (error) {
         const errors = [];
         error.details.forEach((detail) => {
