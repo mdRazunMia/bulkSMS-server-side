@@ -401,7 +401,14 @@ const createCampaign = (req, res) => {
         // res.status(422).send({ message: error.details[0].message });
         return res.status(422).send(errors);
       }
-      console.log(req.body);
+
+      console.log(validatePhoneNumber(value.phoneNumber));
+      if (validatePhoneNumber(value.phoneNumber)) {
+        console.log(`${value.phoneNumber} is valid.`);
+      } else {
+        console.log(`${value.phoneNumber} is not valid.`);
+      }
+      // console.log(req.body);
       res.send(req.body);
     }
 
