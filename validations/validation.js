@@ -77,13 +77,13 @@ const userUpdatePasswordValidation = (data) => {
     // userEmail: Joi.string().email({ minDomainSegments: 2, tlds: {allow: ['com','net']}}).required(),
     userCurrentPassword: Joi.string().min(8).max(25).required().messages({
       "string.empty": `Password cannot be an empty field`,
-      "string.max": `Password should have a minimum length of 25 characters`,
+      "string.max": `Password should have a maximum length of 25 characters`,
       "string.min": `Password should have a minimum length of 8 characters`,
       "any.required": `Password is a required field`,
     }),
     userPassword1: Joi.string().min(8).max(25).required().messages({
       "string.empty": `Password cannot be an empty field`,
-      "string.max": `Password should have a minimum length of 25 characters`,
+      "string.max": `Password should have a maximum length of 25 characters`,
       "string.min": `Password should have a minimum length of 8 characters`,
       "any.required": `Password is a required field`,
     }),
@@ -99,7 +99,7 @@ const userForgetPasswordValidation = (data) => {
   const schema = Joi.object({
     userPassword1: Joi.string().min(8).max(25).required().messages({
       "string.empty": `Password cannot be an empty field`,
-      "string.max": `Password should have a minimum length of 25 characters`,
+      "string.max": `Password should have a maximum length of 25 characters`,
       "string.min": `Password should have a minimum length of 8 characters`,
       "any.required": `Password is a required field`,
     }),
@@ -147,13 +147,13 @@ const subUserCreateValidation = (data) => {
     }),
     subUserPassword: Joi.string().min(8).max(25).required().messages({
       "string.empty": `Password cannot be an empty field`,
-      "string.max": `Password should have a minimum length of 25 characters`,
+      "string.max": `Password should have a maximum length of 25 characters`,
       "string.min": `Password should have a minimum length of 8 characters`,
       "any.required": `Password is a required field`,
     }),
     subUserRole: Joi.string().min(3).max(25).messages({
       "string.empty": `Sub user role cannot be an empty field`,
-      "string.max": `Sub user role should have a minimum length of 25 characters`,
+      "string.max": `Sub user role should have a maximum length of 25 characters`,
       "string.min": `Sub user role should have a minimum length of 3 characters`,
       "any.required": `Sub user role is a required field`,
     }),
@@ -171,13 +171,13 @@ const subUserLoginValidation = (data) => {
     }),
     subUserPassword: Joi.string().min(8).max(25).required().messages({
       "string.empty": `Password cannot be an empty field`,
-      "string.max": `Password should have a minimum length of 25 characters`,
+      "string.max": `Password should have a maximum length of 25 characters`,
       "string.min": `Password should have a minimum length of 8 characters`,
       "any.required": `Password is a required field`,
     }),
     subUserRole: Joi.string().min(3).max(25).messages({
       "string.empty": `Sub user role cannot be an empty field`,
-      "string.max": `Sub user role should have a minimum length of 25 characters`,
+      "string.max": `Sub user role should have a maximum length of 25 characters`,
       "string.min": `Sub user role should have a minimum length of 3 characters`,
       "any.required": `Sub user role is a required field`,
     }),
@@ -196,13 +196,13 @@ const subUserEditValidation = (data) => {
     }),
     subUserPassword: Joi.string().min(8).max(24).required().messages({
       "string.empty": `Password cannot be an empty field`,
-      "string.max": `Password should have a minimum length of 25 characters`,
+      "string.max": `Password should have a maximum length of 25 characters`,
       "string.min": `Password should have a minimum length of 8 characters`,
       "any.required": `Password is a required field`,
     }),
     subUserRole: Joi.string().max(24).messages({
       "string.empty": `Sub user role cannot be an empty field`,
-      "string.max": `Sub user role should have a minimum length of 25 characters`,
+      "string.max": `Sub user role should have a maximum length of 25 characters`,
       "string.min": `Sub user role should have a minimum length of 3 characters`,
       "any.required": `Sub user role is a required field`,
     }),
@@ -215,7 +215,7 @@ const subUserPasswordResetValidation = (data) => {
   const schema = Joi.object({
     subUserPassword1: Joi.string().min(8).max(25).required().messages({
       "string.empty": `Password cannot be an empty field`,
-      "string.max": `Password should have a minimum length of 25 characters`,
+      "string.max": `Password should have a maximum length of 25 characters`,
       "string.min": `Password should have a minimum length of 8 characters`,
       "any.required": `Password is a required field`,
     }),
@@ -232,7 +232,7 @@ const createCampaignValidation = (data) => {
   let schema = Joi.object({
     campaignName: Joi.string().min(6).max(255).required().messages({
       "string.empty": `Campaign name cannot be an empty field`,
-      "string.max": `Campaign name should have a minimum length of 255 characters`,
+      "string.max": `Campaign name should have a maximum length of 255 characters`,
       "string.min": `Campaign name should have a minimum length of 6 characters`,
       "any.required": `Campaign name is a required field`,
     }),
