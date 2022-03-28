@@ -230,8 +230,10 @@ const subUserPasswordResetValidation = (data) => {
 const createCampaignValidation = (data) => {
   //console.log(typeof data.smsType);
   let schema = Joi.object({
-    campaignName: Joi.string().required().messages({
+    campaignName: Joi.string().min(6).max(255).required().messages({
       "string.empty": `Campaign name cannot be an empty field`,
+      "string.max": `Campaign name should have a minimum length of 255 characters`,
+      "string.min": `Campaign name should have a minimum length of 6 characters`,
       "any.required": `Campaign name is a required field`,
     }),
     languageName: Joi.string().required().messages({
