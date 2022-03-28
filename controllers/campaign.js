@@ -224,6 +224,27 @@ const createCampaign = (req, res) => {
     return regex.test(phoneNumber);
   }
 
+  function CharacterCount(message) {
+    const character_number = message.length;
+    console.log(`character_number: ${character_number}`);
+    let sms_count = 0;
+    let flag = false;
+    for (let i = 1; i <= character_number; i = i + 1) {
+      if (i % 120 == 0) {
+        flag = false;
+        sms_count = sms_count + 1;
+      }
+      if (i % 120 != 0) {
+        flag = true;
+      }
+    }
+    if (flag) {
+      sms_count = sms_count + 1;
+      console.log("Total SMS: " + sms_count);
+    }
+    return sms_count;
+  }
+
   //Read XLX / XLSX data
   function readXLSXORXLX() {
     if (process.env.S3_STORAGE === "true") {
@@ -402,7 +423,9 @@ const createCampaign = (req, res) => {
         return res.status(422).send(errors);
       }
 
-      console.log(validatePhoneNumber(value.phoneNumber));
+      const total_sms_number = CharacterCount(value.instantSMS);
+      console.log(total_sms_number);
+
       if (validatePhoneNumber(value.phoneNumber)) {
         console.log(`${value.phoneNumber} is valid.`);
       } else {
@@ -438,6 +461,8 @@ const createCampaign = (req, res) => {
         return res.status(422).send(errors);
       }
       if (process.env.LOCAL_STORAGE === "true") moveFile();
+      const total_sms_number = CharacterCount(value.bulkSMS);
+      console.log(total_sms_number);
       readFile();
     }
 
