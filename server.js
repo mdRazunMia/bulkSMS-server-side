@@ -94,7 +94,7 @@ function expressServerApp() {
       {
         clientID: process.env.LINKEDIN_CLIENT_ID,
         clientSecret: process.env.LINKEDIN_SECRET_ID,
-        callbackURL: `${process.env.BASE_URL}/auth/linkedin/callback`,
+        callbackURL: `${process.env.BASE_URL_FRONT_END}/auth/linkedin/callback`,
         scope: ["r_emailaddress", "r_liteprofile"],
       },
       function (accessToken, refreshToken, profile, done) {

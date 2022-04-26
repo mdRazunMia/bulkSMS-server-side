@@ -1,0 +1,42 @@
+{ 2022-03-29 10:11:51 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-03-29 10:11:51 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-03-30 10:06:10 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-03-30 10:06:10 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-04-03 09:43:52 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-04-03 09:43:53 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-04-04 09:37:05 | error : Email must be a valid Email. | Code: 2-1 }
+{ 2022-04-04 09:37:08 | error : Email must be a valid Email. | Code: 2-1 }
+{ 2022-04-04 10:08:38 | error : Email incorrect or registered first. | Code: 2-9 }
+{ 2022-04-04 10:08:58 | error : Email incorrect or registered first. | Code: 2-9 }
+{ 2022-04-04 10:09:25 | error : User password error. | Code: 2-5 }
+{ 2022-04-04 10:09:37 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-04-04 10:09:37 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-04-04 10:10:02 | info : User has been logged out successfully. | 12-1 }
+{ 2022-04-04 10:10:19 | error : Email incorrect or registered first. | Code: 2-9 }
+{ 2022-04-04 10:14:19 | error : Email incorrect or registered first. | Code: 2-9 }
+{ 2022-04-04 10:14:44 | error : Email incorrect or registered first. | Code: 2-9 }
+{ 2022-04-04 10:15:20 | error : User password error. | Code: 2-5 }
+{ 2022-04-04 10:15:29 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-04-04 10:15:29 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-04-04 10:16:22 | info : User has been logged out successfully. | 12-1 }
+{ 2022-04-04 10:35:39 | warn : Email already exist | Code: 1-5 }
+{ 2022-04-04 10:36:37 | error : Recaptcha cannot be an empty field | Code: 1-1 }
+{ 2022-04-04 10:38:44 | error : Recaptcha cannot be an empty field | Code: 1-1 }
+{ 2022-04-04 10:40:03 | warn : Email already exist | Code: 1-5 }
+{ 2022-04-04 10:41:24 | error : Recaptcha cannot be an empty field | Code: 1-1 }
+{ 2022-04-04 10:49:48 | error : Recaptcha cannot be an empty field | Code: 1-1 }
+{ 2022-04-04 10:52:01 | error : Recaptcha cannot be an empty field | Code: 1-1 }
+{ 2022-04-04 11:07:09 | error : Recaptcha cannot be an empty field | Code: 1-1 }
+{ 2022-04-04 11:07:28 | info : User has been registered successfully. A link has been sent to user E-mail to verify user's account. | Code: 1-4 }
+{ 2022-04-04 11:07:30 | error : Internal error in node mailer send Mail function | Code: 1-3 }
+{ 2022-04-04 11:12:17 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-04-04 11:12:18 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-04-05 09:46:42 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-04-05 09:46:43 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-04-05 09:46:47 | info : User has been logged out successfully. | 12-1 }
+{ 2022-04-05 09:46:54 | error : User password error. | Code: 2-5 }
+{ 2022-04-05 09:46:59 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-04-05 09:46:59 | info : Get all the info of requested user after login. | code: 9-1 }
+{ 2022-04-05 09:52:02 | info : User has been logged out successfully. | 12-1 }
+{ 2022-04-05 09:53:12 | info : User successfully logged in.| user id: 62148029dbb45c9df557e05f | Code: 2-4 }
+{ 2022-04-05 09:53:13 | info : Get all the info of requested user after login. | code: 9-1 }
