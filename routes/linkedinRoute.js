@@ -40,12 +40,14 @@ router.get(
       }
       if (result == null) {
         const authToken = jwt.sign(
-          { userEmail: userEmail },
-          process.env.TOKEN_SECRET
+          { userEmail: result.userEmail },
+          process.env.TOKEN_SECRET,
+          { expiresIn: process.env.JWT_EXPIRE_TIME }
         );
         const refreshToken = jwt.sign(
           { userEmail: userEmail },
-          process.env.REFRESH_TOKEN_SECRET
+          process.env.REFRESH_TOKEN_SECRET,
+          { expiresIn: process.env.REFRESH_TOKEN_SECRET }
         );
         userCollection.insertOne(linkedInUser);
         redisClient.set(
@@ -70,22 +72,22 @@ router.get(
           message:
             "User has been logged in successfully by using linkedIn. | code: 14-3",
         });
-        res
-          .status(200)
-          .send({
-            linkedInSuccessMessageAndInserted:
-              "User has been logged in successfully.",
-            authToken: authToken,
-            refreshToken: refreshToken,
-          });
+        res.status(200).send({
+          linkedInSuccessMessageAndInserted:
+            "User has been logged in successfully.",
+          authToken: authToken,
+          refreshToken: refreshToken,
+        });
       } else {
         const authToken = jwt.sign(
           { userEmail: result.userEmail },
-          process.env.TOKEN_SECRET
+          process.env.TOKEN_SECRET,
+          { expiresIn: process.env.JWT_EXPIRE_TIME }
         );
         const refreshToken = jwt.sign(
           { userEmail: userEmail },
-          process.env.REFRESH_TOKEN_SECRET
+          process.env.REFRESH_TOKEN_SECRET,
+          { expiresIn: process.env.REFRESH_TOKEN_SECRET }
         );
         redisClient.set(
           userEmail,
@@ -108,13 +110,11 @@ router.get(
           level: "error",
           message: "User Already exist for linkedin account. | code: 14-4",
         });
-        res
-          .status(200)
-          .send({
-            linkedInExistingSuccessMessage: "User Already exist.",
-            authToken: authToken,
-            refreshToken: refreshToken,
-          });
+        res.status(200).send({
+          linkedInExistingSuccessMessage: "User Already exist.",
+          authToken: authToken,
+          refreshToken: refreshToken,
+        });
       }
     });
   }

@@ -44,11 +44,13 @@ const googleLogin = (req, res) => {
           if (result == null) {
             const authToken = jwt.sign(
               { userEmail: userEmail },
-              process.env.TOKEN_SECRET
+              process.env.TOKEN_SECRET,
+              { expiresIn: process.env.JWT_EXPIRE_TIME }
             );
             const refreshToken = jwt.sign(
               { userEmail: userEmail },
-              process.env.REFRESH_TOKEN_SECRET
+              process.env.REFRESH_TOKEN_SECRET,
+              { expiresIn: process.env.REFRESH_TOKEN_SECRET }
             );
             userCollection.insertOne(userInformation);
             redisClient.set(
@@ -82,11 +84,13 @@ const googleLogin = (req, res) => {
           } else {
             const authToken = jwt.sign(
               { userEmail: result.userEmail },
-              process.env.TOKEN_SECRET
+              process.env.TOKEN_SECRET,
+              { expiresIn: process.env.JWT_EXPIRE_TIME }
             );
             const refreshToken = jwt.sign(
               { userEmail: userEmail },
-              process.env.REFRESH_TOKEN_SECRET
+              process.env.REFRESH_TOKEN_SECRET,
+              { expiresIn: process.env.REFRESH_TOKEN_SECRET }
             );
             redisClient.set(
               userEmail,
